@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply base styles based on the theme */
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: var(--textColor, #2C2C2C);
+  background-color: var(--white, #FFFFFF);
+  line-height: 1.5;
+  /* Remove default margins */
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary, #1F3B4D);
+    font-weight: bold;
+}
+
+/* Optional: Define CSS Variables for semantic use if preferred */
+/* :root {
+  --primary: #1F3B4D;
+  --accent: #4A90E2;
+  --textColor: #2C2C2C;
+  --lightGray: #F5F7FA;
+  --white: #FFFFFF;
+} */

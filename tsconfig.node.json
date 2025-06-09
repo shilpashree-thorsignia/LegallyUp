@@ -1,0 +1,12 @@
+// tsconfig.node.json
+{
+    "compilerOptions": {
+      "composite": true,
+      "skipLibCheck": true,
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "allowSyntheticDefaultImports": true
+    },
+    "include": ["vite.config.ts"] // Or vite.config.js if you used JS
+    // If you have other node-specific TS files like setupTests.ts, include them here
+  }
