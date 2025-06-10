@@ -14,5 +14,15 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NODE_VERSION": "20.x"
+    }
+  },
+  "nodeVersion": "20.x",
+  "installCommand": "npm install --force",
+  "devCommand": "vite --port $PORT",
+  "framework": "vite",
+  "regions": ["iad1"]
 }
