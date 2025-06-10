@@ -7,8 +7,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "preinstall": "npm config set @rollup:registry https://registry.npmjs.org/",
     "dev": "vite",
-    "build": "tsc && vite build --force",
+    "build": "tsc && FORCE_COLOR=1 NODE_OPTIONS='--no-warnings' vite build --force",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "vercel-build": "npm run build",

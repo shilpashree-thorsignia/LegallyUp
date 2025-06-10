@@ -5,7 +5,8 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "zeroConfig": true
       }
     }
   ],
@@ -22,7 +23,11 @@
   },
   "nodeVersion": "20.x",
   "installCommand": "npm install --force",
+  "buildCommand": "npm run build",
   "devCommand": "vite --port $PORT",
   "framework": "vite",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "env": {
+    "NPM_CONFIG_FORCE": "true"
+  }
 }
