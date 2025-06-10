@@ -25,3 +25,20 @@ h1, h2, h3, h4, h5, h6 {
   --lightGray: #F5F7FA;
   --white: #FFFFFF;
 } */
+ /* src/index.css or similar */
+:root {
+  /* Example, replace with your primary color's RGB values */
+  --color-primary-rgb: 37, 99, 235; /* e.g., for Tailwind's blue-600 */
+  /* Define your gradient colors if using CSS vars there too */
+  --color-primary-dark: #021329;
+  --color-accent-medium: #1460c4;
+}
+/* src/index.css or similar */
+:root {
+  /* Replace with your actual hex/rgb values from Tailwind config */
+  --color-primary-rgb: 37, 99, 235;   /* e.g., for blue-600 */
+  --color-primary: #2563EB;
+  --color-primary-dark: #1D4ED8; /* Darker shade */
+  --color-accent: #3B82F6;       /* Can be same as primary or different */
+  --color-accent-medium: #2563EB; /* Or another mid shade */
+}

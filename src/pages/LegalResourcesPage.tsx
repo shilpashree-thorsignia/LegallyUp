@@ -1,191 +1,140 @@
 // src/pages/LegalResourcesPage.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { BookOpen, Search, Filter, HelpCircle, FileText as GuideIcon, ListChecks, Hash, ChevronRight } from 'lucide-react'; // Using more specific icons
 
-// Placeholder data for resources (e.g., articles, FAQs, glossary terms)
+// Expanded placeholder data with a 'slug' for URL and more content for detail page
 const mockResources = [
-    { id: 'faq-nda', type: 'FAQ', category: 'Contracts', title: 'What is an NDA?', summary: 'Explains the basics of a Non-Disclosure Agreement.' },
-    { id: 'guide-rental', type: 'Guide', category: 'Real Estate', title: 'Guide to Creating a Rental Agreement', summary: 'Step-by-step instructions for landlords and tenants.' },
-    { id: 'glossary-arbitration', type: 'Glossary', category: 'General', title: 'Arbitration', summary: 'Definition of arbitration in legal contexts.' },
-    { id: 'faq-ip', type: 'FAQ', category: 'Intellectual Property', title: 'How to Protect Your Intellectual Property', summary: 'Overview of patents, trademarks, and copyrights.' },
-     { id: 'guide-employment-contract', type: 'Guide', category: 'Employment', title: 'Understanding Employment Contracts', summary: 'What to look for in an employment agreement.' },
-    { id: 'glossary-force-majeure', type: 'Glossary', category: 'Contracts', title: 'Force Majeure', summary: 'Definition and implications of force majeure clauses.' },
-    // Add more mock resources
+    { id: 'faq-nda', slug: 'what-is-an-nda', type: 'FAQ', category: 'Contracts & Agreements', title: 'What is an NDA?', summary: 'Explains the basics of a Non-Disclosure Agreement, its purpose, and key elements.', icon: <HelpCircle size={24} className="text-indigo-500" />, content: "A Non-Disclosure Agreement (NDA), also known as a confidentiality agreement, is a legal contract between at least two parties that outlines confidential material, knowledge, or information that the parties wish to share with one another for certain purposes, but wish to restrict access to or by third parties..." },
+    { id: 'guide-rental', slug: 'guide-to-rental-agreements', type: 'Guide', category: 'Real Estate', title: 'Guide to Creating a Rental Agreement', summary: 'Step-by-step instructions and considerations for landlords and tenants when drafting a lease.', icon: <GuideIcon size={24} className="text-green-500" />, content: "Creating a comprehensive rental agreement is crucial for both landlords and tenants. This guide covers essential clauses like rent, security deposit, lease term, tenant responsibilities, landlord responsibilities, and local regulations..." },
+    { id: 'glossary-arbitration', slug: 'arbitration-defined', type: 'Glossary', category: 'Legal Terms', title: 'Arbitration', summary: 'Definition of arbitration as an alternative dispute resolution method.', icon: <Hash size={24} className="text-purple-500" />, content: "Arbitration is a form of alternative dispute resolution (ADR) in which a dispute is submitted to one or more arbitrators who make a binding decision on the dispute. It is often used for the resolution of commercial disputes and can be either voluntary or mandatory..." },
+    { id: 'faq-ip', slug: 'protecting-intellectual-property', type: 'FAQ', category: 'Intellectual Property', title: 'How to Protect Your Intellectual Property', summary: 'Overview of patents, trademarks, copyrights, and trade secrets.', icon: <HelpCircle size={24} className="text-indigo-500" />, content: "Protecting your intellectual property (IP) is vital for businesses and creators. This involves understanding patents (for inventions), trademarks (for brands), copyrights (for original creative works), and trade secrets (for confidential business information)..." },
+    { id: 'guide-employment-contract', slug: 'understanding-employment-contracts', type: 'Guide', category: 'Employment Law', title: 'Understanding Employment Contracts', summary: 'Key elements to look for in an employment agreement before signing.', icon: <GuideIcon size={24} className="text-green-500" />, content: "An employment contract outlines the terms and conditions of employment between an employer and an employee. Key elements include job title and responsibilities, compensation, benefits, duration of employment (if not at-will), confidentiality clauses, non-compete agreements (where lawful), and termination conditions..." },
+    { id: 'glossary-force-majeure', slug: 'force-majeure-clause', type: 'Glossary', category: 'Contracts & Agreements', title: 'Force Majeure', summary: 'Definition and implications of force majeure clauses in contracts.', icon: <Hash size={24} className="text-purple-500" />, content: "A force majeure clause is a contract provision that relieves the parties from performing their contractual obligations when certain circumstances beyond their control arise, making performance inadvisable, commercially impracticable, illegal, or impossible. Such circumstances typically include acts of God, war, riots, or natural disasters..." },
 ];
 
-// Animation variants for sections
-const sectionVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-};
+
+const sectionVariants = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, type: "spring", stiffness: 50 } } };
+const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
 
 const LegalResourcesPage: React.FC = () => {
-   // Placeholder state for filtering resources
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedType, setSelectedType] = useState('All'); // e.g., 'FAQ', 'Guide', 'Glossary'
+  const [selectedType, setSelectedType] = useState('All');
 
-
-   // --- Placeholder Filtering Logic (Frontend Only) ---
   const filteredResources = mockResources
     .filter(resource => {
-      const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            resource.summary.toLowerCase().includes(searchTerm.toLowerCase());
-
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      const matchesSearch = resource.title.toLowerCase().includes(lowerSearchTerm) ||
+                            resource.summary.toLowerCase().includes(lowerSearchTerm);
       const matchesCategory = selectedCategory === 'All' || resource.category === selectedCategory;
       const matchesType = selectedType === 'All' || resource.type === selectedType;
-
       return matchesSearch && matchesCategory && matchesType;
     });
 
-  // --- End Placeholder Filtering Logic ---
-
-   // Get unique categories and types for filter dropdowns
-   const uniqueCategories = [...new Set(mockResources.map(res => res.category))].sort();
-   const uniqueTypes = [...new Set(mockResources.map(res => res.type))].sort();
-
+  const uniqueCategories = ['All', ...new Set(mockResources.map(res => res.category))].sort();
+  const uniqueTypes = ['All', ...new Set(mockResources.map(res => res.type))].sort();
 
   return (
      <motion.div
-      initial="hidden" // Apply container animation variants
+      initial="hidden"
       animate="visible"
-      variants={{
-        visible: {
-          transition: {
-            staggerChildren: 0.2, // Add slight delay between sections
-          },
-        },
-      }}
-      className="py-8" // Inherits container/padding from Layout, adds vertical padding
+      variants={{ visible: { transition: { staggerChildren: 0.1 }}}}
+      className="bg-gray-50 min-h-screen" // Overall page background
     >
-
-        {/* NEW: Legal Resources Hero Section */}
-        <motion.section variants={sectionVariants} className="text-center py-16 bg-lightGray rounded-3xl mb-12 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-5xl md:text-6xl font-bold text-primary mb-6 leading-tight">
+        <motion.section
+            variants={sectionVariants}
+            className="text-center py-16 md:py-20 bg-gradient-to-br from-primary to-accent text-white rounded-b-3xl md:rounded-b-[60px] shadow-xl mb-12 px-4"
+        >
+            <BookOpen size={64} className="mx-auto mb-6 opacity-80" />
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight">
                 Legal Resources Hub
             </h1>
-            <p className="text-xl text-textColor mb-0 max-w-3xl mx-auto leading-relaxed">
-                Find answers to common legal questions, understand legal terms, and explore helpful guides.
+            <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
+                Empowering you with knowledge. Find answers, understand legal terms, and explore helpful guides.
             </p>
         </motion.section>
 
-         {/* Search and Filter Bar */}
-        <motion.section variants={sectionVariants} className="mb-12 p-6 bg-white rounded-xl shadow-sm border border-lightGray">
-            <h2 className="text-2xl font-semibold text-primary mb-6">Find Resources</h2>
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-stretch md:items-center">
-                {/* Search Input */}
-                <div className="flex-grow">
-                    <label htmlFor="resource-search" className="sr-only">Search resources</label>
-                    <input
-                        id="resource-search"
-                        type="text"
-                        placeholder="Search FAQs, guides, or terms..."
-                         value={searchTerm}
-                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-textColor"
-                    />
+        {/* <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <div className="p-6 md:p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
+                <div className="flex items-center mb-6">
+                    <Filter size={28} className="text-primary mr-3" />
+                    <h2 className="text-2xl font-semibold text-primary">Explore Our Resources</h2>
                 </div>
-
-                 {/* Category Filter */}
-                 <div>
-                     <label htmlFor="resource-category" className="sr-only">Filter by category</label>
-                     <select
-                         id="resource-category"
-                         value={selectedCategory}
-                         onChange={(e) => setSelectedCategory(e.target.value)}
-                         className="w-full md:w-auto p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-textColor bg-white"
-                     >
-                         <option value="All">All Categories</option>
-                         {uniqueCategories.map(category => (
-                             <option key={category} value={category}>{category}</option>
-                         ))}
-                     </select>
-                 </div>
-
-                 {/* Type Filter */}
-                 <div>
-                     <label htmlFor="resource-type" className="sr-only">Filter by type</label>
-                     <select
-                          id="resource-type"
-                          value={selectedType}
-                          onChange={(e) => setSelectedType(e.target.value)}
-                          className="w-full md:w-auto p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-textColor bg-white"
-                      >
-                         <option value="All">All Types</option>
-                         {uniqueTypes.map(type => (
-                             <option key={type} value={type}>{type}</option>
-                         ))}
-                     </select>
-                 </div>
-            </div>
-            {/* Optional: Add Category Navigation links/buttons here if preferred over dropdown */}
-             {/*
-             <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                <button className="px-4 py-2 rounded-md border border-accent text-accent hover:bg-accent hover:text-white transition-colors">All</button>
-                <button className="px-4 py-2 rounded-md border border-accent text-accent hover:bg-accent hover:text-white transition-colors">Contracts</button>
-                <button className="px-4 py-2 rounded-md border border-accent text-accent hover:bg-accent hover:text-white transition-colors">Real Estate</button>
-                 {/* Add more category buttons }
-             </div>
-             */}
-        </motion.section>
-
-
-        {/* Resource List/Grid */}
-        <motion.section variants={sectionVariants} className="py-8"> {/* Add padding, no background */}
-            <h2 className="text-3xl font-bold text-primary mb-8">Matching Resources ({filteredResources.length})</h2>
-            {filteredResources.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Grid for resources */}
-                    {filteredResources.map(resource => (
-                        <div
-                            key={resource.id}
-                            className="bg-white p-6 rounded-xl shadow-md border border-lightGray flex flex-col justify-between"
-                        >
-                            <div> {/* Container for title/description */}
-                                {/* Display resource type and title */}
-                                <p className="text-sm font-semibold text-accent mb-2">{resource.type} / {resource.category}</p>
-                                <h3 className="text-xl font-semibold text-primary mb-2">{resource.title}</h3>
-                                <p className="text-textColor text-sm mb-4 leading-relaxed">{resource.summary}</p>
-                            </div>
-                             {/* Placeholder Link to Resource Detail Page */}
-                            <button
-                                onClick={() => alert(`Placeholder: Navigating to detail page for resource: ${resource.title}`)}
-                                className="self-start text-accent hover:underline font-semibold mt-4"
-                            >
-                                Read More →
-                            </button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                    <div>
+                        <label htmlFor="resource-search" className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
+                            <input id="resource-search" type="text" placeholder="Keywords, title..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 shadow-sm"/>
                         </div>
+                    </div>
+                    <div>
+                        <label htmlFor="resource-category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="resource-category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none">
+                            {uniqueCategories.map(category => (<option key={category} value={category}>{category}</option>))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="resource-type" className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                        <select id="resource-type" value={selectedType} onChange={(e) => setSelectedType(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none">
+                            <option value="All">All Types</option>
+                            {uniqueTypes.map(type => (<option key={type} value={type}>{type}</option>))}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </motion.section> */}
+
+        <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* <h2 className="text-3xl font-bold text-primary mb-8">
+                Found <span className="text-accent">{filteredResources.length}</span> Resources
+            </h2> */}
+            {filteredResources.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {filteredResources.map(resource => (
+                        <motion.div
+                            key={resource.id}
+                            variants={cardVariants}
+                            className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 flex flex-col group transform hover:-translate-y-2"
+                        >
+                            <div className="p-6 md:p-8 flex-grow">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="p-3 bg-lightGray rounded-full">
+                                        {resource.icon || <BookOpen size={24} className="text-primary" />}
+                                    </div>
+                                    <div>
+                                        <span className="text-xs font-semibold text-accent uppercase tracking-wider">{resource.type}</span>
+                                        <h3 className="text-lg md:text-xl font-semibold text-primary group-hover:text-accent transition-colors mt-1">{resource.title}</h3>
+                                    </div>
+                                </div>
+                                <p className="text-gray-600 text-sm mb-6 leading-relaxed min-h-[80px]">{resource.summary}</p>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{resource.category}</span>
+                            </div>
+                             <div className="px-6 md:px-8 pb-6 pt-2">
+                                <Link
+                                    to={`/resources/${resource.slug}`} // Use slug for cleaner URL
+                                    className="inline-flex items-center text-accent hover:text-primary font-semibold group transition-colors duration-200"
+                                >
+                                    Read More
+                                    <ChevronRight size={20} className="ml-1 group-hover:translate-x-1 transition-transform duration-200" />
+                                </Link>
+                            </div>
+                        </motion.div>
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 text-textColor/80 italic text-lg">
-                    No resources match your criteria. Please adjust your search or filters.
-                </div>
+                <motion.div variants={cardVariants} className="text-center py-20 px-6 text-gray-500 italic text-lg bg-white rounded-xl shadow-md border">
+                    <ListChecks size={64} className="mx-auto mb-6 text-gray-400" />
+                    <p className="text-xl font-semibold text-gray-700 mb-2">No resources match your criteria.</p>
+                    <p>Try adjusting your search terms or broadening your filters.</p>
+                </motion.div>
             )}
        </motion.section>
-
-       {/* Optional: Featured Articles Section */}
-        {/*
-       <motion.section variants={sectionVariants} className="py-16 bg-lightGray rounded-3xl mt-12 px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-primary mb-12 text-center">Featured Articles</h2>
-             {/* Placeholder for featured article cards }
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="bg-white p-8 rounded-2xl shadow-md border border-lightGray">
-                     <h3 className="text-2xl font-semibold text-primary mb-4">Title of Featured Article 1</h3>
-                      <p className="text-accent text-sm mb-3">Category / Reading Time</p>
-                     <p className="text-textColor leading-relaxed mb-4">A brief snippet or summary of the featured article content...</p>
-                      <button
-                            onClick={() => alert("Placeholder: Reading featured article 1")}
-                            className="text-accent hover:underline font-semibold"
-                        >
-                            Read Article →
-                        </button>
-                 </div>
-                  {/* Add more featured article cards }
-             </div>
-       </motion.section>
-       */}
-
-
     </motion.div>
   );
 };

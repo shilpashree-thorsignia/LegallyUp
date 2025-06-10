@@ -1,168 +1,287 @@
-// src/pages/SignInPage.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // Adjust path if needed
+import FormField from '../components/forms/FormField'; // Adjust path if needed
+import { LogIn, UserPlus, ShieldCheck, Zap, FileText } from 'lucide-react';
+
+// Define the structure of your form data if needed for more complex validation,
+// but for email/password, direct state is often fine.
+// interface SignInFormData {
+//   email: string;
+//   password: string;
+// }
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  // errors state is now an object to hold field-specific or general errors
+  const [errors, setErrors] = useState<Partial<Record<'email' | 'password' | 'general', string>>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { user, login } = useAuth();
+  const { user, login } = useAuth(); // Assuming login is async and might throw or return user/null
   const navigate = useNavigate();
 
   // If user is already logged in, redirect to dashboard
   if (user) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" replace />;
   }
 
-  // Animation variants for the form container
-  const formVariants = {
+  // Animation Variants
+  const pageVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5 } },
+  };
+
+  const columnVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.1, staggerChildren: 0.2 } },
+  };
+  const formColumnVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.1, staggerChildren: 0.2 } },
+  };
+
+  const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   };
 
+  const validateAndSetErrors = (): boolean => {
+    const newErrors: Partial<Record<'email' | 'password', string>> = {};
+    if (!email.trim()) {
+        newErrors.email = 'Email address is required.';
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+        newErrors.email = 'Please enter a valid email address.';
+    }
+    if (!password.trim()) {
+        newErrors.password = 'Password is required.';
+    }
+    // Example: Add password length validation if desired
+    // else if (password.length < 6) {
+    //     newErrors.password = 'Password must be at least 6 characters.';
+    // }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    setErrors({}); // Clear previous errors
     
-    try {
-      const success = await login(email, password);
-      if (success) {
-        navigate('/dashboard');
-      } else {
-        setError('Invalid email or password');
-      }
-    } catch (err) {
-      setError('Failed to sign in. Please try again.');
+    if (!validateAndSetErrors()) { // Perform basic client-side validation first
+        setIsLoading(false);
+        return;
     }
     
+    setIsLoading(true);
+    try {
+      const loginResult = await login(email, password); // `login` from useAuth
+      if (loginResult) { // Check if login was successful (e.g., returns user object)
+        navigate('/dashboard');
+      } else {
+        // This case might be hit if `login` returns null/undefined on failure
+        // without throwing an error that has a `code`.
+        setErrors({ general: 'Sign-in failed. Please check your credentials.' });
+      }
+    } catch (err: any) {
+      console.error("Sign-in error details:", err);
+      let generalErrorMessage = 'Failed to sign in. Please try again later.';
+      if (err.code) {
+        switch (err.code) {
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+          case 'auth/invalid-credential': // More recent Firebase error code
+            setErrors({ general: 'Invalid email or password. Please check your credentials and try again.' });
+            // Optionally, you could try to highlight both fields, but Firebase doesn't specify which one.
+            // setErrors(prev => ({...prev, email: " ", password: " "})); // Empty string to trigger error style
+            break;
+          case 'auth/invalid-email':
+            setErrors({ email: 'The email address format is not valid.' });
+            break;
+          case 'auth/user-disabled':
+            setErrors({ general: 'This user account has been disabled by an administrator.' });
+            break;
+          case 'auth/too-many-requests':
+            setErrors({ general: 'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.' });
+            break;
+          default:
+            setErrors({ general: generalErrorMessage });
+        }
+      } else {
+        // Non-Firebase error or error without a code
+        setErrors({ general: err.message || generalErrorMessage });
+      }
+    }
     setIsLoading(false);
   };
 
-    // Placeholder for Social Sign-in logic
-    const handleGoogleSignIn = () => {
-        // TODO: Implement Google Sign-in logic (Firebase Auth)
-        alert("Placeholder: Attempting Google Sign In");
-        // Example: Call Firebase auth method like signInWithPopup(auth, googleProvider)
-        // On success: navigate('/dashboard');
-        // On error: show error message to user
-    };
+  const handleGoogleSignIn = async () => {
+    setErrors({}); // Clear previous errors
+    // TODO: Implement Google Sign-in logic (e.g., using Firebase `signInWithPopup`)
+    alert("Placeholder: Attempting Google Sign In. This would typically open a popup.");
+    // try {
+    //   const { user: googleUser } = await signInWithPopup(auth, googleProvider); // Replace with your auth instance and provider
+    //   if (googleUser) {
+    //     navigate('/dashboard');
+    //   }
+    // } catch (error: any) {
+    //   console.error("Google Sign-In Error:", error);
+    //   setErrors({ general: "Failed to sign in with Google. " + (error.message || "Please try again.") });
+    // }
+  };
 
 
   return (
     <motion.div
-      initial="hidden" // Apply container animation variants
+      initial="hidden"
       animate="visible"
-      variants={formVariants}
-      className="min-h-screen flex items-center justify-center bg-lightGray text-textColor py-12 px-4 sm:px-6 lg:px-8" // Full height, center content, themed background/text/padding
+      variants={pageVariants}
+      className="min-h-screen flex items-stretch bg-gray-100 text-textColor"
     >
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-xl border border-lightGray"> {/* Form container styling */}
-        <div>
-          <h2 className="mt-2 text-center text-3xl font-bold text-primary"> {/* Heading styling */}
-            Sign in to your account
-          </h2>
-           {/* Link to Sign Up page */}
-          <p className="mt-2 text-center text-sm text-textColor/80">
-            Or <Link to="/signup" className="font-medium text-accent hover:underline transition-colors duration-200">create a new account</Link>
-          </p>
+      {/* Left Column - Branding & Info */}
+      <motion.div
+        variants={columnVariants}
+        className="hidden lg:flex lg:w-1/2 items-center bg-gradient-to-br from-primary to-accent justify-center p-12 text-white relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
+        <div className="relative z-10 text-center max-w-md bg-white/20 backdrop-blur-sm p-12">
+          <motion.div variants={itemVariants} className="mb-8">
+            <Link to="/">
+              <h1 className="text-5xl font-extrabold tracking-tight">
+                Legally<span className="text-accent">Up</span>
+              </h1>
+            </Link>
+          </motion.div>
+          <motion.h2 variants={itemVariants} className="text-3xl font-semibold mb-6 leading-snug">
+            Welcome Back!
+          </motion.h2>
+          <motion.p variants={itemVariants} className="text-lg text-white/80 leading-relaxed mb-8">
+            Access your dashboard, manage your documents, and continue simplifying your legal needs with LegallyUp.
+          </motion.p>
+          <motion.div variants={itemVariants} className="space-y-4 text-left">
+            <div className="flex items-start gap-3 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <FileText size={24} className="text-accent mt-1 flex-shrink-0" />
+              <p><strong className="font-semibold">Quick Document Access:</strong> Instantly find and manage all your generated legal documents.</p>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <ShieldCheck size={24} className="text-accent mt-1 flex-shrink-0" />
+              <p><strong className="font-semibold">Secure & Reliable:</strong> Your information is protected with industry-leading security.</p>
+            </div>
+             <div className="flex items-start gap-3 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <Zap size={24} className="text-accent mt-1 flex-shrink-0" />
+              <p><strong className="font-semibold">Streamlined Workflow:</strong> Continue where you left off and save valuable time.</p>
+            </div>
+          </motion.div>
         </div>
+      </motion.div>
 
-        {/* Email/Password Sign In Form */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
+      {/* Right Column - Sign In Form */}
+      <motion.div
+        variants={formColumnVariants}
+        className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12"
+      >
+        <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-2xl shadow-2xl border border-gray-200">
+          <div>
+            <motion.h2 variants={itemVariants} className="mt-2 text-center text-3xl font-bold text-primary">
+              Sign in to your account
+            </motion.h2>
+            <motion.p variants={itemVariants} className="mt-3 text-center text-sm text-gray-500">
+              Don't have an account?{' '}
+              <Link to="/signup" className="font-medium text-accent hover:underline transition-colors duration-200">
+                Create one now
+              </Link>
+            </motion.p>
           </div>
-        )}
-        <form className="space-y-6" onSubmit={handleSubmit}> {/* Form structure with spacing */}
-          <div className="rounded-md shadow-sm -space-y-px"> {/* Group fields, remove space */}
-            <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label> {/* Hidden label for accessibility */}
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
+
+          {errors.general && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert"
+            >
+              <p className="font-medium">Sign-in Error</p>
+              <p className="text-sm">{errors.general}</p>
+            </motion.div>
+          )}
+
+          <motion.form
+            // variants={itemVariants} // Apply to form as a whole if not staggering individual fields
+            className="space-y-6" onSubmit={handleSubmit} noValidate>
+            <motion.div variants={itemVariants}> {/* Stagger individual fields */}
+              <FormField
+                id="email" // Use "email" to match error key
+                label="Email address" type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2.5 border border-lightGray placeholder-textColor/60 text-textColor focus:outline-none focus:ring-2 focus:ring-accent focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors(prev => ({...prev, email: undefined}));
+                }}
+                required placeholder="you@example.com"
+                error={errors.email}
               />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <FormField
+                id="password" // Use "password" to match error key
+                label="Password" type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2.5 border border-lightGray placeholder-textColor/60 text-textColor focus:outline-none focus:ring-2 focus:ring-accent focus:z-10 sm:text-sm"
-                placeholder="Password"
+                onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors(prev => ({...prev, password: undefined}));
+                }}
+                required placeholder="••••••••"
+                error={errors.password}
               />
-            </div>
-          </div>
+            </motion.div>
 
-          {/* Forgot Password Link */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              {/* Remember me checkbox placeholder */}
-            </div>
-            <div className="text-sm">
-              <Link to="#" className="font-medium text-accent hover:underline transition-colors duration-200">
+            <motion.div variants={itemVariants} className="flex items-center justify-end text-sm"> {/* Moved Forgot Password to be staggered */}
+              <Link to="/forgot-password" className="font-medium text-accent hover:underline transition-colors duration-200">
                 Forgot your password?
               </Link>
+            </motion.div>
+
+            <motion.div variants={itemVariants}> {/* Stagger button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300 disabled:opacity-70"
+              >
+                {isLoading ? (
+                    <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                ) : (
+                    <LogIn size={22} className="transition-transform duration-200 group-hover:translate-x-[-4px]" /> // Icon before text
+                )}
+                <span className="ml-2">{isLoading ? 'Signing in...' : 'Sign In'}</span>
+              </button>
+            </motion.div>
+          </motion.form>
+
+          <motion.div variants={itemVariants}> {/* Stagger social sign-in */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true"><div className="w-full border-t border-gray-300" /></div>
+              <div className="relative flex justify-center text-sm"><span className="px-3 bg-white text-gray-500">Or continue with</span></div>
             </div>
-          </div>
+            <div>
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-md font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+              >
+                <svg className="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Sign in with Google
+              </button>
+            </div>
+          </motion.div>
 
-          {/* Sign In Button */}
-          <div>
-            <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-md text-white bg-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200" // Themed button styling
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </div>
-
-           {/* Social Sign-in Options */}
-           <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                            </div>
-                        </div>
-                        <div className="mt-6">
-                            <button 
-                                type="button"
-                                onClick={handleGoogleSignIn}
-                                className="w-full flex items-center justify-center py-2.5 px-4 border border-lightGray rounded-md shadow-sm text-sm font-medium text-textColor bg-white hover:bg-lightGray focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lightGray transition-colors duration-200"
-                            >
-                                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                                </svg>
-                                Sign in with Google
-                            </button>
-                        </div>
-           </div>
-
-           {/* Legal Terms */}
-           <div className="text-center text-xs text-textColor/60 mt-6">
-               By signing in, you agree to LegallyUp's <Link to="/terms" className="text-accent hover:underline transition-colors duration-200">Terms of Service</Link> and <Link to="/privacy" className="text-accent hover:underline transition-colors duration-200">Privacy Policy</Link>.
-           </div>
-        </form>
-      </div>
+          <motion.p variants={itemVariants} className="text-center text-xs text-gray-500 mt-8">
+            By signing in, you agree to LegallyUp's{' '}
+            <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link> and{' '}
+            <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>.
+          </motion.p>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };

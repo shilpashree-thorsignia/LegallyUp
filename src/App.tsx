@@ -13,7 +13,9 @@ import AboutPage from './pages/AboutPage';
 import DocumentGeneratorPage from './pages/Documents/DocumentGeneratorPage';
 import TemplateLibraryPage from './pages/TemplateLibraryPage';
 import AttorneyPage from './pages/AttorneyPage';
+import ScheduleConsultationPage from './pages/ScheduleConsultationPage';
 import LegalResourcesPage from './pages/LegalResourcesPage';
+import ResourceDetailPage from './pages/ResourceDetailPage';
 import PricingPage from './pages/PricingPage';
 import CaseStudiesPage from './pages/CaseStudiesPage';
 import ContactPage from './pages/ContactPage';
@@ -27,6 +29,7 @@ import PowerOfAttorneyPage from './pages/Documents/PowerOfAttorneyPage.tsx';
 import EulaPage from './pages/Documents/EulaPage.tsx';
 import WebsiteServicesAgreementPage from './pages/Documents/WebsiteServicesAgreementPage.tsx';
 import CookiesPolicyPage from './pages/Documents/CookiesPolicyPage.tsx';
+import CaseStudyDetailPage from './pages/CaseStudyDetailPage.tsx';
 
 
 // Protected route component
@@ -72,9 +75,12 @@ function App() {
           <Route path="/Documents/generate/cookies-policy" element={<Layout><CookiesPolicyPage /></Layout>} />
           <Route path="/templates" element={<Layout><TemplateLibraryPage /></Layout>} />
           <Route path="/attorneys" element={<Layout><AttorneyPage /></Layout>} />
+          <Route path="/schedule-consultation/:attorneySlug" element={<Layout><ScheduleConsultationPage /></Layout>} />
           <Route path="/resources" element={<Layout><LegalResourcesPage /></Layout>} />
+          <Route path="/resources/:resourceSlug" element={<Layout><ResourceDetailPage /></Layout>} />
           <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
-          <Route path="/case-studies" element={<Layout><CaseStudiesPage /></Layout>} />
+          <Route path="/case-studies" element={<Layout><CaseStudiesPage /></Layout>} /> 
+          <Route path="/case-studies/:caseStudySlug" element={<Layout><CaseStudyDetailPage /></Layout>} />
           <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
