@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { DollarSign, CheckCircle, XCircle, HelpCircle, ChevronDown, Star, Zap, Users } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 // Animation variants
 const pageVariants = {
@@ -38,7 +39,7 @@ const planCardVariants = {
 
 // FAQ Data - Expanded as requested
 const faqsData = [
-  { id: 'faq1', q: 'How does the Free plan work?', a: 'Our Free plan provides access to a selection of basic templates and allows for a limited number of document generations per month (currently 3). It’s perfect for individuals with occasional legal document needs or for those wanting to try our platform before committing to a paid plan. You can save your generated documents and access standard email support.' },
+  { id: 'faq1', q: 'How does the Free plan work?', a: 'Our Free plan provides access to a selection of basic templates and allows for a limited number of document generations per month (currently 3). It\'s perfect for individuals with occasional legal document needs or for those wanting to try our platform before committing to a paid plan. You can save your generated documents and access standard email support.' },
   { id: 'faq2', q: 'What are "premium templates" in the Pro plan?', a: 'Premium templates are more complex, specialized, or industry-specific documents drafted by legal experts. They often include more customization options, cover a wider range of legal scenarios, and are designed for more robust needs. These are available exclusively to our Pro subscribers.' },
   { id: 'faq3', q: 'Can I upgrade or downgrade my plan at any time?', a: 'Absolutely! You can easily change your plan (upgrade or downgrade) directly from your account dashboard. Upgrades are typically pro-rated, and downgrades will take effect at the start of your next billing cycle.' },
   { id: 'faq4', q: 'What payment methods do you accept for paid plans?', a: 'We accept all major credit cards, including Visa, MasterCard, American Express, and Discover. We also support payments through PayPal for added convenience. All payments are processed securely through our PCI-compliant payment gateway.' },
@@ -94,11 +95,26 @@ const FaqItem: React.FC<{ faq: typeof faqsData[0]; isOpen: boolean; onClick: () 
 
 const PricingPage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<string | null>(faqsData[0]?.id || null); // Open first FAQ by default
+  const { user } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [pendingPlan, setPendingPlan] = useState<string | null>(null);
 
   const toggleFaq = (id: string) => {
     setOpenFaq(openFaq === id ? null : id);
   };
 
+  const handlePlanClick = (plan: string) => {
+    if (!user) {
+      setPendingPlan(plan);
+      setShowLoginPrompt(true);
+    } else {
+      window.location.href = `/signup?plan=${plan}`;
+    }
+  };
+
+  const handleLogin = () => {
+    window.location.href = '/signin';
+  };
 
   return (
      <motion.div
@@ -108,6 +124,27 @@ const PricingPage: React.FC = () => {
       variants={pageVariants}
       className="bg-gray-100 min-h-screen"
     >
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-primary mb-4">Please log in to continue</h3>
+            <p className="mb-6 text-gray-600">You need to be logged in to upgrade your plan.</p>
+            <button
+              onClick={handleLogin}
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition mb-2"
+            >
+              Log in
+            </button>
+            <button
+              onClick={() => setShowLoginPrompt(false)}
+              className="w-full py-2 text-gray-500 hover:text-primary text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
         <motion.section // Hero Section
             variants={contentBlockVariants}
             className="text-center py-20 md:py-28 bg-gradient-to-br from-primary to-accent text-white rounded-b-[30px] md:rounded-b-[60px] shadow-xl mb-16 px-4"
@@ -159,7 +196,7 @@ const PricingPage: React.FC = () => {
                         className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
                         onClick={(e) => {
                           e.preventDefault();
-                          window.location.href = '/signup?plan=free';
+                          handlePlanClick('free');
                         }}
                     >
                        Get Started Free
@@ -192,7 +229,7 @@ const PricingPage: React.FC = () => {
                         className="mt-auto w-full text-center bg-white text-primary px-8 py-3.5 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold text-md shadow-lg"
                         onClick={(e) => {
                           e.preventDefault();
-                          window.location.href = '/signup?plan=pro';
+                          handlePlanClick('pro');
                         }}
                     >
                        Choose Pro Plan
@@ -221,7 +258,7 @@ const PricingPage: React.FC = () => {
                         className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
                         onClick={(e) => {
                           e.preventDefault();
-                          window.location.href = '/signup?plan=attorney';
+                          handlePlanClick('attorney');
                         }}
                     >
                        Join as Attorney

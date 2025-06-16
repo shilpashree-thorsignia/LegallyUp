@@ -13,7 +13,7 @@ import {
   Save 
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 // Components
 import FormField from '../../components/forms/FormField';
@@ -470,7 +470,7 @@ const PowerOfAttorneyPage: React.FC = () => {
   const progressIcons = [<UserCheck size={16} />, <UserCog size={16} />, <Scale size={16} />, <CalendarCheck size={16} />];
 
   if (!user) {
-    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Power of Attorney.</div>;
+    return <Navigate to="/signin" replace />;
   }
 
   return (

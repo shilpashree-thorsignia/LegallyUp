@@ -4,7 +4,7 @@ import FormField from '../../components/forms/FormField';
 import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Users, Tv2, DollarSign, Lock, FileSignature, Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 interface WebsiteServicesAgreementData {
   // Step 1: Parties & Agreement Overview
@@ -299,6 +299,10 @@ const WebsiteServicesAgreementPage: React.FC = () => {
   const progressSteps = [1, 2, 3, 4, 5];
   const progressLabels = ["Parties", "Scope", "Payment", "IP & Term", "Finalize"];
   const progressIcons = [<Users size={16} />, <Tv2 size={16} />, <DollarSign size={16} />, <Lock size={16} />, <FileSignature size={16} />];
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">

@@ -5,7 +5,7 @@ import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 interface CookiesPolicyData {
   // Step 1: Business & Basic Cookie Info
@@ -308,7 +308,7 @@ const CookiesPolicyPage: React.FC = () => {
   );
 
   if (!user) {
-    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Cookies Policy.</div>;
+    return <Navigate to="/signin" replace />;
   }
 
   return (

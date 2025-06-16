@@ -5,7 +5,7 @@ import { generateDocx } from '../../utils/docxGenerator';  // Adjust path if nec
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 // Interface NdaData remains the same
 interface NdaData {
@@ -56,6 +56,10 @@ const NdaPage: React.FC = () => {
   } = useFormValidation('nda', formData, totalFormSteps);
 
   const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
 
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 

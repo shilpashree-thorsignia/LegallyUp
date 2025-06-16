@@ -5,7 +5,7 @@ import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 
 interface PrivacyPolicyData {
   // Step 1
@@ -94,6 +94,10 @@ const PrivacyPolicyPage: React.FC = () => {
   } = useFormValidation('privacy', formData, totalFormSteps);
 
   const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
 
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 

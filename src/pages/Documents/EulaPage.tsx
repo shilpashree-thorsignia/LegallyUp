@@ -5,7 +5,7 @@ import { useFormValidation } from '../../hooks/useFormValidation';
 import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Edit3 } from 'lucide-react'; // Relevant icons
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 interface EulaData {
   // Step 1: Parties & Product Information
@@ -174,7 +174,7 @@ const EulaPage: React.FC = () => {
   ];
 
   if (!user) {
-    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate an EULA.</div>;
+    return <Navigate to="/signin" replace />;
   }
 
   const renderStepFormContent = () => {

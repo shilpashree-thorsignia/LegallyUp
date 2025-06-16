@@ -5,7 +5,7 @@ import { generateDocx } from '../../utils/docxGenerator';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 interface RefundPolicyData {
   // Step 1: Business Information & Policy Scope
@@ -310,7 +310,7 @@ const RefundPolicyPage: React.FC = () => {
   const progressLabels = ["Business Info", "Eligibility", "Returns", "Finalize"];
 
   if (!user) {
-    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Refund Policy.</div>;
+    return <Navigate to="/signin" replace />;
   }
 
   return (

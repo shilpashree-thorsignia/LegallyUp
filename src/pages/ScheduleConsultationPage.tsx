@@ -52,6 +52,17 @@ const ScheduleConsultationPage: React.FC = () => {
   const attorneyName = attorney?.name || passedAttorneyInfo.attorneyName || "Selected Attorney";
 
   const { user } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  React.useEffect(() => {
+    if (!user) {
+      setShowLoginPrompt(true);
+    }
+  }, [user]);
+
+  const handleLogin = () => {
+    window.location.href = '/signin';
+  };
 
   useEffect(() => {
     if (attorney && attorney.specialization.length > 0 && !formData.caseType) { // Only set if not already set
@@ -168,6 +179,27 @@ const ScheduleConsultationPage: React.FC = () => {
       exit={{ opacity: 0 }}
       className="bg-gray-100 min-h-screen py-12 md:py-16"
     >
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-primary mb-4">Please log in to continue</h3>
+            <p className="mb-6 text-gray-600">You need to be logged in to schedule a consultation.</p>
+            <button
+              onClick={handleLogin}
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition mb-2"
+            >
+              Log in
+            </button>
+            <button
+              onClick={() => setShowLoginPrompt(false)}
+              className="w-full py-2 text-gray-500 hover:text-primary text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Link
             to="/attorneys"
