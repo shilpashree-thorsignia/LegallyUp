@@ -12,6 +12,7 @@ import {
   CalendarCheck, 
   Save 
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Components
 import FormField from '../../components/forms/FormField';
@@ -84,6 +85,7 @@ const PowerOfAttorneyPage: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 4;
+  const { user } = useAuth();
 
   const {
     currentStep,
@@ -116,8 +118,27 @@ const PowerOfAttorneyPage: React.FC = () => {
   const handleBack = () => prevStep();
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `Power of Attorney - ${formData.principalFullName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {
@@ -441,6 +462,10 @@ const PowerOfAttorneyPage: React.FC = () => {
   const progressSteps = [1, 2, 3, 4];
   const progressLabels = ["Principal", "Agent", "Authority", "Finalize"];
   const progressIcons = [<UserCheck size={16} />, <UserCog size={16} />, <Scale size={16} />, <CalendarCheck size={16} />];
+
+  if (!user) {
+    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Power of Attorney.</div>;
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">

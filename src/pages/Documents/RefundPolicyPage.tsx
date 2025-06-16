@@ -4,6 +4,7 @@ import FormField from '../../components/forms/FormField';
 import { generateDocx } from '../../utils/docxGenerator';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, RotateCcw, Save } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface RefundPolicyData {
   // Step 1: Business Information & Policy Scope
@@ -41,7 +42,7 @@ const initialData: RefundPolicyData = {
   contactPhone: '',
   websiteUrl: '',
   policyScope: 'e.g., All products and services sold on our website, unless otherwise specified.',
-  refundEligibilityConditions: 'e.g., To be eligible for a refund, your item must be unused and in the same condition that you received it. It must also be in the original packaging. Our refund policy lasts for 30 days. If 30 days have gone by since your purchase, unfortunately, we can’t offer you a refund or exchange.',
+  refundEligibilityConditions: "e.g., To be eligible for a refund, your item must be unused and in the same condition that you received it. It must also be in the original packaging. Our refund policy lasts for 30 days. If 30 days have gone by since your purchase, unfortunately, we can't offer you a refund or exchange.",
   howToRequestRefund: 'e.g., To request a refund, please email us at [Your Refund Email Address] with your order number and reason for the request. We may require proof of purchase or evidence of the issue.',
   refundProcessingTimeframe: 'e.g., Once your return is received and inspected, we will send you an email to notify you that we have received your returned item. We will also notify you of the approval or rejection of your refund. If you are approved, then your refund will be processed, and a credit will automatically be applied to your original method of payment, within 5-7 business days.',
   nonRefundableItems: 'e.g., Gift cards, Downloadable software products, Some health and personal care items, Sale items (if applicable).',
@@ -64,6 +65,7 @@ const RefundPolicyPage: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 4;
+  const { user } = useAuth();
 
   const {
     currentStep,
@@ -101,8 +103,27 @@ const RefundPolicyPage: React.FC = () => {
   };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `Refund Policy - ${formData.companyName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {
@@ -281,6 +302,10 @@ const RefundPolicyPage: React.FC = () => {
 
   const progressSteps = [1, 2, 3, 4];
   const progressLabels = ["Business Info", "Eligibility", "Returns", "Finalize"];
+
+  if (!user) {
+    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Refund Policy.</div>;
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">

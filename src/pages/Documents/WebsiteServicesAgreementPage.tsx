@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Users, Tv2, DollarSign, Lock, FileSignature, Milestone, Save } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface WebsiteServicesAgreementData {
   // Step 1: Parties & Agreement Overview
@@ -93,6 +94,7 @@ const WebsiteServicesAgreementPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const totalFormSteps = 5;
 
@@ -110,8 +112,27 @@ const WebsiteServicesAgreementPage: React.FC = () => {
   const jumpToStep = (step: number) => { if (step >= 1 && step <= totalFormSteps) setCurrentStep(step); };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `Website Services Agreement - ${formData.projectName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {

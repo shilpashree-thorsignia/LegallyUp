@@ -28,22 +28,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        const user = dummyUsers.find(
-          (u) => u.email === email && u.password === password
-        );
-        if (user) {
-          const { password: _, ...userWithoutPassword } = user;
-          setUser(userWithoutPassword);
-          localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      }, 500);
-    });
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok && data.user) {
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
   };
 
   const register = async (name: string, email: string, password: string) => {

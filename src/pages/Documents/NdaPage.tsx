@@ -4,6 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path if nece
 import { generateDocx } from '../../utils/docxGenerator';  // Adjust path if necessary
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Interface NdaData remains the same
 interface NdaData {
@@ -51,6 +52,8 @@ const NdaPage: React.FC = () => {
     setErrors
   } = useFormValidation('nda', formData, totalFormSteps);
 
+  const { user } = useAuth();
+
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
   }, [currentStep]);
@@ -77,8 +80,27 @@ const NdaPage: React.FC = () => {
   };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `NDA - ${formData.disclosingPartyName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {

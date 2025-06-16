@@ -30,6 +30,7 @@ import EulaPage from './pages/Documents/EulaPage.tsx';
 import WebsiteServicesAgreementPage from './pages/Documents/WebsiteServicesAgreementPage.tsx';
 import CookiesPolicyPage from './pages/Documents/CookiesPolicyPage.tsx';
 import CaseStudyDetailPage from './pages/CaseStudyDetailPage.tsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 
 // Protected route component
@@ -91,6 +92,12 @@ function App() {
           {/* Auth pages with Layout */}
           <Route path="/signin" element={<Layout><SignInPage /></Layout>} />
           <Route path="/signup" element={<Layout><SignUpPage /></Layout>} />
+
+          {/* New route for editing privacy policy with an ID */}
+          <Route path="/documents/privacy-policy/:id" element={<Layout><PrivacyPolicyPage /></Layout>} />
+
+          {/* New route for Forgot Password */}
+          <Route path="/forgot-password" element={<Layout><ForgotPasswordPage /></Layout>} />
         </Routes>
         <ScrollToTop />
       </>

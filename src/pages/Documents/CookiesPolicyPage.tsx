@@ -4,6 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path
 import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Settings, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface CookiesPolicyData {
   // Step 1: Business & Basic Cookie Info
@@ -56,6 +57,7 @@ const CookiesPolicyPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const totalFormSteps = formData.usesCookies === 'yes' ? 3 : 2; // Step 2 is conditional
 
@@ -105,8 +107,27 @@ const CookiesPolicyPage: React.FC = () => {
   };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `Cookies Policy - ${formData.companyName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleGenerateDocx = async () => {
@@ -279,6 +300,10 @@ const CookiesPolicyPage: React.FC = () => {
         <p className="mt-6 text-center italic text-xs">This is a preview. The final document will be formatted professionally.</p>
     </div>
   );
+
+  if (!user) {
+    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate a Cookies Policy.</div>;
+  }
 
   return (
     <motion.div 

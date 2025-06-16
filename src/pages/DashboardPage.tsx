@@ -1,8 +1,12 @@
 // src/pages/DashboardPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Import the hook from the correct path
+import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp } from 'lucide-react';
+import { generateDocx } from '../utils/docxGenerator';
+import { generatePdf } from '../utils/pdfGenerator';
+import ReactDOMServer from 'react-dom/server';
 
 // Animation variants for sections
 const sectionVariants = {
@@ -10,68 +14,129 @@ const sectionVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
-// Placeholder data for recent documents
-const mockDocuments = [
-    { id: 'doc1', name: 'NDA - Project Alpha', type: 'NDA', dateSaved: '2023-10-27' },
-    { id: 'doc2', name: 'Residential Lease - Elm St', type: 'Rental', dateSaved: '2023-10-25' },
-    { id: 'doc3', name: 'Consultant Agreement - Blog', type: 'Consultant', dateSaved: '2023-10-20' },
-    // Add more mock documents
-];
+const getEditPath = (title = '') => {
+  // Map template titles to generator routes
+  if (title.toLowerCase().includes('nda')) return '/documents/nda';
+  if (title.toLowerCase().includes('privacy')) return '/documents/privacy-policy';
+  if (title.toLowerCase().includes('refund')) return '/documents/refund-policy';
+  if (title.toLowerCase().includes('power of attorney')) return '/documents/power-of-attorney';
+  if (title.toLowerCase().includes('website services')) return '/documents/website-services-agreement';
+  if (title.toLowerCase().includes('cookies')) return '/documents/cookies-policy';
+  if (title.toLowerCase().includes('eula')) return '/documents/eula';
+  return '/generate';
+};
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
+  const [showTrash, setShowTrash] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [viewModal, setViewModal] = useState<{ open: boolean, template?: any }>({ open: false });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('az'); // 'az', 'za', 'newest', 'oldest'
+
+  // Fetch templates helper
+  const fetchTemplates = async (userId: string, trash = false) => {
+    setLoading(true);
+    const url = trash ? `/api/templates/trash?user_id=${userId}` : `/api/templates?user_id=${userId}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (trash) setTrashedTemplates(data.templates || []);
+    else setTemplates(data.templates || []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    fetchTemplates(user.id, showTrash);
+  }, [user, showTrash]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  // Placeholder for document actions
-  const handleViewDocument = (docId: string) => {
-      // TODO: Implement logic to view document (e.g., fetch from storage, show in modal)
-      alert(`Placeholder: Viewing document ${docId}`);
+  const handleViewDocument = (doc: any) => {
+    setViewModal({ open: true, template: doc });
   };
 
-  const handleDownloadDocument = (docId: string, format: 'pdf' | 'docx') => {
-      // TODO: Implement logic to download document (e.g., fetch from backend API)
-      alert(`Placeholder: Downloading document ${docId} as ${format}`);
+  const handleEditDocument = (doc: any) => {
+    const editPath = getEditPath(doc.title);
+    // If privacy policy, use the new route with id
+    if (editPath === '/documents/privacy-policy') {
+      navigate(`/documents/privacy-policy/${doc.id}`, { state: { template: doc } });
+    } else {
+      navigate(editPath, { state: { template: doc } });
+    }
   };
 
-   const handleEditDocument = (docId: string) => {
-      // TODO: Implement logic to edit document (likely navigate back to generator with pre-filled data)
-      alert(`Placeholder: Editing document ${docId}`);
-       // navigate(`/generate?docId=${docId}`); // Example navigation
-   };
+  const handleDeleteDocument = async (docId: number) => {
+    if (confirm(`Are you sure you want to move this document to trash?`)) {
+      await fetch(`/api/templates/${docId}/trash`, { method: 'POST' });
+      if (user) fetchTemplates(user.id, false);
+    }
+  };
 
-    const handleDeleteDocument = (docId: string) => {
-      // TODO: Implement logic to delete document (e.g., confirm, call backend API, update state)
-      if (confirm(`Are you sure you want to delete document ${docId}?`)) {
-          alert(`Placeholder: Deleting document ${docId}`);
-          // Update mockDocuments state or fetch new list
+  const handleRestoreDocument = async (docId: number) => {
+    await fetch(`/api/templates/${docId}/restore`, { method: 'POST' });
+    if (user) fetchTemplates(user.id, true);
+  };
+
+  const handleDownloadDocument = async (doc: any, format: 'pdf' | 'docx') => {
+    // Determine document type from title
+    let typeKey = '';
+    if (doc.title.toLowerCase().includes('privacy')) typeKey = 'privacyPolicy';
+    else if (doc.title.toLowerCase().includes('nda')) typeKey = 'nda';
+    else if (doc.title.toLowerCase().includes('refund')) typeKey = 'refundPolicy';
+    else if (doc.title.toLowerCase().includes('power of attorney')) typeKey = 'powerOfAttorney';
+    else if (doc.title.toLowerCase().includes('website services')) typeKey = 'websiteServicesAgreement';
+    else if (doc.title.toLowerCase().includes('cookies')) typeKey = 'cookiesPolicy';
+    else if (doc.title.toLowerCase().includes('eula')) typeKey = 'eula';
+    else typeKey = 'generic';
+    const data = JSON.parse(doc.content);
+    if (format === 'docx') {
+      await generateDocx(data, doc.title, typeKey);
+    } else if (format === 'pdf') {
+      // Render a hidden preview for PDF
+      const previewId = `pdf-preview-${doc.id}`;
+      let previewDiv = document.getElementById(previewId);
+      if (!previewDiv) {
+        previewDiv = document.createElement('div');
+        previewDiv.id = previewId;
+        previewDiv.style.position = 'absolute';
+        previewDiv.style.left = '-9999px';
+        previewDiv.style.top = '0';
+        document.body.appendChild(previewDiv);
       }
-    };
+      // Render a simple preview (customize as needed)
+      previewDiv.innerHTML = `<h2>${doc.title}</h2><pre>${doc.content}</pre>`;
+      await generatePdf(previewDiv, `${doc.title}.pdf`);
+      document.body.removeChild(previewDiv);
+    }
+  };
 
+  // Filter and sort logic
+  const filteredAndSortedTemplates = (showTrash ? trashedTemplates : templates)
+    .filter(template => {
+      const lowerSearch = searchTerm.toLowerCase();
+      return (
+        template.title.toLowerCase().includes(lowerSearch) ||
+        (template.created_at && template.created_at.toLowerCase().includes(lowerSearch))
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === 'az') return a.title.localeCompare(b.title);
+      if (sortBy === 'za') return b.title.localeCompare(a.title);
+      if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      if (sortBy === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      return 0;
+    });
 
-  // Uncomment this block later to protect the route and show loading/error
-  // if (loading) {
-  //    return <div className="py-8 text-center text-primary text-xl">Loading dashboard...</div>;
-  // }
-  // if (!currentUser) {
-  //    // This route should ideally be protected by react-router-dom's routing logic
-  //    // However, adding a fallback message here is also good practice
-  //    return (
-  //         <motion.div
-  //              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-  //              className="py-16 text-center text-red-600 text-2xl"
-  //         >
-  //              Please sign in to view your dashboard.
-  //              <br/>
-  //              <Link to="/signin" className="text-accent hover:underline mt-4 inline-block text-xl">Go to Sign In</Link>
-  //         </motion.div>
-  //     );
-  // }
-
+  if (!user) {
+    return <div className="py-8 text-center text-primary text-xl">Please sign in to view your dashboard.</div>;
+  }
 
   return (
      <motion.div
@@ -118,49 +183,94 @@ const DashboardPage: React.FC = () => {
              */}
         </motion.section>
 
-         {/* Saved Documents */}
+         {/* Saved or Trashed Documents */}
          <motion.section variants={sectionVariants} className="py-8 mb-12">
-            <h2 className="text-4xl font-bold text-primary mb-8">Your Documents</h2>
-            {mockDocuments.length > 0 ? (
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-4xl font-bold text-primary">
+                {showTrash ? 'Trashed Documents' : 'Your Documents'}
+              </h2>
+              <button
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50 transition-colors duration-200`}
+                onClick={() => setShowTrash(t => !t)}
+              >
+                {showTrash ? <Undo2 size={18} className="text-green-600"/> : <Trash2 size={18}/>} <span className={showTrash ? 'text-green-600 font-semibold' : ''}>{showTrash ? 'Back to Documents' : 'View Trash'}</span>
+              </button>
+            </div>
+            {/* Search and Sort Bar */}
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
+              <div className="flex-1">
+                <label htmlFor="dashboard-search" className="block text-sm font-medium text-gray-700 mb-1.5">Search Documents</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
+                  <input id="dashboard-search" type="text" placeholder="e.g., NDA, Privacy, 2024-06-16..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                    className="w-full p-3.5 pl-11 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-gray-700 shadow-sm transition-shadow hover:shadow-md"/>
+                </div>
+              </div>
+              <div className="w-full md:w-64">
+                <label htmlFor="dashboard-sort" className="block text-sm font-medium text-gray-700 mb-1.5">Sort By</label>
+                <div className="relative">
+                  <select id="dashboard-sort" value={sortBy} onChange={e => setSortBy(e.target.value)}
+                    className="w-full p-3.5 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none transition-shadow hover:shadow-md">
+                    <option value="az">Title (A-Z)</option>
+                    <option value="za">Title (Z-A)</option>
+                    <option value="newest">Created (Newest)</option>
+                    <option value="oldest">Created (Oldest)</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none"><ArrowDownUp size={18} className="text-gray-400" /></div>
+                </div>
+              </div>
+            </div>
+            {loading ? (
+              <div className="text-center py-12 text-textColor/80 italic text-lg bg-lightGray p-6 rounded-2xl">Loading...</div>
+            ) : filteredAndSortedTemplates.length > 0 ? (
                 <div className="bg-lightGray p-6 rounded-2xl">
                     <ul className="space-y-4">
-                         {mockDocuments.map(doc => (
+                         {filteredAndSortedTemplates.map(doc => (
                              <li key={doc.id} className="bg-white p-4 rounded-lg shadow-sm border border-white flex flex-col md:flex-row justify-between items-center gap-3">
                                  <div className="text-left flex-grow">
-                                     <span className="text-primary font-semibold text-lg">{doc.name}</span>
-                                     <span className="text-textColor/80 text-sm ml-2 italic">({doc.type} - Saved: {doc.dateSaved})</span> {/* Optional: show type and date */}
+                                     <span className="text-primary font-semibold text-lg">{doc.title}</span>
+                                     <span className="text-textColor/80 text-sm ml-2 italic">(Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''})</span>
                                  </div>
-                                 <div className="flex flex-wrap gap-3 justify-center"> {/* Buttons container */}
+                                 <div className="flex flex-wrap gap-3 justify-center">
                                       <button
-                                          onClick={() => handleViewDocument(doc.id)}
-                                          className="text-accent hover:underline text-sm font-semibold"
+                                          onClick={() => handleViewDocument(doc)}
+                                          className="text-accent hover:underline text-sm font-semibold flex items-center gap-1"
                                       >
-                                          View
+                                          <Eye size={16}/> View
                                       </button>
                                       <button
-                                          onClick={() => handleEditDocument(doc.id)}
-                                          className="text-accent hover:underline text-sm font-semibold"
+                                          onClick={() => handleEditDocument(doc)}
+                                          className="text-accent hover:underline text-sm font-semibold flex items-center gap-1"
                                       >
-                                          Edit
+                                          <Edit3 size={16}/> Edit
                                       </button>
                                       <button
-                                          onClick={() => handleDownloadDocument(doc.id, 'pdf')}
+                                          onClick={() => handleDownloadDocument(doc, 'pdf')}
                                           className="text-primary hover:underline text-sm font-semibold"
                                       >
                                           Download PDF
                                       </button>
                                       <button
-                                          onClick={() => handleDownloadDocument(doc.id, 'docx')}
+                                          onClick={() => handleDownloadDocument(doc, 'docx')}
                                           className="text-primary hover:underline text-sm font-semibold"
                                       >
                                           Download DOCX
                                       </button>
-                                       <button
-                                          onClick={() => handleDeleteDocument(doc.id)}
-                                          className="text-red-600 hover:underline text-sm font-semibold"
-                                      >
-                                          Delete
-                                      </button>
+                                      {!showTrash ? (
+                                        <button
+                                            onClick={() => handleDeleteDocument(doc.id)}
+                                            className="text-red-600 hover:underline text-sm font-semibold flex items-center gap-1"
+                                        >
+                                            <Trash2 size={16}/> Trash
+                                        </button>
+                                      ) : (
+                                        <button
+                                            onClick={() => handleRestoreDocument(doc.id)}
+                                            className="text-green-600 hover:underline text-sm font-semibold flex items-center gap-1"
+                                        >
+                                            <Undo2 size={16}/> Restore
+                                        </button>
+                                      )}
                                  </div>
                              </li>
                          ))}
@@ -168,10 +278,20 @@ const DashboardPage: React.FC = () => {
                  </div>
             ) : (
                  <div className="text-center py-12 text-textColor/80 italic text-lg bg-lightGray p-6 rounded-2xl">
-                     You haven't saved any documents yet.
+                     {showTrash ? "No trashed documents found." : "You haven't saved any documents yet."}
                       <br/>
                      <Link to="/generate" className="text-accent hover:underline mt-4 inline-block font-semibold">Start Generating One!</Link>
                  </div>
+            )}
+            {/* View Modal */}
+            {viewModal.open && viewModal.template && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 relative">
+                  <button className="absolute top-3 right-3 text-gray-400 hover:text-red-500" onClick={() => setViewModal({ open: false })}><X size={22}/></button>
+                  <h3 className="text-2xl font-bold text-primary mb-4">{viewModal.template.title}</h3>
+                  <pre className="bg-gray-100 rounded p-4 text-sm overflow-x-auto max-h-96 whitespace-pre-wrap">{viewModal.template.content}</pre>
+                </div>
+              </div>
             )}
          </motion.section>
 

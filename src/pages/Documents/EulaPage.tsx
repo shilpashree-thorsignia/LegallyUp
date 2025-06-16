@@ -4,6 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Shield, Settings2, FileLock2, AlertTriangle, CalendarDays, Edit3 } from 'lucide-react'; // Relevant icons
+import { useAuth } from '../../contexts/AuthContext';
 
 interface EulaData {
   // Step 1: Parties & Product Information
@@ -75,6 +76,8 @@ const EulaPage: React.FC = () => {
     setErrors
   } = useFormValidation('eula', formData, totalFormSteps);
 
+  const { user } = useAuth();
+
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
   }, [currentStep]);
@@ -101,8 +104,27 @@ const EulaPage: React.FC = () => {
   };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `EULA - ${formData.licensorCompanyName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title, content }),
+      });
+      if (res.ok) {
+        alert('Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {
@@ -145,6 +167,9 @@ const EulaPage: React.FC = () => {
     {value: "Custom License", label: "Custom License (Describe below)"},
   ];
 
+  if (!user) {
+    return <div className="py-8 text-center text-primary text-xl">Please sign in to generate an EULA.</div>;
+  }
 
   const renderStepFormContent = () => {
     const getError = (fieldName: string) => {

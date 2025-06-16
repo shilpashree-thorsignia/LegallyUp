@@ -4,6 +4,8 @@ import FormField from '../../components/forms/FormField'; // Adjust path
 import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, ShieldCheck, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { useAuth } from '../../contexts/AuthContext';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 interface PrivacyPolicyData {
   // Step 1
@@ -63,7 +65,18 @@ const stepVariants = {
 };
 
 const PrivacyPolicyPage: React.FC = () => {
-  const [formData, setFormData] = useState<PrivacyPolicyData>(initialData);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(location.state?.template);
+  const [formData, setFormData] = useState<PrivacyPolicyData>(() => {
+    try {
+      return editingTemplate ? JSON.parse(editingTemplate.content) : initialData;
+    } catch {
+      return initialData;
+    }
+  });
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
@@ -79,9 +92,36 @@ const PrivacyPolicyPage: React.FC = () => {
     setErrors
   } = useFormValidation('privacy', formData, totalFormSteps);
 
+  const { user } = useAuth();
+
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
   }, [currentStep]);
+
+  useEffect(() => {
+    if (!editingTemplate && id) {
+      setLoading(true);
+      fetch(`/api/templates/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.template) setEditingTemplate(data.template);
+          else navigate('/dashboard');
+        })
+        .catch(() => navigate('/dashboard'))
+        .finally(() => setLoading(false));
+    }
+  }, [editingTemplate, id, navigate]);
+
+  useEffect(() => {
+    if (editingTemplate) {
+      try {
+        setFormData(JSON.parse(editingTemplate.content));
+      } catch {
+        setFormData(initialData);
+      }
+    }
+    // eslint-disable-next-line
+  }, [editingTemplate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -105,8 +145,38 @@ const PrivacyPolicyPage: React.FC = () => {
   };
 
   const handleSaveToDashboard = async () => {
-    // TODO: Implement save to dashboard functionality
-    alert('Document saved to dashboard!');
+    if (!user) {
+      alert('You must be logged in to save documents.');
+      return;
+    }
+    const title = `Privacy Policy - ${formData.companyName || 'Untitled'}`;
+    const content = JSON.stringify(formData, null, 2);
+    try {
+      let res;
+      if (editingTemplate) {
+        // Update existing template
+        res = await fetch(`/api/templates/${editingTemplate.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content }),
+        });
+      } else {
+        // Create new template
+        res = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, title, content }),
+        });
+      }
+      if (res.ok) {
+        alert(editingTemplate ? 'Document updated!' : 'Document saved to dashboard!');
+      } else {
+        const data = await res.json();
+        alert('Failed to save: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to save: ' + err);
+    }
   };
 
   const handleDownloadDocx = async () => {
@@ -260,11 +330,14 @@ const PrivacyPolicyPage: React.FC = () => {
   const progressSteps = [1, 2, 3];
   const progressLabels = ["Business Info", "Data & Usage", "Security & Rights"];
 
+  if (loading) return <div className="text-center py-12 text-primary">Loading...</div>;
+  if (id && !editingTemplate) return <div className="text-center py-12 text-red-600">No template found. Please return to the dashboard.</div>;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2 text-center">Generate Privacy Policy</h1>
+      <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2 text-center">{editingTemplate ? 'Edit Privacy Policy' : 'Generate Privacy Policy'}</h1>
       <p className="text-center text-textColor mb-8 max-w-2xl mx-auto">
-        Complete the information below to create your website's Privacy Policy.
+        Complete the information below to {editingTemplate ? 'edit' : 'create'} your website's Privacy Policy.
       </p>
 
       {/* Progress Bar */}
@@ -326,7 +399,7 @@ const PrivacyPolicyPage: React.FC = () => {
               onClick={handleSaveToDashboard} 
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              <Save size={18}/> Save to Dashboard
+              <Save size={18}/> {editingTemplate ? 'Update Document' : 'Save to Dashboard'}
             </button>
             <button 
               onClick={handleDownloadDocx} 

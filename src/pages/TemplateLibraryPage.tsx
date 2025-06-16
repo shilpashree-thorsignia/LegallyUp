@@ -1,23 +1,12 @@
 // src/pages/TemplateLibraryPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
-  Search, Filter as FilterIcon, ArrowDownUp, Layers, ChevronRight, Inbox
+  Search, Filter as FilterIcon, ArrowDownUp, Layers, ChevronRight, Inbox, Trash2, Undo2
 } from 'lucide-react';
-
-// mockTemplates (assuming it's defined as in your previous LegalResourcesPage version, with slug, icon, content etc.)
-const mockTemplates = [
-    { id: 'nda', category: 'Business & Confidentiality', name: 'Non-Disclosure Agreement (NDA)', description: 'Protect confidential information when sharing sensitive details with another party.', tags: ['confidentiality', 'nda', 'business', 'legal contract'], icon: <FileText size={28} className="text-blue-600" />, path: '/documents/generate/nda' },
-    { id: 'privacy-policy', category: 'Website & Compliance', name: 'Privacy Policy', description: 'Outline how your business collects, uses, and protects user personal data for your website or app.', tags: ['privacy', 'compliance', 'gdpr', 'ccpa', 'website', 'legal'], icon: <ShieldCheck size={28} className="text-green-600" />, path: '/documents/generate/privacy-policy' },
-    { id: 'cookies-policy', category: 'Website & Compliance', name: 'Cookies Policy', description: 'Inform users about the cookies your website uses and how they can manage them.', tags: ['cookies', 'website', 'compliance', 'privacy', 'gdpr'], icon: <Settings2 size={28} className="text-purple-600" />, path: '/documents/generate/cookies-policy' },
-    { id: 'refund-policy', category: 'E-commerce & Business', name: 'Refund Policy', description: 'Define the terms and conditions for product or service refunds and exchanges for your customers.', tags: ['refund', 'return', 'ecommerce', 'customer service', 'business terms'], icon: <RotateCcw size={28} className="text-orange-600" />, path: '/documents/generate/refund-policy' },
-    { id: 'power-of-attorney', category: 'Personal & Legal', name: 'Power of Attorney (PoA)', description: 'Grant legal authority to another person (agent) to act on your behalf in specified matters.', tags: ['poa', 'legal representative', 'agent', 'personal affairs', 'financial'], icon: <Users size={28} className="text-teal-600" />, path: '/documents/generate/power-of-attorney' },
-    { id: 'website-services-agreement', category: 'Business & Services', name: 'Website Services Agreement', description: 'Formalize terms for website design, development, or maintenance services between a provider and a client.', tags: ['services', 'contract', 'freelance', 'web development', 'agency'], icon: <Tv2 size={28} className="text-indigo-600" />, path: '/documents/generate/website-services-agreement' },
-    { id: 'eula', category: 'Software & Technology', name: 'End User License Agreement (EULA)', description: 'Set the terms under which users are granted a license to use your software product.', tags: ['eula', 'software', 'license', 'legal terms', 'technology'], icon: <UserCheck size={28} className="text-pink-600" />, path: '/documents/generate/eula' },
-];
-
 
 // Animation Variants
 const pageVariants = {
@@ -37,217 +26,184 @@ const itemVariants = { // For items within a content block, like text in hero, o
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-const cardGridVariants = { // To stagger the cards within their container
-  hidden: { opacity: 0 }, // Grid container itself can be simple
-  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } } // Stagger cards after grid is visible
+const cardGridVariants = {
+  visible: { transition: { staggerChildren: 0.07 } }
 };
 
 const cardItemVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.9 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 12, duration: 0.5 } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } },
   hover: {
-    y: -10,
-    boxShadow: "0px 20px 40px -15px rgba(var(--color-primary-rgb, 29 78 216), 0.2)",
-    transition: { type: "spring", stiffness: 250, damping: 10 }
+    y: -8,
+    boxShadow: "0px 15px 30px -10px rgba(var(--color-primary-rgb, 29 78 216), 0.15)",
+    transition: { type: "spring", stiffness: 300, damping: 10 }
   }
 };
 
+// Add the documentTypes array from DocumentGeneratorPage
+const documentTypes = [
+  { id: 'nda', name: 'Non-Disclosure Agreement (NDA)', description: 'Protect confidential information shared with others.', path: '/documents/generate/nda', icon: <FileText size={28} /> },
+  { id: 'privacy-policy', name: 'Privacy Policy', description: 'Outline how your business collects, uses, and protects user personal data.', path: '/documents/generate/privacy-policy', icon: <ShieldCheck size={28} /> },
+  { id: 'cookies-policy', name: 'Cookies Policy', description: 'Inform users about the cookies your website uses and how they can manage them.', path: '/documents/generate/cookies-policy', icon: <Settings2 size={28} /> },
+  { id: 'refund-policy', name: 'Refund Policy', description: 'Define terms for product/service refunds and exchanges.', path: '/documents/generate/refund-policy', icon: <RotateCcw size={28} /> },
+  { id: 'power-of-attorney', name: 'Power of Attorney (PoA)', description: 'Grant legal authority to another person to act on your behalf.', path: '/documents/generate/power-of-attorney', icon: <Users size={28} /> },
+  { id: 'website-services-agreement', name: 'Website Services Agreement', description: 'Formalize terms for website design, development, or maintenance.', path: '/documents/generate/website-services-agreement', icon: <Tv2 size={28} /> },
+  { id: 'eula', name: 'End User License Agreement (EULA)', description: 'Set terms for users to license and use your software product.', path: '/documents/generate/eula', icon: <UserCheck size={28} /> },
+];
 
 const TemplateLibraryPage: React.FC = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('name');
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
+  const [showTrash, setShowTrash] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ... (filteredAndSortedTemplates logic remains the same)
-  const filteredAndSortedTemplates = mockTemplates
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
+    const fetchTemplates = async () => {
+      const url = showTrash ? `/api/templates/trash?user_id=${user.id}` : `/api/templates?user_id=${user.id}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (showTrash) setTrashedTemplates(data.templates || []);
+      else setTemplates(data.templates || []);
+      setLoading(false);
+    };
+    fetchTemplates();
+  }, [user, showTrash]);
+
+  const handleTrash = async (templateId: number) => {
+    await fetch(`/api/templates/${templateId}/trash`, { method: 'POST' });
+    setTemplates(templates.filter(t => t.id !== templateId));
+  };
+
+  const handleRestore = async (templateId: number) => {
+    await fetch(`/api/templates/${templateId}/restore`, { method: 'POST' });
+    setTrashedTemplates(trashedTemplates.filter(t => t.id !== templateId));
+  };
+
+  const filteredAndSortedTemplates = (showTrash ? trashedTemplates : templates)
     .filter(template => {
       const lowerSearchTerm = searchTerm.toLowerCase();
-      const matchesSearch = template.name.toLowerCase().includes(lowerSearchTerm) ||
-                            template.description.toLowerCase().includes(lowerSearchTerm) ||
-                            template.category.toLowerCase().includes(lowerSearchTerm) ||
-                            template.tags.some(tag => tag.toLowerCase().includes(lowerSearchTerm));
-      const matchesCategory = selectedCategory === 'All' || template.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      const matchesSearch = template.title.toLowerCase().includes(lowerSearchTerm) ||
+                            template.content.toLowerCase().includes(lowerSearchTerm);
+      // You can add category logic if you store categories
+      return matchesSearch;
     })
     .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      if (sortBy === 'category') return a.category.localeCompare(b.category);
+      if (sortBy === 'name') return a.title.localeCompare(b.title);
       return 0;
     });
 
-
-  const categories = ['All', ...new Set(mockTemplates.map(t => t.category))].sort();
-
-  const handleUseTemplate = (templateId: string, templateName: string) => {
-    navigate('/signup', { state: { intendedTemplateId: templateId, intendedTemplateName: templateName } });
-  };
-
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+        <div className="text-primary text-2xl font-bold mb-4">Please sign in to view your templates.</div>
+        <Link to="/signin" className="bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-accent transition-colors">Sign In</Link>
+      </div>
+    );
+  }
 
   return (
      <motion.div
       initial="initial"
       animate="animate"
       exit="exit"
-      variants={pageVariants} // Overall page animation
       className="bg-gray-100 min-h-screen"
     >
-        {/* Hero Section */}
+        {/* Hero Section (matching /generate, but with template library content) */}
         <motion.section
-            className="relative min-h-[50vh] md:min-h-[60vh] bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white px-6 py-16 md:py-24 overflow-hidden rounded-b-[30px] md:rounded-b-[50px] shadow-xl mb-12"
-            variants={contentBlockVariants} // Animate this whole block
+          className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative"
+          variants={{ hidden: { opacity: 0, y: 30, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], delayChildren: 0.2, staggerChildren: 0.2 } } }}
+          initial="hidden"
+          animate="visible"
         >
-            {/* ... (Hero content remains the same) ... */}
-            <div className="absolute inset-0 opacity-[0.03]">
-                <Layers size={500} className="absolute -bottom-20 -left-40 transform rotate-12" />
-                <FileText size={400} className="absolute -top-32 -right-32 transform -rotate-12" />
-            </div>
-            <motion.div
-                // Removed variants from here, parent section handles entry
-                // Stagger children directly if needed, or use simpler itemVariants
-                variants={{ visible: {transition: {staggerChildren: 0.15}}}} // Stagger hero items
-                className="relative z-10 text-center max-w-4xl mx-auto"
-            >
-                <motion.div variants={itemVariants} className="mb-8">
-                    <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.5}/>
-                </motion.div>
-                <motion.h1
-                    variants={itemVariants}
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
-                    style={{ textShadow: '0 3px 12px rgba(0,0,0,0.25)'}}
-                >
-                    Legal Template Library
-                </motion.h1>
-                <motion.p
-                    variants={itemVariants}
-                    className="text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed text-white/90"
-                >
-                    Browse our extensive collection of professionally drafted legal templates. Find the right document for your needs and get started quickly.
-                </motion.p>
+          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#patt)"/>
+            </svg>
+          </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
+              <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
             </motion.div>
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
+              style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
+            >
+              Template Library
+            </motion.h1>
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+              className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
+            >
+              Browse all available legal templates and manage your saved documents. Instantly generate, edit, or restore templates as needed.
+            </motion.p>
+          </div>
         </motion.section>
-
-        {/* Filter & Search Bar Section */}
-        <motion.div
-            variants={contentBlockVariants} // Animate this whole block
-            className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-16"
-        >
-            {/* ... (Filter bar content remains the same, can use itemVariants for individual filter elements if desired) ... */}
-             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-                    <div className="flex items-center">
-                        <FilterIcon size={28} className="text-primary mr-3" />
-                        <h2 className="text-2xl font-semibold text-primary">Find Your Template</h2>
+        {/* Built-in Templates Section */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h2 className="text-3xl font-bold text-primary mb-8">
+            All Available Templates
+          </h2>
+          <motion.div
+            variants={cardGridVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-8"
+          >
+            {documentTypes.map(docType => (
+              <motion.div
+                key={docType.id}
+                variants={cardItemVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                className="bg-white rounded-2xl shadow-xl hover:shadow-primary/20 border border-gray-200 flex flex-col overflow-hidden group cursor-pointer transition-all duration-300"
+              >
+                <div className="p-6 md:p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3.5 bg-accent/10 text-accent rounded-xl mr-4 group-hover:bg-accent group-hover:text-white transition-colors duration-300 transform group-hover:scale-105">
+                      {React.cloneElement(docType.icon, { size: 30, strokeWidth: 2 })}
                     </div>
-                    <div className="text-sm text-gray-500">
-                        Showing {filteredAndSortedTemplates.length} of {mockTemplates.length} templates
-                    </div>
+                    <h3 className="text-xl lg:text-2xl font-semibold text-primary group-hover:text-accent transition-colors duration-300 leading-tight">
+                      {docType.name}
+                    </h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 min-h-[60px] line-clamp-3 group-hover:text-gray-700">
+                    {docType.description}
+                  </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
-                    {/* Search */}
-                    <motion.div variants={itemVariants} className="lg:col-span-1">
-                        <label htmlFor="template-search" className="block text-sm font-medium text-gray-700 mb-1.5">Search Templates</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
-                            <input id="template-search" type="text" placeholder="e.g., NDA, Lease, Privacy..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full p-3.5 pl-11 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-gray-700 shadow-sm transition-shadow hover:shadow-md"/>
-                        </div>
-                    </motion.div>
-                    {/* Category */}
-                    <motion.div variants={itemVariants}>
-                        <label htmlFor="template-category" className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
-                        <select id="template-category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full p-3.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none transition-shadow hover:shadow-md">
-                            {categories.map(category => (<option key={category} value={category}>{category}</option>))}
-                        </select>
-                    </motion.div>
-                    {/* Sort By */}
-                    <motion.div variants={itemVariants}>
-                        <label htmlFor="template-sort" className="block text-sm font-medium text-gray-700 mb-1.5">Sort By</label>
-                        <div className="relative">
-                        <select id="template-sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                            className="w-full p-3.5 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none transition-shadow hover:shadow-md">
-                            <option value="name">Name (A-Z)</option>
-                            <option value="category">Category</option>
-                        </select>
-                        <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none"><ArrowDownUp size={18} className="text-gray-400" /></div>
-                        </div>
-                    </motion.div>
+                <div className="mt-auto border-t border-gray-200">
+                  <Link
+                    to={docType.path}
+                    className="flex items-center justify-between w-full bg-gray-50 group-hover:bg-accent px-6 py-4 text-md font-semibold text-accent group-hover:text-white transition-all duration-300 rounded-b-2xl"
+                  >
+                    <span>Generate Document</span>
+                    <ChevronRight size={20} className="transform group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
                 </div>
-            </div>
-        </motion.div>
-
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+        {/* Trash Toggle */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex justify-end">
+          <button
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50`}
+            onClick={() => setShowTrash(t => !t)}
+          >
+            {showTrash ? <Undo2 size={18}/> : <Trash2 size={18}/>} {showTrash ? 'Restore from Trash' : 'View Trash'}
+          </button>
+        </div>
         {/* Template Grid Section */}
-       <motion.section
-            variants={contentBlockVariants} // Animate this whole block
-            className="container mx-auto px-4 sm:px-6 lg:px-8 py-8"
-        >
-            <motion.h2 variants={itemVariants} className="text-3xl font-bold text-primary mb-8"> {/* Animate title */}
-                Available Templates <span className="text-lg text-textColor font-normal">({filteredAndSortedTemplates.length} found)</span>
-            </motion.h2>
-            {filteredAndSortedTemplates.length > 0 ? (
-                <motion.div
-                    variants={cardGridVariants} // This will stagger children with 'cardItemVariants'
-                    initial="hidden" // Explicitly set initial/animate for the grid container
-                    animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8"
-                >
-                    {filteredAndSortedTemplates.map(template => (
-                        <motion.div
-                            key={template.id}
-                            variants={cardItemVariants} // Individual card animation + hover
-                            // whileHover="hover" // This is now part of cardItemVariants
-                            className="bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col group overflow-hidden transform transition-all duration-300 hover:border-accent hover:-translate-y-2 hover:shadow-primary/20" // Combined hover effects
-                        >
-                            {/* ... (Card content remains the same) ... */}
-                            <div className="p-6 md:p-8 flex-grow">
-                                <div className="flex items-start gap-4 mb-5">
-                                    <div className="flex-shrink-0 p-4 bg-gradient-to-br from-primary/10 to-accent/10 text-primary rounded-xl group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-300">
-                                        {React.cloneElement(template.icon, { size: 32, strokeWidth: 1.5 })}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl lg:text-2xl font-semibold text-primary group-hover:text-accent transition-colors duration-300 leading-tight mb-1">
-                                            {template.name}
-                                        </h3>
-                                        <span className="text-xs text-gray-500 font-medium bg-gray-100 group-hover:bg-gray-200 px-2.5 py-1 rounded-full transition-colors duration-300">
-                                            {template.category}
-                                        </span>
-                                    </div>
-                                </div>
-                                <p className="text-gray-600 text-sm leading-relaxed mb-6 min-h-[70px] line-clamp-3">
-                                    {template.description}
-                                </p>
-                            </div>
-                            <div className="mt-auto border-t border-gray-200">
-                                <button
-                                    onClick={() => handleUseTemplate(template.id, template.name)}
-                                    className="flex items-center justify-between w-full bg-gray-50 group-hover:bg-accent px-6 py-4 text-md font-semibold text-accent group-hover:text-white transition-all duration-300 rounded-b-2xl"
-                                >
-                                    <span>Use This Template</span>
-                                    <ChevronRight size={20} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
-                                </button>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            ) : (
-                <motion.div
-                    variants={itemVariants} // Animate the "no results" message
-                    className="text-center py-20 px-6 text-gray-600 italic text-lg bg-white rounded-2xl shadow-md border border-gray-200"
-                >
-                    {/* ... (No templates found message remains the same) ... */}
-                    <Inbox size={64} className="mx-auto mb-6 text-gray-400" strokeWidth={1.5}/>
-                    <p className="text-xl font-semibold text-gray-700 mb-2">No Templates Found</p>
-                    <p>We couldn't find any templates matching your current search and filter criteria.
-                    <br />
-                    Try adjusting your terms or{' '}
-                    <Link to="/contact" className="text-accent hover:underline font-semibold">
-                        request a specific template
-                    </Link>.
-                    </p>
-                </motion.div>
-            )}
-       </motion.section>
+        {/* Removed user-generated templates section as requested */}
     </motion.div>
   );
 };
