@@ -17,12 +17,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Dummy user data
-let dummyUsers = [
-  { id: '1', name: 'John Doe', email: 'john@example.com', password: 'password123' },
-  { id: '2', name: 'Jane Smith', email: 'jane@example.com', password: 'password123' },
-];
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();

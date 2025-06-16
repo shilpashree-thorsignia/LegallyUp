@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
 import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Settings, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -68,7 +68,7 @@ const CookiesPolicyPage: React.FC = () => {
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
 
-  const { errors, validateBeforeSubmit } = useFormValidation('cookiesPolicy', formData, totalFormSteps);
+  const { errors } = useFormValidation('cookiesPolicy', formData, totalFormSteps);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -151,29 +151,29 @@ const CookiesPolicyPage: React.FC = () => {
     }
   };
 
-  const handleDownloadDocx = async () => {
-    // Validate the form before generating the document
-    const isValid = validateBeforeSubmit();
-    if (!isValid) {
-      // Scroll to the first error field
-      const firstErrorField = Object.keys(errors || {})[0];
-      if (firstErrorField) {
-        const element = document.getElementById(firstErrorField);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
+  // const handleDownloadDocx = async () => {
+  //   // Validate the form before generating the document
+  //   const isValid = validateBeforeSubmit();
+  //   if (!isValid) {
+  //     // Scroll to the first error field
+  //     const firstErrorField = Object.keys(errors || {})[0];
+  //     if (firstErrorField) {
+  //       const element = document.getElementById(firstErrorField);
+  //       element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //     }
+  //     return;
+  //   }
 
-    try {
-      setIsGenerating(true);
-      await generateDocx(formData, `Cookies-Policy-${formData.companyName || 'Document'}.docx`, 'cookiesPolicy');
-    } catch (error: any) {
-      console.error('Error generating DOCX:', error);
-      alert(`Failed to generate document: ${error.message}`);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  //   try {
+  //     setIsGenerating(true);
+  //     await generateDocx(formData, `Cookies-Policy-${formData.companyName || 'Document'}.docx`, 'cookiesPolicy');
+  //   } catch (error: any) {
+  //     console.error('Error generating DOCX:', error);
+  //     alert(`Failed to generate document: ${error.message}`);
+  //   } finally {
+  //     setIsGenerating(false);
+  //   }
+  // };
 
   const renderStepFormContent = () => {
     const yesNoOptions = [
