@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 from mysql.connector import Error
+import re
 
 app = Flask(__name__)
 
@@ -34,6 +35,23 @@ def init_db():
                 is_trashed BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS consultations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT,
+                user_name VARCHAR(255),
+                user_email VARCHAR(255),
+                attorney_id VARCHAR(32),
+                attorney_name VARCHAR(255),
+                full_name VARCHAR(255),
+                email VARCHAR(255),
+                phone VARCHAR(20),
+                preferred_date DATE,
+                preferred_time TIME,
+                reason_for_consult TEXT,
+                case_type VARCHAR(255)
             )
         ''')
         cursor.close()
@@ -222,6 +240,52 @@ def get_template(template_id):
             return jsonify({'error': 'Template not found'}), 404
     except Error as e:
         print('Get template error:', e)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/consultations', methods=['POST'])
+def create_consultation():
+    data = request.get_json()
+    user_id = data.get('userId')
+    user_name = data.get('userName')
+    user_email = data.get('userEmail')
+    attorney_id = data.get('attorneyId')
+    attorney_name = data.get('attorneyName')
+    full_name = data.get('fullName')
+    email = data.get('email')
+    phone = data.get('phone')
+    preferred_date = data.get('preferredDate')
+    preferred_time = data.get('preferredTime')
+    reason_for_consult = data.get('reasonForConsult')
+    case_type = data.get('caseType')
+
+    # Ensure preferred_time is a valid TIME string or None
+    if preferred_time:
+        # Accept 'HH:MM' or 'HH:MM:SS', else set to None
+        if re.match(r'^\d{2}:\d{2}$', preferred_time):
+            preferred_time = preferred_time + ':00'
+        elif not re.match(r'^\d{2}:\d{2}:\d{2}$', preferred_time):
+            preferred_time = None
+    else:
+        preferred_time = None
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        sql = '''
+            INSERT INTO consultations
+            (user_id, user_name, user_email, attorney_id, attorney_name, full_name, email, phone, preferred_date, preferred_time, reason_for_consult, case_type)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        '''
+        cursor.execute(sql, (
+            user_id, user_name, user_email, attorney_id, attorney_name,
+            full_name, email, phone, preferred_date, preferred_time, reason_for_consult, case_type
+        ))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({'message': 'Consultation scheduled!'}), 201
+    except Exception as e:
+        print('Consultation error:', e)
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":

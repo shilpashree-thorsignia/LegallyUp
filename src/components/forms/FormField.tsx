@@ -3,7 +3,7 @@ import React from 'react';
 interface FormFieldProps {
   id: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'url' | 'date' | 'textarea' | 'select' | 'password';
+  type?: 'text' | 'email' | 'tel' | 'url' | 'date' | 'time' | 'textarea' | 'select' | 'password';
   value: string | number | undefined;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   options?: { value: string; label: string }[];

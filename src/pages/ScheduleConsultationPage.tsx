@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation, Link} from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CalendarDays, UserCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, UserCircle, CheckCircle } from 'lucide-react';
 import FormField from '../components/forms/FormField'; // Ensure this path is correct
+import { useAuth } from '../contexts/AuthContext';
 
 // Make sure mockAttorneys is accessible here.
 // For a real app, import from a shared data file or fetch data.
@@ -50,6 +51,8 @@ const ScheduleConsultationPage: React.FC = () => {
 
   const attorneyName = attorney?.name || passedAttorneyInfo.attorneyName || "Selected Attorney";
 
+  const { user } = useAuth();
+
   useEffect(() => {
     if (attorney && attorney.specialization.length > 0 && !formData.caseType) { // Only set if not already set
       setFormData(prev => ({ ...prev, caseType: attorney.specialization[0] }));
@@ -96,16 +99,34 @@ const ScheduleConsultationPage: React.FC = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API
 
-    console.log('Consultation Request Data:', {
+    // Prepare payload with user and attorney details
+    const payload = {
+      userId: user?.id || null,
+      userName: user?.name || formData.fullName,
+      userEmail: user?.email || formData.email,
       attorneyId: attorney?.id || passedAttorneyInfo.attorneyId,
       attorneyName: attorneyName,
-      formData,
-    });
+      ...formData,
+    };
 
-    setIsSubmitting(false);
-    setSubmissionSuccess(true);
+    try {
+      const res = await fetch('/api/consultations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setSubmissionSuccess(true);
+      } else {
+        const data = await res.json();
+        alert('Failed to schedule: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to schedule: ' + err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!attorney && !passedAttorneyInfo.attorneyName) {
@@ -226,7 +247,7 @@ const ScheduleConsultationPage: React.FC = () => {
                         required={false}
                     />
                     <FormField
-                        id="preferredTime" label="Preferred Time (Optional)" type="date"
+                        id="preferredTime" label="Preferred Time (Optional)" type="time"
                         value={formData.preferredTime || ''} onChange={handleChange}
                         required={false}
                     />
