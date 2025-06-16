@@ -3,7 +3,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext'; // Adjust path if needed
 import FormField from '../components/forms/FormField'; // Adjust path if needed
-import { LogIn, UserPlus, ShieldCheck, Zap, FileText } from 'lucide-react';
+import { LogIn, ShieldCheck, Zap, FileText } from 'lucide-react';
 
 // Define the structure of your form data if needed for more complex validation,
 // but for email/password, direct state is often fine.

@@ -1,30 +1,30 @@
 // src/pages/TemplateLibraryPage.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
-  Search, Filter as FilterIcon, ArrowDownUp, Layers, ChevronRight, Inbox, Trash2, Undo2
+  Layers, ChevronRight, Trash2, Undo2
 } from 'lucide-react';
 
 // Animation Variants
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.1 } }, // Stagger direct children: Hero, Filter, Main Content Section
-  exit: { opacity: 0 }
-};
+// const pageVariants = {
+//   initial: { opacity: 0 },
+//   animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.1 } }, // Stagger direct children: Hero, Filter, Main Content Section
+//   exit: { opacity: 0 }
+// };
 
 // Variants for main content blocks like Hero, Filter Section, Template Grid Section
-const contentBlockVariants = { // <<< DEFINED HERE
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] } },
-};
+// const contentBlockVariants = { // <<< DEFINED HERE
+//   hidden: { opacity: 0, y: 50 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] } },
+// };
 
-const itemVariants = { // For items within a content block, like text in hero, or individual filter elements
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
+// const itemVariants = { // For items within a content block, like text in hero, or individual filter elements
+//   hidden: { opacity: 0, y: 20 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+// };
 
 const cardGridVariants = {
   visible: { transition: { staggerChildren: 0.07 } }
@@ -53,14 +53,14 @@ const documentTypes = [
 
 const TemplateLibraryPage: React.FC = () => {
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('name');
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [selectedCategory, setSelectedCategory] = useState('All');
+//   const [sortBy, setSortBy] = useState('name');
   const [templates, setTemplates] = useState<any[]>([]);
   const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+//   const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -76,28 +76,28 @@ const TemplateLibraryPage: React.FC = () => {
     fetchTemplates();
   }, [user, showTrash]);
 
-  const handleTrash = async (templateId: number) => {
-    await fetch(`/api/templates/${templateId}/trash`, { method: 'POST' });
-    setTemplates(templates.filter(t => t.id !== templateId));
-  };
+//   const handleTrash = async (templateId: number) => {
+//     await fetch(`/api/templates/${templateId}/trash`, { method: 'POST' });
+//     setTemplates(templates.filter(t => t.id !== templateId));
+//   };
 
-  const handleRestore = async (templateId: number) => {
-    await fetch(`/api/templates/${templateId}/restore`, { method: 'POST' });
-    setTrashedTemplates(trashedTemplates.filter(t => t.id !== templateId));
-  };
+//   const handleRestore = async (templateId: number) => {
+//     await fetch(`/api/templates/${templateId}/restore`, { method: 'POST' });
+//     setTrashedTemplates(trashedTemplates.filter(t => t.id !== templateId));
+//   };
 
-  const filteredAndSortedTemplates = (showTrash ? trashedTemplates : templates)
-    .filter(template => {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      const matchesSearch = template.title.toLowerCase().includes(lowerSearchTerm) ||
-                            template.content.toLowerCase().includes(lowerSearchTerm);
-      // You can add category logic if you store categories
-      return matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') return a.title.localeCompare(b.title);
-      return 0;
-    });
+//   const filteredAndSortedTemplates = (showTrash ? trashedTemplates : templates)
+//     .filter(template => {
+//       const lowerSearchTerm = searchTerm.toLowerCase();
+//       const matchesSearch = template.title.toLowerCase().includes(lowerSearchTerm) ||
+//                             template.content.toLowerCase().includes(lowerSearchTerm);
+//       // You can add category logic if you store categories
+//       return matchesSearch;
+//     })
+//     .sort((a, b) => {
+//       if (sortBy === 'name') return a.title.localeCompare(b.title);
+//       return 0;
+//     });
 
   if (!user) {
     return (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { motion } from 'framer-motion';
 import FormField from '../components/forms/FormField';
 import { LogIn } from 'lucide-react';
@@ -12,7 +12,7 @@ const ForgotPasswordPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Animation Variants
   const pageVariants = {

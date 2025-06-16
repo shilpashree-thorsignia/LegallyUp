@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { generateDocx } from '../../utils/docxGenerator';
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Users, Tv2, DollarSign, Lock, FileSignature, Milestone, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Users, Tv2, DollarSign, Lock, FileSignature, Milestone, Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface WebsiteServicesAgreementData {

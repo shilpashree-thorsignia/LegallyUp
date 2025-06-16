@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext'; // Adjust path if needed
 import FormField from '../components/forms/FormField'; // Adjust path if needed
-import { UserPlus, LogIn, CheckSquare, FileText, Users, ShieldCheck, Zap, Image as ImageIcon } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 
 // Interface (if you defined one previously, keep it)
 // interface SignUpFormData { ... }
@@ -82,11 +82,6 @@ const SignUpPage: React.FC = () => {
       } else { setErrors({ general: err.message || generalErrorMessage }); }
     }
     setIsLoading(false);
-  };
-
-  const handleGoogleSignUp = async () => {
-    setErrors({});
-    alert("Placeholder: Attempting Google Sign Up.");
   };
 
 

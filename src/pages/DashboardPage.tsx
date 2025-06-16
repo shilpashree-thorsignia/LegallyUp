@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext'; // Import the hook from the c
 import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp } from 'lucide-react';
 import { generateDocx } from '../utils/docxGenerator';
 import { generatePdf } from '../utils/pdfGenerator';
-import ReactDOMServer from 'react-dom/server';
 
 // Animation variants for sections
 const sectionVariants = {

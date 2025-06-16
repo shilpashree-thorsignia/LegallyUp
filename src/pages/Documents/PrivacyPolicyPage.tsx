@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
 import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, ShieldCheck, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';

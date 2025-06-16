@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { generateDocx } from '../../utils/docxGenerator';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, RotateCcw, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface RefundPolicyData {
