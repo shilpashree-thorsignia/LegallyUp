@@ -47,31 +47,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    // Simulate API call
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        // Check if user already exists
-        if (dummyUsers.some(u => u.email === email)) {
-          resolve(false);
-          return;
-        }
-        
-        const newUser = {
-          id: Math.random().toString(36).substr(2, 9),
-          name,
-          email,
-          password
-        };
-        
-        // In a real app, you would send this to your backend
-        dummyUsers = [...dummyUsers, newUser];
-        
-        const { password: _, ...userWithoutPassword } = newUser;
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name, email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const userWithoutPassword = { name, email, id: data.id || '' };
         setUser(userWithoutPassword);
         localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-        resolve(true);
-      }, 500);
-    });
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
   };
 
   const logout = () => {

@@ -24,4 +24,9 @@ export default defineConfig({
   esbuild: {
     target: 'esnext',
   },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
+  },
 })
