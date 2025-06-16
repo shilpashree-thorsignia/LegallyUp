@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Import the hook from the correct path
-import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp } from 'lucide-react';
+import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers } from 'lucide-react';
 import { generateDocx } from '../utils/docxGenerator';
 import { generatePdf } from '../utils/pdfGenerator';
 
@@ -139,26 +139,45 @@ const DashboardPage: React.FC = () => {
 
   return (
      <motion.div
-      initial="hidden" // Apply container animation variants
+      initial="hidden"
       animate="visible"
       variants={{
         visible: {
           transition: {
-            staggerChildren: 0.2, // Add slight delay between sections
+            staggerChildren: 0.2,
           },
         },
       }}
-      className="py-8" // Inherits container/padding from Layout, adds vertical padding
+      className="py-8"
     >
-
-        {/* Welcome Banner */}
-        <motion.section variants={sectionVariants} className="py-16 bg-primary text-textColor rounded-3xl mb-12 px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Welcome Back, {user?.name || 'User'}!
-            </h1>
-            <p className="text-xl text-textColor/90 max-w-2xl mx-auto mb-6">
-              Your personalized legal hub awaits.
-            </p>
+        {/* Hero Section (modern, animated) */}
+        <motion.section
+          variants={sectionVariants}
+          className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-12 px-4 sm:px-6 lg:px-8"
+        >
+          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#patt)"/>
+            </svg>
+          </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
+              <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
+            </motion.div>
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
+              style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
+            >
+              Dashboard
+            </motion.h1>
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+              className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-4"
+            >
+              Welcome back, <span className="font-bold">{user?.name || 'User'}</span>! Manage your legal documents, edit, download, or restore them anytime.
+            </motion.p>
             <div className="mt-8 space-x-4">
               <Link 
                 to="/generate" 
@@ -173,13 +192,7 @@ const DashboardPage: React.FC = () => {
                 Logout
               </button>
             </div>
-             {/* Quick Nav within Banner (Optional alternative to Quick Links section) */}
-             {/*
-             <div className="mt-8 space-x-4">
-                 <Link to="/generate" className="bg-accent text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold">Generate Document</Link>
-                 <Link to="/templates" className="bg-white text-primary px-6 py-3 rounded-md hover:bg-lightGray transition-colors font-semibold">Browse Templates</Link>
-             </div>
-             */}
+          </div>
         </motion.section>
 
          {/* Saved or Trashed Documents */}

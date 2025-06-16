@@ -5,6 +5,7 @@ import { useFormValidation } from '../../hooks/useFormValidation';
 import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Shield, Settings2, FileLock2, AlertTriangle, CalendarDays, Edit3 } from 'lucide-react'; // Relevant icons
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface EulaData {
   // Step 1: Parties & Product Information
@@ -77,6 +78,8 @@ const EulaPage: React.FC = () => {
   } = useFormValidation('eula', formData, totalFormSteps);
 
   const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -108,6 +111,7 @@ const EulaPage: React.FC = () => {
       alert('You must be logged in to save documents.');
       return;
     }
+    setIsSaving(true);
     const title = `EULA - ${formData.licensorCompanyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
@@ -117,13 +121,15 @@ const EulaPage: React.FC = () => {
         body: JSON.stringify({ user_id: user.id, title, content }),
       });
       if (res.ok) {
-        alert('Document saved to dashboard!');
+        navigate('/dashboard');
       } else {
         const data = await res.json();
         alert('Failed to save: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
       alert('Failed to save: ' + err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -437,9 +443,10 @@ const EulaPage: React.FC = () => {
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleSaveToDashboard} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              disabled={isSaving} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Save size={18}/> Save to Dashboard
+              <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
             <button 
               onClick={handleDownloadDocx} 

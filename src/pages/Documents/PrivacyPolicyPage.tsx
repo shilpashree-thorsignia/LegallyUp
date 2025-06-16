@@ -81,6 +81,7 @@ const PrivacyPolicyPage: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 3;
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     currentStep,
@@ -149,19 +150,18 @@ const PrivacyPolicyPage: React.FC = () => {
       alert('You must be logged in to save documents.');
       return;
     }
+    setIsSaving(true);
     const title = `Privacy Policy - ${formData.companyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
       let res;
       if (editingTemplate) {
-        // Update existing template
         res = await fetch(`/api/templates/${editingTemplate.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, content }),
         });
       } else {
-        // Create new template
         res = await fetch('/api/templates', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -169,13 +169,15 @@ const PrivacyPolicyPage: React.FC = () => {
         });
       }
       if (res.ok) {
-        alert(editingTemplate ? 'Document updated!' : 'Document saved to dashboard!');
+        navigate('/dashboard');
       } else {
         const data = await res.json();
         alert('Failed to save: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
       alert('Failed to save: ' + err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -397,9 +399,10 @@ const PrivacyPolicyPage: React.FC = () => {
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleSaveToDashboard} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              disabled={isSaving} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Save size={18}/> {editingTemplate ? 'Update Document' : 'Save to Dashboard'}
+              <Save size={18}/> {isSaving ? (editingTemplate ? 'Updating...' : 'Saving...') : (editingTemplate ? 'Update Document' : 'Save to Dashboard')}
             </button>
             <button 
               onClick={handleDownloadDocx} 

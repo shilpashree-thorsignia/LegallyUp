@@ -13,6 +13,7 @@ import {
   Save 
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Components
 import FormField from '../../components/forms/FormField';
@@ -86,6 +87,8 @@ const PowerOfAttorneyPage: React.FC = () => {
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 4;
   const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   const {
     currentStep,
@@ -122,6 +125,7 @@ const PowerOfAttorneyPage: React.FC = () => {
       alert('You must be logged in to save documents.');
       return;
     }
+    setIsSaving(true);
     const title = `Power of Attorney - ${formData.principalFullName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
@@ -131,13 +135,15 @@ const PowerOfAttorneyPage: React.FC = () => {
         body: JSON.stringify({ user_id: user.id, title, content }),
       });
       if (res.ok) {
-        alert('Document saved to dashboard!');
+        navigate('/dashboard');
       } else {
         const data = await res.json();
         alert('Failed to save: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
       alert('Failed to save: ' + err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -531,9 +537,10 @@ const PowerOfAttorneyPage: React.FC = () => {
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleSaveToDashboard} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              disabled={isSaving} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Save size={18}/> Save to Dashboard
+              <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
             <button 
               onClick={handleDownloadDocx} 

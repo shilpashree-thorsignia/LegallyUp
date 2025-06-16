@@ -5,6 +5,7 @@ import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Settings, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface CookiesPolicyData {
   // Step 1: Business & Basic Cookie Info
@@ -58,6 +59,8 @@ const CookiesPolicyPage: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   const totalFormSteps = formData.usesCookies === 'yes' ? 3 : 2; // Step 2 is conditional
 
@@ -111,6 +114,7 @@ const CookiesPolicyPage: React.FC = () => {
       alert('You must be logged in to save documents.');
       return;
     }
+    setIsSaving(true);
     const title = `Cookies Policy - ${formData.companyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
@@ -120,13 +124,15 @@ const CookiesPolicyPage: React.FC = () => {
         body: JSON.stringify({ user_id: user.id, title, content }),
       });
       if (res.ok) {
-        alert('Document saved to dashboard!');
+        navigate('/dashboard');
       } else {
         const data = await res.json();
         alert('Failed to save: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
       alert('Failed to save: ' + err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -393,9 +399,10 @@ const CookiesPolicyPage: React.FC = () => {
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleSaveToDashboard} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              disabled={isSaving} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Save size={18}/> Save to Dashboard
+              <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
             <button 
               onClick={handleGenerateDocx} 
