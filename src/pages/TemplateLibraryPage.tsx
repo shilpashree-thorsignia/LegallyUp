@@ -1,5 +1,5 @@
 // src/pages/TemplateLibraryPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -63,17 +63,8 @@ const TemplateLibraryPage: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    // setLoading(true);
-    const fetchTemplates = async () => {
-      const url = showTrash ? `/api/templates/trash?user_id=${user.id}` : `/api/templates?user_id=${user.id}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      // if (showTrash) setTrashedTemplates(data.templates || []);
-      // else setTemplates(data.templates || []);
-      // setLoading(false);
-    };
-    fetchTemplates();
-  }, [user, showTrash]);
+    // Removed showTrash logic
+  }, [user]);
 
 //   const handleTrash = async (templateId: number) => {
 //     await fetch(`/api/templates/${templateId}/trash`, { method: 'POST' });
@@ -192,15 +183,6 @@ const TemplateLibraryPage: React.FC = () => {
             ))}
           </motion.div>
         </section>
-        {/* Trash Toggle */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex justify-end">
-          <button
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50`}
-            onClick={() => setShowTrash(t => !t)}
-          >
-            {showTrash ? <Undo2 size={18}/> : <Trash2 size={18}/>} {showTrash ? 'Restore from Trash' : 'View Trash'}
-          </button>
-        </div>
         {/* Template Grid Section */}
         {/* Removed user-generated templates section as requested */}
     </motion.div>

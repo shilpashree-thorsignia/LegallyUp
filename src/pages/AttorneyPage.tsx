@@ -18,9 +18,6 @@ const sectionVariants = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, 
 const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
 
 const AttorneyPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSpecialization, setSelectedSpecialization] = useState('All');
-  const [selectedLocation, setSelectedLocation] = useState('All');
   const navigate = useNavigate();
 
   const filteredAttorneys = mockAttorneys
@@ -34,9 +31,6 @@ const AttorneyPage: React.FC = () => {
       const matchesLocation = selectedLocation === 'All' || attorney.location === selectedLocation;
       return matchesSearch && matchesSpecialization && matchesLocation;
     });
-
-  const uniqueSpecializations = ['All', ...new Set(mockAttorneys.flatMap(att => att.specialization))].sort();
-  const uniqueLocations = ['All', ...new Set(mockAttorneys.map(att => att.location))].sort();
 
   const handleScheduleConsult = (attorneyId: string, attorneyName: string, attorneySlug: string) => {
     navigate(`/schedule-consultation/${attorneySlug}`, {

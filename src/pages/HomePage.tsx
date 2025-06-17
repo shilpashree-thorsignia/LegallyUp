@@ -27,42 +27,6 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
-const cardHoverVariant = {
-  hover: {
-    y: -8,
-    scale: 1.03,
-    boxShadow: "0px 15px 35px -10px rgba(var(--color-primary-rgb, 29 78 216), 0.15)",
-    transition: { type: "spring", stiffness: 250, damping: 10 }
-  }
-};
-
-const heroTitleText = "Automate Your Legal Paperwork Instantly";
-const titleWords = heroTitleText.split(" ");
-const titleContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: i * 0.04 },
-  }),
-};
-const titleWord: Variants = {
-  hidden: { opacity: 0, y: 20, rotateX: -30, transformOrigin: "bottom center" },
-  visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: "spring", damping: 15, stiffness: 100 } },
-};
-
-const sectionVariants: Variants = {
-  hidden: { opacity: 0, y: 60 }, // Start slightly lower and transparent
-  visible: {
-    opacity: 1,
-    y: 0, // Move to original position
-    transition: {
-      duration: 0.7, // How long the transition takes
-      ease: [0.6, -0.05, 0.01, 0.99], // A custom easing curve for a smoother feel
-      staggerChildren: 0.2, // If direct children are also motion components, they will stagger
-    },
-  },
-};
-
 const floatingIconVariants = (
     delay: number,
     durationRange: [number, number] = [10, 15],
@@ -338,7 +302,6 @@ const HomePage: React.FC = () => {
                 variants={itemVariants}
                 className="bg-lightGray p-8 rounded-2xl shadow-xl relative border-l-4 border-accent"
               >
-                <Quote size={48} className="absolute top-4 left-4 text-accent opacity-10 -z-0 transform -translate-x-2 -translate-y-2" />
                 <p className="text-lg text-textColor italic mb-6 relative z-10">"{testimonial.quote}"</p>
                 <div className="text-right">
                     <p className="font-semibold text-primary not-italic">{testimonial.author}</p>

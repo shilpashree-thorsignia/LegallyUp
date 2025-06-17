@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BookOpen, ListChecks, ChevronRight } from 'lucide-react';
+import { BookOpen, ListChecks, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';
 
 // Expanded placeholder data with a 'slug' for URL and more content for detail page
 const mockResources = [
@@ -19,23 +19,6 @@ const sectionVariants = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, 
 const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
 
 const LegalResourcesPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
-
-  const filteredResources = mockResources
-    .filter(resource => {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      const matchesSearch = resource.title.toLowerCase().includes(lowerSearchTerm) ||
-                            resource.summary.toLowerCase().includes(lowerSearchTerm);
-      const matchesCategory = selectedCategory === 'All' || resource.category === selectedCategory;
-      const matchesType = selectedType === 'All' || resource.type === selectedType;
-      return matchesSearch && matchesCategory && matchesType;
-    });
-
-  const uniqueCategories = ['All', ...new Set(mockResources.map(res => res.category))].sort();
-  const uniqueTypes = ['All', ...new Set(mockResources.map(res => res.type))].sort();
-
   return (
      <motion.div
       initial="hidden"
@@ -94,9 +77,9 @@ const LegalResourcesPage: React.FC = () => {
             {/* <h2 className="text-3xl font-bold text-primary mb-8">
                 Found <span className="text-accent">{filteredResources.length}</span> Resources
             </h2> */}
-            {filteredResources.length > 0 ? (
+            {mockResources.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredResources.map(resource => (
+                    {mockResources.map(resource => (
                         <motion.div
                             key={resource.id}
                             variants={cardVariants}

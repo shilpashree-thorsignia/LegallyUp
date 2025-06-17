@@ -21,7 +21,6 @@ const SignUpPage: React.FC = () => {
 
   const intendedTemplateInfo = location.state as { intendedTemplateId?: string; intendedTemplateName?: string } || {};
 
-  const [otpRequested, setOtpRequested] = useState(false);
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'register' | 'otp'>('register');
   const [otpMessage, setOtpMessage] = useState('');
