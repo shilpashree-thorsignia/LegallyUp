@@ -10,6 +10,8 @@ import secrets
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+# For Vercel Python serverless: expose 'app' at module level
+# (Vercel looks for 'app' in this file)
 
 load_dotenv()
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
@@ -470,4 +472,5 @@ def reset_password():
         return jsonify({'error': 'Failed to reset password'}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True) 
+    # For local development only
+    app.run(host="0.0.0.0", port=5000, debug=True) 
