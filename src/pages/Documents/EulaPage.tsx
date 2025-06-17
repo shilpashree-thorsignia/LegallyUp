@@ -6,6 +6,7 @@ import { generateDocx } from '../../utils/docxGenerator';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Edit3 } from 'lucide-react'; // Relevant icons
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { API_BASE } from '../../lib/apiBase';
 
 interface EulaData {
   // Step 1: Parties & Product Information
@@ -115,7 +116,7 @@ const EulaPage: React.FC = () => {
     const title = `EULA - ${formData.licensorCompanyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch('/api/templates', {
+      const res = await fetch(`${API_BASE}/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, title, content }),

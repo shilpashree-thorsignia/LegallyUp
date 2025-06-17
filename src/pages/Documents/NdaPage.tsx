@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucid
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { API_BASE } from '../../lib/apiBase';
 
 // Interface NdaData remains the same
 interface NdaData {
@@ -95,7 +96,7 @@ const NdaPage: React.FC = () => {
     const title = `NDA - ${formData.disclosingPartyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch('/api/templates', {
+      const res = await fetch(`${API_BASE}/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, title, content }),

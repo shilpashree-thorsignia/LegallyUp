@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { API_BASE } from '../../lib/apiBase';
 
 // Components
 import FormField from '../../components/forms/FormField';
@@ -129,7 +130,7 @@ const PowerOfAttorneyPage: React.FC = () => {
     const title = `Power of Attorney - ${formData.principalFullName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch('/api/templates', {
+      const res = await fetch(`${API_BASE}/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, title, content }),

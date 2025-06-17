@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext'; // Adjust path if needed
 import FormField from '../components/forms/FormField'; // Adjust path if needed
 import { UserPlus } from 'lucide-react';
+import { API_BASE } from '../lib/apiBase';
 
 // Interface (if you defined one previously, keep it)
 // interface SignUpFormData { ... }
@@ -87,7 +88,7 @@ const SignUpPage: React.FC = () => {
     setOtpError('');
     setIsLoading(true);
     try {
-      const res = await fetch('/api/register', {
+      const res = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: name, email, password, otp }),

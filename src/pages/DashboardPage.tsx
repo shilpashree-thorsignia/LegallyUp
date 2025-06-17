@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext'; // Import the hook from the c
 import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers } from 'lucide-react';
 import { generateDocx } from '../utils/docxGenerator';
 import { generatePdf } from '../utils/pdfGenerator';
+import { API_BASE } from '../lib/apiBase';
 
 // Animation variants for sections
 const sectionVariants = {
@@ -39,7 +40,7 @@ const DashboardPage: React.FC = () => {
   // Fetch templates helper
   const fetchTemplates = async (userId: string, trash = false) => {
     setLoading(true);
-    const url = trash ? `/api/templates/trash?user_id=${userId}` : `/api/templates?user_id=${userId}`;
+    const url = trash ? `${API_BASE}/templates/trash?user_id=${userId}` : `${API_BASE}/templates?user_id=${userId}`;
     const res = await fetch(url);
     const data = await res.json();
     if (trash) setTrashedTemplates(data.templates || []);
@@ -73,13 +74,13 @@ const DashboardPage: React.FC = () => {
 
   const handleDeleteDocument = async (docId: number) => {
     if (confirm(`Are you sure you want to move this document to trash?`)) {
-      await fetch(`/api/templates/${docId}/trash`, { method: 'POST' });
+      await fetch(`${API_BASE}/templates/${docId}/trash`, { method: 'POST' });
       if (user) fetchTemplates(user.id, false);
     }
   };
 
   const handleRestoreDocument = async (docId: number) => {
-    await fetch(`/api/templates/${docId}/restore`, { method: 'POST' });
+    await fetch(`${API_BASE}/templates/${docId}/restore`, { method: 'POST' });
     if (user) fetchTemplates(user.id, true);
   };
 

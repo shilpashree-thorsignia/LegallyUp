@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from '
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { API_BASE } from '../../lib/apiBase';
 
 interface CookiesPolicyData {
   // Step 1: Business & Basic Cookie Info
@@ -118,7 +119,7 @@ const CookiesPolicyPage: React.FC = () => {
     const title = `Cookies Policy - ${formData.companyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch('/api/templates', {
+      const res = await fetch(`${API_BASE}/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, title, content }),

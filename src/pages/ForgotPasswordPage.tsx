@@ -3,6 +3,7 @@ import { Link} from 'react-router-dom';
 import { motion } from 'framer-motion';
 import FormField from '../components/forms/FormField';
 import { LogIn } from 'lucide-react';
+import { API_BASE } from '../lib/apiBase';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -31,7 +32,7 @@ const ForgotPasswordPage: React.FC = () => {
     setMessage('');
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/send-otp', {
+      const res = await fetch(`${API_BASE}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, purpose: 'forgot' }),
@@ -57,7 +58,7 @@ const ForgotPasswordPage: React.FC = () => {
     setMessage('');
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/reset-password', {
+      const res = await fetch(`${API_BASE}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),
