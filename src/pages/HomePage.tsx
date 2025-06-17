@@ -64,6 +64,30 @@ const floatingIconVariants = (
   };
 };
 
+// Section animation variants (missing variable fix)
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], staggerChildren: 0.2 },
+  },
+};
+
+// Hero title animation variables (missing variable fix)
+const heroTitleText = "Automate Your Legal Paperwork Instantly";
+const titleWords: string[] = heroTitleText.split(" ");
+const titleContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: i * 0.04 },
+  }),
+};
+const titleWord: Variants = {
+  hidden: { opacity: 0, y: 20, rotateX: -30, transformOrigin: "bottom center" },
+  visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: "spring", damping: 15, stiffness: 100 } },
+};
 
 const HomePage: React.FC = () => {
  
@@ -130,7 +154,7 @@ const HomePage: React.FC = () => {
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-white"
                 style={{ textShadow: '0 3px 12px rgba(0,0,0,0.4)'}}
               >
-                {titleWords.map((word, i) => (
+                {titleWords.map((word: string, i: number) => (
                   <motion.span key={i} variants={titleWord} className="inline-block mr-2.5 md:mr-3.5 text-white" style={{ textShadow: '0 3px 12px rgba(0,0,0,0.4)'}}>
                     {word}
                   </motion.span>
