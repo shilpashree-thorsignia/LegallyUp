@@ -20,15 +20,20 @@
       "dest": "/api/app.py"
     },
     {
-      "handle": "filesystem"
+      "src": "/favicon.ico",
+      "dest": "/dist/favicon.ico"
     },
     {
       "src": "/assets/(.*)",
       "dest": "/dist/assets/$1"
     },
     {
-      "src": "/(.*\\.[a-z]+$)",
-      "dest": "/dist/$1"
+      "src": "/(.*)\\.(?:ico|gif|jpg|jpeg|png|webp|svg)$",
+      "dest": "/dist/$1.$2"
+    },
+    {
+      "src": "/(.*)\\.(?:js|css|html)$",
+      "dest": "/dist/$1.$2"
     },
     {
       "src": "/(.*)",
