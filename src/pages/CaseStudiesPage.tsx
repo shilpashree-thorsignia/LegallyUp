@@ -26,7 +26,7 @@ const mockCaseStudies = [
         client: 'Oak Property Management',
         industry: 'Real Estate',
         imageUrl: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVhbCUyMGVzdGF0ZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
-        summary: 'Discover how a property manager simplified lease generation, ensured compliance, and improved tenant onboarding using LegallyUp's residential lease templates.',
+        summary: "Discover how a property manager simplified lease generation, ensured compliance, and improved tenant onboarding using LegallyUp's residential lease templates.",
         challenge: "Managing multiple rental properties with varying tenant needs, Oak Property Management struggled with inconsistent lease agreements and time-consuming manual drafting. This led to occasional disputes and inefficiencies.",
         solution: "By adopting LegallyUp's residential lease agreement templates, Oak Property Management standardized their leasing process. They could easily customize clauses for specific properties while ensuring all agreements were comprehensive and legally sound.",
         results: "The company reduced lease preparation time by over 70%, minimized legal ambiguities, and experienced smoother tenant relations. Tenant onboarding became more professional and efficient.",
