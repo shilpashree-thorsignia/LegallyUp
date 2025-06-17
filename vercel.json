@@ -5,8 +5,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist",
-        "zeroConfig": true
+        "distDir": "dist"
       }
     },
     {
@@ -20,27 +19,12 @@
       "dest": "/api/app.py"
     },
     {
-      "src": "/favicon.ico",
-      "dest": "/dist/favicon.ico"
+      "handle": "filesystem"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
-    },
-    {
-      "src": "/(.*)\\.(?:ico|gif|jpg|jpeg|png|webp|svg)$",
-      "dest": "/dist/$1.$2"
-    },
-    {
-      "src": "/(.*)\\.(?:js|css|html)$",
-      "dest": "/dist/$1.$2"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/index.html",
-      "headers": {
-        "Cache-Control": "no-cache, no-store, must-revalidate"
-      }
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
     }
   ],
   "build": {
@@ -50,7 +34,6 @@
   },
   "installCommand": "npm install --force",
   "buildCommand": "npm run build",
-  "devCommand": "vite --port $PORT",
   "framework": "vite",
   "regions": ["iad1"],
   "env": {
