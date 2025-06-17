@@ -2,31 +2,13 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import {
-  Menu as MenuIcon,
-  X,
-  Home,
-  Info,
-  FileText,
-  LayoutGrid,
-  Users,
-  DollarSign,
-  BookOpen,
-  MessageSquare,
-  Briefcase,
-  LogIn,
-  LogOut,
-  UserPlus,
-  UserCircle,
-  Newspaper,
-} from 'lucide-react';
+import { Menu as MenuIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NAVBAR_HEIGHT_REM = 5; // 5rem = 80px (h-20 in Tailwind)
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // const [isScrolled, setIsScrolled] = useState(false); // No longer needed for this style
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -36,35 +18,23 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
-  // No longer need scroll listener if background is always white
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     setIsScrolled(window.scrollY > 20);
-  //   };
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, []);
-
-
   const navLinks = [
-    { path: '/', label: 'Home', icon: <Home size={18} /> },
-    { path: '/about', label: 'About', icon: <Info size={18} /> },
-    { path: '/templates', label: 'Templates', icon: <LayoutGrid size={18} /> },
-    { path: '/documents/generate', label: 'Generate', icon: <FileText size={18} /> },
-    { path: '/attorneys', label: 'Attorneys', icon: <Users size={18} /> },
-    { path: '/pricing', label: 'Pricing', icon: <DollarSign size={18} /> },
-    { path: '/blogs', label: 'Blogs', icon: <Newspaper size={18} /> },
-    { path: '/resources', label: 'Resources', icon: <BookOpen size={18} /> },
-    { path: '/case-studies', label: 'Case Studies', icon: <Briefcase size={18} /> },
-    { path: '/contact', label: 'Contact', icon: <MessageSquare size={18} /> },
+    { path: '/', label: 'Home' },
+    { path: '/about', label: 'About' },
+    { path: '/templates', label: 'Templates' },
+    { path: '/attorneys', label: 'Attorneys' },
+    { path: '/pricing', label: 'Pricing' },
+    { path: '/blogs', label: 'Blogs' },
+    { path: '/resources', label: 'Resources' },
+    { path: '/case-studies', label: 'Case Studies' },
+    { path: '/contact', label: 'Contact' },
   ];
 
   // Adjusted link colors for white background
   const activeLinkClasses = "text-primary font-semibold border-b-2 border-primary pb-1";
   const inactiveLinkClasses = "text-gray-600 hover:text-primary pb-1 border-b-2 border-transparent hover:border-primary/30 transition-all duration-300";
-  const mobileActiveLinkClasses = "bg-accent/10 text-accent font-semibold"; // Mobile can still use accent for active
+  const mobileActiveLinkClasses = "bg-accent/10 text-accent font-semibold";
   const mobileInactiveLinkClasses = "text-gray-700 hover:bg-gray-200 hover:text-primary";
-
 
   const mobileMenuVariants = {
     closed: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeOut" } },
@@ -73,75 +43,66 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ease-in-out bg-white shadow-md`} // Default white bg and shadow
-      style={{
-        height: `${NAVBAR_HEIGHT_REM}rem`,
-        // Removed dynamic background and backdrop filter based on scroll/open state
-      }}
+      className="fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ease-in-out bg-white shadow-md w-full"
+      style={{ height: `${NAVBAR_HEIGHT_REM}rem` }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center h-full">
         {/* Logo/Brand */}
-        <Link to="/" className="text-3xl font-extrabold text-primary hover:opacity-80 transition-opacity duration-200 tracking-tight">
+        <Link to="/" className="text-2xl md:text-3xl font-extrabold text-primary hover:opacity-80 transition-opacity duration-200 tracking-tight mr-4 lg:mr-8">
           Legally<span className="text-accent">Up</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-5 lg:space-x-7 h-full">
-          {navLinks.map(link => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 h-full ${isActive ? activeLinkClasses : inactiveLinkClasses} text-md font-medium`
-              }
-            >
-              {link.icon && React.cloneElement(link.icon, { className: "text-gray-500 group-hover:text-primary" })} {/* Icon color needs to be managed */}
-              <span>{link.label}</span>
-            </NavLink>
-          ))}
+        {/* Desktop/Tablet Navigation */}
+        <nav className="hidden md:flex items-center justify-between flex-1">
+          <div className="flex items-center flex-wrap lg:flex-nowrap gap-x-3 lg:gap-x-6 xl:gap-x-8">
+            {navLinks.map(link => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                className={({ isActive }) =>
+                  `flex items-center h-full ${isActive ? activeLinkClasses : inactiveLinkClasses} text-base md:text-[15px] lg:text-[16px] font-medium whitespace-nowrap py-2`
+                }
+              >
+                <span>{link.label}</span>
+              </NavLink>
+            ))}
+          </div>
         </nav>
 
-        {/* Desktop Auth Links */}
-        <div className="hidden md:flex items-center space-x-4">
+        {/* Desktop/Tablet Auth Links */}
+        <div className="hidden md:flex items-center ml-4 lg:ml-8">
           {user ? (
             <>
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 ${isActive ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'} transition-colors duration-200 text-md font-medium`
+                  `flex items-center ${isActive ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'} transition-colors duration-200 text-base md:text-[15px] lg:text-[16px] font-medium mr-4`
                 }
               >
-                <UserCircle size={22} className="text-gray-500"/>
                 {user.name || 'Dashboard'}
               </NavLink>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg transition-all duration-300 text-md font-semibold"
+                className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
               >
-                <LogOut size={18} /> Logout
+                Logout
               </button>
             </>
           ) : (
-            <>
-              <Link to="/signin" className="text-gray-600 hover:text-primary text-md font-medium transition-colors duration-200 px-3 py-2">
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                className="bg-primary text-white px-5 py-2.5 rounded-lg text-md font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md"
-              >
-                Sign Up
-              </Link>
-            </>
+            <Link
+              to="/signin"
+              className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
+            >
+              Sign In
+            </Link>
           )}
         </div>
 
-
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="md:hidden ml-auto">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-gray-700 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors" // Text color for white bg
+            className="text-gray-700 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
             aria-label="Toggle Mobile Menu"
           >
             {isMobileMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
@@ -158,7 +119,7 @@ const Header: React.FC = () => {
             animate="open"
             exit="closed"
             variants={mobileMenuVariants}
-            className="md:hidden absolute top-full left-0 right-0 shadow-xl bg-white border-t border-gray-200" // White bg for mobile menu
+            className="md:hidden absolute top-full left-0 right-0 shadow-xl bg-white border-t border-gray-200 w-full"
           >
             <div className="px-4 pt-4 pb-5 space-y-2">
               {navLinks.map(link => (
@@ -167,10 +128,9 @@ const Header: React.FC = () => {
                   to={link.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`
+                    `flex items-center px-4 py-3 rounded-lg text-[16px] font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`
                   }
                 >
-                  {link.icon && React.cloneElement(link.icon, { className: "text-gray-600" })}
                   {link.label}
                 </NavLink>
               ))}
@@ -180,34 +140,25 @@ const Header: React.FC = () => {
                     <NavLink
                       to="/dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}
+                      className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg text-[16px] font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}
                     >
-                      <UserCircle size={20} className={isMobileMenuOpen && mobileActiveLinkClasses.includes('text-accent') ? "text-accent" : "text-gray-600"}/> {user.name || 'Dashboard'}
+                      {user.name || 'Dashboard'}
                     </NavLink>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-left text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors"
+                      className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
                     >
-                      <LogOut size={20} className="text-gray-600"/> Logout
+                      Logout
                     </button>
                   </>
                 ) : (
-                  <>
-                    <NavLink
-                      to="/signin"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}
-                    >
-                      <LogIn size={20} className={isMobileMenuOpen && mobileActiveLinkClasses.includes('text-accent') ? "text-accent" : "text-gray-600"}/> Sign In
-                    </NavLink>
-                    <NavLink
-                      to="/signup"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 bg-primary text-white px-4 py-3.5 rounded-lg text-base font-semibold hover:bg-primary/80 transition-colors duration-300 w-full justify-center"
-                    >
-                      <UserPlus size={20} /> Sign Up
-                    </NavLink>
-                  </>
+                  <NavLink
+                    to="/signin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
+                  >
+                    Sign In
+                  </NavLink>
                 )}
               </div>
             </div>
