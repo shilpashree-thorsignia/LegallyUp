@@ -8,8 +8,18 @@ import sendgrid
 from sendgrid.helpers.mail import Mail
 import secrets
 from datetime import datetime, timedelta
+from flask_cors import CORS
 
 app = Flask(__name__)
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:5173", "https://legally-up-nu.vercel.app"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
 # For Vercel Python serverless: expose 'app' at module level
 # (Vercel looks for 'app' in this file)
 
