@@ -28,7 +28,7 @@ const createKeyValue = (key: string, value: any, isMultiLine: boolean = false) =
 
   const valueRuns: TextRun[] = [];
   // Ensure all TextRun options for value parts include the size property
-  const textRunOptions: Partial<ITextRunOptions> = { size: 22 };
+  const textRunOptions: Partial<IRunOptions> = { size: 22 };
 
   if (isMultiLine && typeof value === 'string') {
       const lines = value.split('\n');
@@ -198,7 +198,8 @@ const createEulaDoc = (data: any): Document => {
   ];
   const children = childrenContent.filter(el => el !== null) as Paragraph[];
   children.push(new Paragraph({text: "\n\nLICENSEE ACKNOWLEDGEMENT:", heading: HeadingLevel.HEADING_3, spacing: {before: 400}}));
-  children.push(createTextParagraph("By installing, copying, or otherwise using the Software, Licensee acknowledges that they have read this EULA, understand it, and agree to be bound by its terms and conditions."));
+  const para = createTextParagraph("By installing, copying, or otherwise using the Software, Licensee acknowledges that they have read this EULA, understand it, and agree to be bound by its terms and conditions.");
+  if (para) children.push(para);
   // EULAs often don't have a traditional signature block like a contract, agreement is by use.
   // If you need one: children.push(...createSignatureBlock("Licensee (if applicable)"));
   return createDocumentWithSetup(children, `EULA - ${data.productName || "Software"}`, data.licensorCompanyName);
@@ -336,7 +337,8 @@ const createPowerOfAttorneyDoc = (data: any): Document => {
   if (data.witness2FullName) children.push(...createSignatureBlock("Witness 2 Signature", data.witness2FullName));
   
   children.push(new Paragraph({text: "\n\nNOTARY ACKNOWLEDGEMENT (If Required)", heading: HeadingLevel.HEADING_3, spacing: {before: 400}}));
-  children.push(createTextParagraph("State of _______________\nCounty of _______________\n\nOn this ____ day of ___________, 20__, before me, the undersigned Notary Public, personally appeared _________________________ (Principal), _________________________ (Agent), and _________________________ (Witness(es)), personally known to me or proved to me on the basis of satisfactory evidence to be the individual(s) whose name(s) is/are subscribed to the within instrument and acknowledged to me that he/she/they executed the same in his/her/their capacity(ies), and that by his/her/their signature(s) on the instrument, the individual(s), or the person upon behalf of which the individual(s) acted, executed the instrument.\n\n_____________________________\nNotary Public Signature\nMy Commission Expires: _______________"));
+  const para = createTextParagraph("State of _______________\nCounty of _______________\n\nOn this ____ day of ___________, 20__, before me, the undersigned Notary Public, personally appeared _________________________ (Principal), _________________________ (Agent), and _________________________ (Witness(es)), personally known to me or proved to me on the basis of satisfactory evidence to be the individual(s) whose name(s) is/are subscribed to the within instrument and acknowledged to me that he/she/they executed the same in his/her/their capacity(ies), and that by his/her/their signature(s) on the instrument, the individual(s), or the person upon behalf of which the individual(s) acted, executed the instrument.\n\n_____________________________\nNotary Public Signature\nMy Commission Expires: _______________");
+  if (para) children.push(para);
 
   return createDocumentWithSetup(children, `Power of Attorney - ${data.principalFullName || "Principal"}`, data.principalFullName || data.companyName);
 };
