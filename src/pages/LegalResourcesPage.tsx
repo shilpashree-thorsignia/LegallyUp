@@ -1,5 +1,5 @@
 // src/pages/LegalResourcesPage.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BookOpen, ListChecks, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';

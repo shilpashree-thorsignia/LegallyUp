@@ -247,7 +247,7 @@ const HomePage: React.FC = () => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Get Your Documents in 3 Simple Steps</h2>
           </motion.div>
           <motion.div variants={{visible: {transition: {staggerChildren: 0.2}}}} className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {howItWorksSteps.map((step, index) => (
+            {howItWorksSteps.map((step) => (
               <motion.div key={step.num} variants={itemVariants} className="text-center p-6 bg-white rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <div className="flex items-center justify-center w-16 h-16 bg-accent text-white rounded-full mx-auto mb-6 text-2xl font-bold shadow-md">
                   {step.num}

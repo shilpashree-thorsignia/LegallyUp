@@ -1,5 +1,5 @@
 // src/pages/AttorneyPage.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Users, MapPin, ChevronRight, Shield } from 'lucide-react';
@@ -19,18 +19,6 @@ const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { op
 
 const AttorneyPage: React.FC = () => {
   const navigate = useNavigate();
-
-  const filteredAttorneys = mockAttorneys
-    .filter(attorney => {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      const matchesSearch = attorney.name.toLowerCase().includes(lowerSearchTerm) ||
-                            attorney.specialization.some(spec => spec.toLowerCase().includes(lowerSearchTerm)) ||
-                            attorney.location.toLowerCase().includes(lowerSearchTerm) ||
-                            attorney.bio.toLowerCase().includes(lowerSearchTerm);
-      const matchesSpecialization = selectedSpecialization === 'All' || attorney.specialization.includes(selectedSpecialization);
-      const matchesLocation = selectedLocation === 'All' || attorney.location === selectedLocation;
-      return matchesSearch && matchesSpecialization && matchesLocation;
-    });
 
   const handleScheduleConsult = (attorneyId: string, attorneyName: string, attorneySlug: string) => {
     navigate(`/schedule-consultation/${attorneySlug}`, {
@@ -95,9 +83,9 @@ const AttorneyPage: React.FC = () => {
             <h2 className="text-3xl font-bold text-primary mb-10">
                 Meet Our Network of Attorneys 
             </h2>
-            {filteredAttorneys.length > 0 ? (
+            {mockAttorneys.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredAttorneys.map(attorney => (
+                    {mockAttorneys.map(attorney => (
                         <motion.div
                             key={attorney.id}
                             variants={cardVariants}
