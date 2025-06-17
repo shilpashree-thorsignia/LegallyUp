@@ -2,8 +2,14 @@ from flask import Flask, jsonify, request
 import mysql.connector
 from mysql.connector import Error
 import re
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
+
+load_dotenv()
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL')
 
 # MySQL database configuration
 DB_CONFIG = {
