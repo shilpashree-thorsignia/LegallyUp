@@ -64,26 +64,23 @@ const DocumentGeneratorPage: React.FC = () => {
       {/* Unique Hero Section */}
       <motion.section
         className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative"
-        // Removed rounded-b for full bleed into next section's top curve
-        variants={heroContentVariants} // Variants applied to content wrapper now
+        variants={heroContentVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay"> {/* Subtle pattern */}
-            {/* Example pattern - replace with SVG or more complex pattern */}
+        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>
                 <rect width="100%" height="100%" fill="url(#patt)"/>
             </svg>
         </div>
-
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div variants={heroItemVariants} className="mb-8">
             <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
           </motion.div>
           <motion.h1
             variants={heroItemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-gray-900"
             style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
           >
             Document Builder

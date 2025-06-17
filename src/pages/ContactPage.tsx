@@ -164,7 +164,7 @@ const ContactPage: React.FC = () => {
             variants={itemVariants} // Assuming itemVariants is defined
             className="lg:col-span-2  p-8 md:p-10 rounded-2xl shadow-xl text-accent sticky top-28 space-y-10" // Gradient BG, sticky
         >
-            <div>
+            {/* <div>
                 <div className="flex items-center mb-4">
                     <Building2 size={36} className="mr-4 opacity-80" />
                     <h3 className="text-2xl md:text-3xl font-bold">Our Headquarters</h3>
@@ -182,7 +182,7 @@ const ContactPage: React.FC = () => {
                 >
                     View on Map (Conceptual) <ExternalLink size={14} className="ml-1" />
                 </Link>
-            </div>
+            </div> */}
 
             <div className="border-t border-textColor/20 pt-8">
                 <div className="flex items-center mb-4">

@@ -3,236 +3,287 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import {
-  FileText, ShieldCheck, Lock, Users, CheckSquare, ArrowRight, BookOpen, Layers, Briefcase, Home as HomeIcon, Zap, ThumbsUp, MousePointer, FileEdit
+  FileText, ShieldCheck, Lock, Users, ArrowRight, Layers, 
+  Briefcase, Home as HomeIcon, Zap, MousePointer, Clock, DollarSign
 } from 'lucide-react';
+import img1 from '../assets/img1.webp';  
+import img2 from '../assets/img2.webp';
+import img3 from '../assets/img3.webp';
+import ExpertBacked from '../assets/Expert-Backed.webp';
+import Fast from '../assets/Fast.webp';
+import Secure from '../assets/Secure.webp';
+import Accessible from '../assets/Accessible.jpg';
 
 // Animation Variants
 const pageVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.1 } },
+  animate: { opacity: 1, transition: { duration: 0.5 } },
   exit: { opacity: 0 }
 };
 
 const contentBlockVariants: Variants = {
-  hidden: { opacity: 0, y: 60 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], staggerChildren: 0.2 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
-};
-
-const floatingIconVariants = (
-    delay: number,
-    durationRange: [number, number] = [10, 15],
-    yRange: [number, number] = [-15, 15],
-    xRange: [number, number] = [-10, 10]
-  ): Variants => {
-  const duration = Math.random() * (durationRange[1] - durationRange[0]) + durationRange[0];
-  const yStart = Math.random() * (yRange[1] - yRange[0]) + yRange[0];
-  const yEnd = Math.random() * (yRange[1] - yRange[0]) + yRange[0];
-  const xStart = Math.random() * (xRange[1] - xRange[0]) + xRange[0];
-  const xEnd = Math.random() * (xRange[1] - xRange[0]) + xRange[0];
-
-  return {
-    initial: { opacity: 0, scale: 0.7, y: yStart / 2, x: xStart / 2 },
-    animate: {
-      opacity: [0, 0.5, 0.5, 0.5, 0], // Adjusted for longer visibility during float
-      scale: [0.7, 1, 1, 1, 0.7],
-      y: [yStart, yEnd, yStart, yEnd / 2, yStart],
-      x: [xStart, xEnd, xStart / 2, xEnd, xStart],
-      transition: {
-        duration: duration,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatType: "mirror",
-        delay: delay,
-      },
-    },
-    appear: {
-        opacity: 0.5, // Initial visible opacity
-        scale: 1,
-        y: 0,
-        x: 0,
-        transition: {duration: 0.8, delay: delay + 0.3, ease: "easeOut"} // Slightly shorter delay for appearance
-    }
-  };
-};
-
-// Section animation variants (missing variable fix)
-const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], staggerChildren: 0.2 },
+    transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] },
   },
 };
 
-// Hero title animation variables (missing variable fix)
-const heroTitleText = "Automate Your Legal Paperwork Instantly";
+const itemVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] },
+  },
+};
+
+const heroTitleText = "Transform Your Legal Documentation Process";
 const titleWords: string[] = heroTitleText.split(" ");
 const titleContainer: Variants = {
   hidden: { opacity: 0 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: i * 0.04 },
-  }),
+  visible: { opacity: 1, transition: { duration: 0.5 } },
 };
 const titleWord: Variants = {
-  hidden: { opacity: 0, y: 20, rotateX: -30, transformOrigin: "bottom center" },
-  visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: "spring", damping: 15, stiffness: 100 } },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.5 } },
 };
 
 const HomePage: React.FC = () => {
- 
-
   const features = [
-    { icon: <FileEdit size={36} />, title: "Smart Document Builder", desc: "Craft custom legal documents with our intuitive, step-by-step smart forms, powered by expert-vetted templates." },
-    { icon: <Layers size={36} />, title: "Comprehensive Template Suite", desc: "Access an extensive and growing library of legal templates for diverse personal and business requirements." },
-    { icon: <Users size={36} />, title: "Attorney Network Access", desc: "Seamlessly find, connect, and consult with qualified legal professionals for personalized advice when you need it most." },
-    { icon: <ShieldCheck size={36} />, title: "Encrypted Document Vault", desc: "Securely store and manage your generated documents in your personal, encrypted dashboard for easy access anytime, anywhere." },
-    { icon: <Zap size={36} />, title: "Instant Export Options", desc: "Download your finalized documents immediately in standard, professional formats like PDF or DOCX." },
-    { icon: <MousePointer size={36} />, title: "User-Centric Dashboard", desc: "Manage your profile, view saved documents, track activity, and access support all in one streamlined place." },
+    { 
+      icon: <FileText size={36} className="text-primary" />, 
+      title: "Smart Document Builder", 
+      desc: "Craft custom legal documents with our intuitive, step-by-step smart forms, powered by expert-vetted templates." 
+    },
+    { 
+      icon: <Layers size={36} className="text-primary" />, 
+      title: "Comprehensive Template Suite", 
+      desc: "Access an extensive and growing library of legal templates for diverse personal and business requirements." 
+    },
+    { 
+      icon: <Users size={36} className="text-primary" />, 
+      title: "Attorney Network Access", 
+      desc: "Seamlessly find, connect, and consult with qualified legal professionals for personalized advice when you need it most." 
+    },
+    { 
+      icon: <ShieldCheck size={36} className="text-primary" />, 
+      title: "Encrypted Document Vault", 
+      desc: "Securely store and manage your generated documents in your personal, encrypted dashboard for easy access anytime, anywhere." 
+    },
+    { 
+      icon: <Zap size={36} className="text-primary" />, 
+      title: "Instant Export Options", 
+      desc: "Download your finalized documents immediately in standard, professional formats like PDF or DOCX." 
+    },
+    { 
+      icon: <MousePointer size={36} className="text-primary" />, 
+      title: "User-Centric Dashboard", 
+      desc: "Manage your profile, view saved documents, track activity, and access support all in one streamlined place." 
+    },
+  ];
+
+  const stats = [
+    { number: "50K+", label: "Documents Generated", icon: <FileText size={24} /> },
+    { number: "100+", label: "Legal Templates", icon: <Layers size={24} /> },
+    { number: "24/7", label: "Support Available", icon: <Clock size={24} /> },
+    { number: "60%", label: "Cost Savings", icon: <DollarSign size={24} /> },
   ];
 
   const howItWorksSteps = [
-    { num: 1, icon: <BookOpen size={32}/>, title: "Select Your Template", desc: "Choose from our diverse library of professionally drafted legal documents tailored to your specific needs." },
-    { num: 2, icon: <FileEdit size={32}/>, title: "Customize with Ease", desc: "Answer simple questions in our guided forms to input your details and customize the document precisely." },
-    { num: 3, icon: <CheckSquare size={32}/>, title: "Generate & Download", desc: "Instantly create, review, and download your professional legal document in your preferred format." },
+    { 
+      num: 1, 
+      image: img1, 
+      title: "Select Your Template", 
+      desc: "Choose from our diverse library of professionally drafted legal documents tailored to your specific needs." 
+    },
+    { 
+      num: 2, 
+      image: img2, 
+      title: "Customize with Ease", 
+      desc: "Answer simple questions in our guided forms to input your details and customize the document precisely." 
+    },
+    { 
+      num: 3, 
+      image: img3, 
+      title: "Generate & Download", 
+      desc: "Instantly create, review, and download your professional legal document in your preferred format." 
+    },
   ];
 
   const templateCategories = [
-    { slug: 'nda', icon: <Lock size={36}/>, title: "NDAs", desc: "Protect sensitive information." },
-    { slug: 'rental', icon: <HomeIcon size={36}/>, title: "Rental Agreements", desc: "For residential & commercial leases." },
-    { slug: 'employment', icon: <Briefcase size={36}/>, title: "Employment Docs", desc: "Contracts, offer letters, & more." },
-    { slug: 'business', icon: <Layers size={36}/>, title: "Business Contracts", desc: "Essential operational agreements." },
+    { 
+      slug: 'nda', 
+      icon: <Lock size={36} className="text-primary" />, 
+      title: "NDAs", 
+      desc: "Protect sensitive information.",
+      count: "15+ Templates" 
+    },
+    { 
+      slug: 'rental', 
+      icon: <HomeIcon size={36} className="text-primary" />, 
+      title: "Rental Agreements", 
+      desc: "For residential & commercial leases.",
+      count: "10+ Templates" 
+    },
+    { 
+      slug: 'employment', 
+      icon: <Briefcase size={36} className="text-primary" />, 
+      title: "Employment Docs", 
+      desc: "Contracts, offer letters, & more.",
+      count: "20+ Templates" 
+    },
+    { 
+      slug: 'business', 
+      icon: <Layers size={36} className="text-primary" />, 
+      title: "Business Contracts", 
+      desc: "Essential operational agreements.",
+      count: "25+ Templates" 
+    },
   ];
 
   const whyChooseUs = [
-      { icon: <ThumbsUp size={32}/>, title: "Expert-Backed & Reliable", desc: "Our templates are meticulously developed with legal expertise, providing a solid foundation you can trust."},
-      { icon: <Zap size={32}/>, title: "Fast & Intuitive", desc: "Generate complex documents in minutes with our user-friendly, step-by-step interface designed for clarity."},
-      { icon: <ShieldCheck size={32}/>, title: "Secure & Private by Design", desc: "We prioritize your data security and privacy, employing robust measures to ensure your information is protected."},
-      { icon: <Users size={32}/>, title: "Accessible Legal Support", desc: "Easily find and connect with qualified attorneys through our integrated network for personalized advice."}
+    { 
+      image: ExpertBacked,
+      title: "Expert-Backed & Reliable", 
+      desc: "Our templates are meticulously developed with legal expertise, providing a solid foundation you can trust."
+    },
+    { 
+      image: Fast,
+      title: "Fast & Intuitive", 
+      desc: "Generate complex documents in minutes with our user-friendly, step-by-step interface designed for clarity."
+    },
+    { 
+      image: Secure,
+      title: "Secure & Private by Design", 
+      desc: "We prioritize your data security and privacy, employing robust measures to ensure your information is protected."
+    },
+    { 
+      image: Accessible,
+      title: "Accessible Legal Support", 
+      desc: "Easily find and connect with qualified attorneys through our integrated network for personalized advice."
+    }
   ];
-
-  const testimonials = [
-      { quote: "LegallyUp revolutionized how I handle NDAs. It's incredibly fast and the documents are top-notch. A huge time and money saver!", author: "Alex R., Tech Startup Founder", clientCompany: "Innovate Solutions" },
-      { quote: "As a landlord, generating lease agreements used to be a hassle. LegallyUp made it a breeze. The templates are comprehensive and easy to customize.", author: "Sarah B., Property Manager", clientCompany: "Oakview Properties"},
-  ];
-
 
   return (
     <motion.div
-      initial="initial" // Corresponds to pageVariants.initial
-      animate="animate" // Corresponds to pageVariants.animate
-      exit="exit"       // Corresponds to pageVariants.exit
+      initial="initial"
+      animate="animate"
+      exit="exit"
       variants={pageVariants}
       className="overflow-x-hidden bg-gray-50"
     >
       {/* Hero Section */}
       <motion.section
-        className="relative bg-gradient-to-br from-primary to-accent w-full min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden text-white"
-        variants={contentBlockVariants} // This section itself will animate in
-        // initial="hidden" // Already handled by pageVariants if this is a direct child
-        // animate="visible"
+        className="relative bg-gradient-to-br from-primary to-accent min-h-[85vh] flex items-center justify-center overflow-hidden text-white rounded-b-[4rem]"
+        variants={contentBlockVariants}
       >
-        {/* Darkening overlay for even better text contrast if needed - adjust opacity */}
-        <div className="absolute inset-0 bg-black/30 z-0"></div> {/* Increased opacity for better contrast */}
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center md:text-left">
-          <div className="grid md:grid-cols-2 gap-10 md:gap-20 items-center"> {/* Increased gap for more space */}
-            {/* Left Text Content */}
-            <motion.div variants={{visible: {transition: {staggerChildren: 0.2}}}}>
-              <motion.h1
-                variants={titleContainer} initial="hidden" animate="visible" // Animate words
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-white"
-                style={{ textShadow: '0 3px 12px rgba(0,0,0,0.4)'}}
-              >
-                {titleWords.map((word: string, i: number) => (
-                  <motion.span key={i} variants={titleWord} className="inline-block mr-2.5 md:mr-3.5 text-white" style={{ textShadow: '0 3px 12px rgba(0,0,0,0.4)'}}>
-                    {word}
-                  </motion.span>
-                ))}
-              </motion.h1>
-              <motion.p
-                variants={itemVariants}
-                className="text-lg sm:text-xl text-gray-100 mb-10 lg:mb-12 max-w-xl leading-relaxed md:pr-6" // Brighter text (text-gray-100 or text-white/90), added right padding on md
-              >
-                Generate compliance-ready legal documentation such as NDAs and lease contracts. Browse a robust template library or get expert assistance—fast, secure, and scalable.
-              </motion.p>
-              <motion.div variants={itemVariants}>
-                <Link
-                  to="/documents/generate"
-                  className="
-                    inline-flex items-center gap-2.5 
-                    bg-white text-primary  
-                    px-10 py-4 sm:px-12 sm:py-4 
-                    rounded-xl text-md sm:text-lg font-bold 
-                    hover:bg-gray-200 hover:text-primary-dark
-                    transition-all duration-300 
-                    shadow-xl hover:shadow-2xl 
-                    transform hover:scale-105 active:scale-95
-                  "
-                >
-                  Launch Document Builder <ArrowRight size={22} strokeWidth={2.5}/>
-                </Link>
-              </motion.div>
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <ShieldCheck size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5}/>
             </motion.div>
-
-            {/* Right Animation Area - Floating Legal Icons */}
             <motion.div
-                variants={itemVariants}
-                className="hidden md:flex items-center justify-center relative w-full h-80 md:h-96 lg:h-[500px] pointer-events-none"
+              variants={titleContainer}
+              initial="hidden"
+              animate="visible"
+              className="mb-6"
             >
-                {/* Central, slightly more opaque element */}
-                <FileText size={180} strokeWidth={0.7} className="text-white opacity-40 transform rotate-[-8deg]" />
-
-                {/* Floating Icons - Brighter and slightly thicker stroke */}
-                <motion.div className="absolute text-white" variants={floatingIconVariants(0.2)} initial="initial" animate={["appear", "animate"]} style={{ top: '10%', left: '15%' }}>
-                    <ShieldCheck size={70} strokeWidth={0.9} className="opacity-60" />
-                </motion.div>
-                <motion.div className="absolute text-white" variants={floatingIconVariants(0.5, [12,18], [-20,20], [-15,15])} initial="initial" animate={["appear", "animate"]} style={{ top: '60%', left: '70%' }}>
-                    <Lock size={55} strokeWidth={0.9} className="opacity-50" />
-                </motion.div>
-                <motion.div className="absolute text-white" variants={floatingIconVariants(0.8, [8,12], [-15,15], [-25,25])} initial="initial" animate={["appear", "animate"]} style={{ bottom: '15%', left: '25%' }}>
-                    <Users size={65} strokeWidth={0.9} className="opacity-50" />
-                </motion.div>
-                <motion.div className="absolute text-white" variants={floatingIconVariants(1.1, [7,10], [-10,10], [-10,10])} initial="initial" animate={["appear", "animate"]} style={{ top: '20%', right: '10%' }}>
-                    <CheckSquare size={50} strokeWidth={0.9} className="opacity-60" />
-                </motion.div>
+              {titleWords.map((word, i) => (
+                <motion.span
+                  key={i}
+                  variants={titleWord}
+                  className="inline-block mr-[0.2em] last:mr-0 text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900"
+                >
+                  {word}
+                </motion.span>
+              ))}
             </motion.div>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto"
+            >
+              Create, customize, and manage your legal documents with ease. Our intuitive platform helps you generate professional documents in minutes.
+            </motion.p>
           </div>
         </div>
       </motion.section>
 
+      {/* Stats Section */}
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-16 md:py-24 bg-white relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  className="relative group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl transform transition-transform duration-300 group-hover:scale-105"></div>
+                  <div className="relative flex flex-col items-center text-center p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-6 transform transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary/20">
+                      <div className="text-primary group-hover:text-primary/80 transition-colors duration-300">{stat.icon}</div>
+                    </div>
+                    <div className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80 mb-3">
+                      {stat.number}
+                    </div>
+                    <div className="text-base text-gray-600 font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.section>
 
       {/* Features Section */}
-      <motion.section variants={sectionVariants} className="py-20 md:py-28 bg-white">
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="py-20 bg-white"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <span className="text-accent font-semibold uppercase tracking-wider text-sm">Our Features</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Everything You Need, Simplified</h2>
-            <p className="text-lg text-textColor mt-4 max-w-2xl mx-auto">LegallyUp offers a powerful suite of tools to streamline your legal document needs.</p>
+          <motion.div variants={contentBlockVariants} className="text-center mb-16">
+            <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Powerful Features for Your Legal Needs
+            </motion.h2>
+            <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to create, manage, and store your legal documents securely and efficiently.
+            </motion.p>
           </motion.div>
-          <motion.div variants={{visible: {transition: {staggerChildren: 0.1}}}} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature) => (
+
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {features.map((feature, index) => (
               <motion.div
-                key={feature.title}
-                variants={itemVariants}
-                whileHover="hover"
-                className="bg-lightGray p-8 rounded-2xl shadow-lg group flex flex-col text-center items-center transform transition-all duration-300 hover:border-primary border-2 border-transparent"
+                key={index}
+                className="bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg group"
               >
-                <div className="p-5 bg-gradient-to-br from-primary to-accent text-white rounded-full mb-6 transform group-hover:scale-110 transition-transform duration-300 shadow-md">
-                  {React.cloneElement(feature.icon, { strokeWidth: 2 })}
+                <div className="p-3 bg-primary/10 rounded-xl w-fit mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+                  {feature.icon}
                 </div>
-                <h3 className="text-xl lg:text-2xl font-semibold text-primary mb-3 group-hover:text-accent transition-colors">{feature.title}</h3>
-                <p className="text-textColor text-sm leading-relaxed flex-grow">{feature.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -240,131 +291,169 @@ const HomePage: React.FC = () => {
       </motion.section>
 
       {/* How It Works Section */}
-      <motion.section variants={sectionVariants} className="py-20 md:py-28 bg-lightGray">
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="py-20 bg-gray-50"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <span className="text-accent font-semibold uppercase tracking-wider text-sm">Easy Process</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Get Your Documents in 3 Simple Steps</h2>
+          <motion.div variants={contentBlockVariants} className="text-center mb-16">
+            <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
+              How It Works
+            </motion.h2>
+            <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Create professional legal documents in three simple steps
+            </motion.p>
           </motion.div>
-          <motion.div variants={{visible: {transition: {staggerChildren: 0.2}}}} className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {howItWorksSteps.map((step) => (
-              <motion.div key={step.num} variants={itemVariants} className="text-center p-6 bg-white rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
-                <div className="flex items-center justify-center w-16 h-16 bg-accent text-white rounded-full mx-auto mb-6 text-2xl font-bold shadow-md">
+
+          <motion.div
+            className="grid md:grid-cols-3 gap-8"
+          >
+            {howItWorksSteps.map((step, index) => (
+              <motion.div
+                key={index}
+                className="relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300"
+              >
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                   {step.num}
                 </div>
-                <div className="mb-4 text-primary">{React.cloneElement(step.icon, {size: 40, strokeWidth: 1.5})}</div>
-                <h3 className="text-xl font-semibold text-primary mb-3">{step.title}</h3>
-                <p className="text-textColor text-sm leading-relaxed">{step.desc}</p>
+                <div className="flex justify-center mb-6">
+                  <img src={step.image} alt={step.title} className="w-20 h-20 object-contain rounded-xl shadow" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{step.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </motion.section>
 
-      {/* Top Template Categories Section */}
-      <motion.section variants={sectionVariants} className="py-20 md:py-28 bg-white">
+      {/* Template Categories Section */}
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="py-20 bg-white"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <span className="text-accent font-semibold uppercase tracking-wider text-sm">Quick Access</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Popular Template Categories</h2>
+          <motion.div variants={contentBlockVariants} className="text-center mb-16">
+            <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Document Templates
+            </motion.h2>
+            <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Browse our extensive collection of professional legal templates
+            </motion.p>
           </motion.div>
-          <motion.div variants={{visible: {transition: {staggerChildren: 0.1}}}} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {templateCategories.map(category => (
-              <motion.div key={category.slug} variants={itemVariants} whileHover="hover" className="group">
-                <Link to={`/templates?category=${category.slug}`} className="block bg-lightGray p-8 rounded-2xl shadow-lg text-center transform transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:shadow-xl">
-                  <div className="mb-4 text-accent group-hover:text-white transition-colors duration-300">
-                     {React.cloneElement(category.icon, { strokeWidth: 1.5 })}
+
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {templateCategories.map((category, index) => (
+              <motion.div
+                key={index}
+                className="group"
+              >
+                <Link
+                  to={`/templates#${category.slug}`}
+                  className="block bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="p-3 bg-primary/10 rounded-xl w-fit mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+                    {category.icon}
                   </div>
-                  <h3 className="text-xl font-semibold text-primary group-hover:text-white mb-2 transition-colors duration-300">{category.title}</h3>
-                  <p className="text-textColor text-sm group-hover:text-white/80 transition-colors duration-300">{category.desc}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{category.title}</h3>
+                  <p className="text-gray-600 mb-4">{category.desc}</p>
+                  <p className="text-sm text-primary font-medium">{category.count}</p>
                 </Link>
               </motion.div>
             ))}
           </motion.div>
-          <motion.div variants={itemVariants} className="mt-16 text-center">
-            <Link to="/templates" className="inline-flex items-center gap-2 bg-accent text-white px-8 py-3.5 rounded-xl text-lg font-semibold hover:bg-accent-dark transition-colors duration-300 shadow-md transform hover:scale-105">
-              View All Templates <ArrowRight size={20} />
+
+          <motion.div className="text-center mt-12">
+            <Link
+              to="/templates"
+              className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold text-lg group"
+            >
+              View All Templates
+              <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </motion.div>
         </div>
       </motion.section>
 
-      {/* Why Choose LegallyUp Section */}
-      <motion.section variants={sectionVariants} className="py-20 md:py-28 bg-lightGray">
+      {/* Why Choose Us Section */}
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="py-20 bg-gray-50"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <span className="text-accent font-semibold uppercase tracking-wider text-sm">Our Advantage</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Why Choose LegallyUp?</h2>
+          <motion.div variants={contentBlockVariants} className="text-center mb-16">
+            <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Why Choose LegallyUp
+            </motion.h2>
+            <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              We combine legal expertise with modern technology to make document creation simple and reliable
+            </motion.p>
           </motion.div>
-          <motion.div variants={{visible: {transition: {staggerChildren: 0.15}}}} className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-            {whyChooseUs.map(item => (
-              <motion.div key={item.title} variants={itemVariants} className="flex items-start gap-5 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div className="flex-shrink-0 p-3.5 bg-primary/10 text-primary rounded-xl">
-                  {React.cloneElement(item.icon, { strokeWidth: 2, size: 28 })}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-primary mb-2">{item.title}</h3>
-                  <p className="text-textColor text-sm leading-relaxed">{item.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </motion.section>
 
-      {/* Testimonials Section */}
-      <motion.section variants={sectionVariants} className="py-20 md:py-28 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <span className="text-accent font-semibold uppercase tracking-wider text-sm">Social Proof</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mt-2 tracking-tight">Trusted by Users Like You</h2>
-          </motion.div>
-          <motion.div variants={{visible: {transition: {staggerChildren: 0.2}}}} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {testimonials.map((testimonial, index) => (
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {whyChooseUs.map((item, index) => (
               <motion.div
                 key={index}
-                variants={itemVariants}
-                className="bg-lightGray p-8 rounded-2xl shadow-xl relative border-l-4 border-accent"
+                className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300"
               >
-                <p className="text-lg text-textColor italic mb-6 relative z-10">"{testimonial.quote}"</p>
-                <div className="text-right">
-                    <p className="font-semibold text-primary not-italic">{testimonial.author}</p>
-                    <p className="text-sm text-textColor/80 not-italic">{testimonial.clientCompany}</p>
+                <div className="flex justify-center mb-6">
+                  <img src={item.image} alt={item.title} className="w-20 h-20 object-contain rounded-xl shadow" />
                 </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </motion.section>
 
-      {/* Final Call-to-Action Section */}
-      <motion.div
-        variants={contentBlockVariants}
-        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-gray-100"
+      {/* CTA Section */}
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="relative py-20 bg-white"
       >
-        <div
-          className="relative overflow-hidden bg-gradient-to-br from-primary to-accent text-white rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-10 sm:p-16 md:p-20 shadow-2xl text-center max-w-5xl mx-auto"
-        >
-            <Zap size={100} className="absolute -top-10 -left-10 text-white/5 transform rotate-[20deg] opacity-50 -z-0" />
-            <FileText size={120} className="absolute -bottom-12 -right-12 text-white/5 transform -rotate-[10deg] opacity-50 -z-0" />
-            <motion.div variants={{visible:{transition:{staggerChildren:0.15}}}} className="relative z-10">
-                <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight tracking-tight">
-                    Ready to Streamline Your Legal Needs?
-                </motion.h2>
-                <motion.p variants={itemVariants} className="text-md sm:text-lg text-white/90 mb-10 max-w-xl mx-auto leading-relaxed">
-                    Eliminate legal bottlenecks. Begin automating your documents, explore our vast template library, or get expert legal support with LegallyUp.
-                </motion.p>
-                <motion.div variants={itemVariants}>
-                    <Link
-                    to="/documents/generate"
-                    className="inline-flex items-center gap-2 bg-white text-primary px-10 py-4 sm:px-14 sm:py-5 rounded-2xl text-lg sm:text-xl font-bold hover:bg-gray-200 transition-colors duration-300 shadow-xl transform hover:scale-105 active:scale-100"
-                    >
-                    Generate Your Document Now <ArrowRight size={22}/>
-                    </Link>
-                </motion.div>
+        <div className="absolute inset-0 bg-gray-50/50"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h2 
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900"
+            >
+              Ready to Streamline Your Legal Documentation?
+            </motion.h2>
+            <motion.p 
+              className="text-lg md:text-xl text-gray-600 mb-10"
+            >
+              Join thousands of satisfied users who trust LegallyUp for their legal document needs
+            </motion.p>
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 transition-colors duration-200"
+              >
+                Get Started Now <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </motion.section>
     </motion.div>
   );
 };

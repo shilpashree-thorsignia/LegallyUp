@@ -151,7 +151,7 @@ const PricingPage: React.FC = () => {
                 <motion.div variants={itemVariants} className="mb-6">
                     <DollarSign size={72} className="mx-auto opacity-90" strokeWidth={1.5} />
                 </motion.div>
-                <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight tracking-tighter" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.2)'}}>
+                <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tighter" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.2)'}}>
                     Simple, Transparent Pricing
                 </motion.h1>
                 <motion.p variants={itemVariants} className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">

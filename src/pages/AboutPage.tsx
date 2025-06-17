@@ -69,7 +69,7 @@ const AboutPage: React.FC = () => {
       <motion.section
         className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white px-6 py-20 md:py-28 overflow-hidden rounded-b-[30px] md:rounded-b-[50px] shadow-2xl"
         style={{ backgroundImage: "" }}
-        variants={contentBlockVariants} // Apply to the section itself
+        variants={contentBlockVariants}
       >
         <div className="absolute inset-0 opacity-[0.03]"> {/* Subtle pattern or shapes */}
           <Building size={500} className="absolute -bottom-20 -left-40 transform rotate-12" />
@@ -81,9 +81,8 @@ const AboutPage: React.FC = () => {
             </motion.div>
             <motion.h1
                 variants={itemVariants}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
-                style={{ textShadow: '0 3px 12px rgba(0,0,0,0.25)'}}
-            >
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-gray-900"
+                style={{ textShadow: '0 3px 12px rgba(0,0,0,0.25)'}}>
                 About LegallyUp
             </motion.h1>
             <motion.p

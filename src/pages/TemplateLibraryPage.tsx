@@ -124,7 +124,7 @@ const TemplateLibraryPage: React.FC = () => {
             </motion.div>
             <motion.h1
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-gray-900"
               style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
             >
               Template Library
@@ -155,29 +155,22 @@ const TemplateLibraryPage: React.FC = () => {
                 initial="hidden"
                 animate="visible"
                 whileHover="hover"
-                className="bg-white rounded-2xl shadow-xl hover:shadow-primary/20 border border-gray-200 flex flex-col overflow-hidden group cursor-pointer transition-all duration-300"
+                className="group"
               >
-                <div className="p-6 md:p-8">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3.5 bg-accent/10 text-accent rounded-xl mr-4 group-hover:bg-accent group-hover:text-white transition-colors duration-300 transform group-hover:scale-105">
-                      {React.cloneElement(docType.icon, { size: 30, strokeWidth: 2 })}
-                    </div>
-                    <h3 className="text-xl lg:text-2xl font-semibold text-primary group-hover:text-accent transition-colors duration-300 leading-tight">
-                      {docType.name}
-                    </h3>
+                <div className="bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg flex flex-col h-full">
+                  <div className="p-3 bg-primary/10 rounded-xl w-fit mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+                    {React.cloneElement(docType.icon, { size: 32, strokeWidth: 2 })}
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6 min-h-[60px] line-clamp-3 group-hover:text-gray-700">
-                    {docType.description}
-                  </p>
-                </div>
-                <div className="mt-auto border-t border-gray-200">
-                  <Link
-                    to={docType.path}
-                    className="flex items-center justify-between w-full bg-gray-50 group-hover:bg-accent px-6 py-4 text-md font-semibold text-accent group-hover:text-white transition-all duration-300 rounded-b-2xl"
-                  >
-                    <span>Generate Document</span>
-                    <ChevronRight size={20} className="transform group-hover:translate-x-1 transition-transform duration-300" />
-                  </Link>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{docType.name}</h3>
+                  <p className="text-gray-600 mb-4">{docType.description}</p>
+                  <div className="mt-auto">
+                    <Link
+                      to={docType.path}
+                      className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent transition-colors duration-200"
+                    >
+                      Generate Document <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
                 </div>
               </motion.div>
             ))}
