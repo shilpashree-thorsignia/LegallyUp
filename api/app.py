@@ -84,17 +84,96 @@ def generate_otp():
     return str(secrets.randbelow(1000000)).zfill(6)
 
 def send_otp_email(email, otp, purpose):
-    subject = 'Your LegallyUp OTP Code'
+    subject = 'LegallyUp - ' + ('Registration OTP' if purpose == 'register' else 'Password Reset OTP')
+    
+    # Common CSS styles
+    styles = """
+        .container { 
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #eee;
+        }
+        .content {
+            padding: 30px 0;
+            text-align: center;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+            letter-spacing: 5px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    """
+
     if purpose == 'register':
         html_content = f"""
-            <p>Your OTP for registration is: <b>{otp}</b></p>
-            <p>This code will expire in {OTP_EXPIRY_MINUTES} minutes.</p>
+            <html>
+            <head>
+                <style>{styles}</style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Welcome to LegallyUp!</h1>
+                    </div>
+                    <div class="content">
+                        <p>Thank you for registering with LegallyUp. To complete your registration, please use the following OTP code:</p>
+                        <div class="otp-code">{otp}</div>
+                        <p>This code will expire in {OTP_EXPIRY_MINUTES} minutes.</p>
+                    </div>
+                    <div class="footer">
+                        <p>If you didn't request this registration, please ignore this email.</p>
+                        <p>© {datetime.now().year} LegallyUp. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         """
     else:
         html_content = f"""
-            <p>Your OTP for password reset is: <b>{otp}</b></p>
-            <p>This code will expire in {OTP_EXPIRY_MINUTES} minutes.</p>
+            <html>
+            <head>
+                <style>{styles}</style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Password Reset Request</h1>
+                    </div>
+                    <div class="content">
+                        <p>You have requested to reset your password for your LegallyUp account. Please use the following OTP code to proceed:</p>
+                        <div class="otp-code">{otp}</div>
+                        <p>This code will expire in {OTP_EXPIRY_MINUTES} minutes.</p>
+                    </div>
+                    <div class="footer">
+                        <p>If you didn't request this password reset, please ignore this email.</p>
+                        <p>© {datetime.now().year} LegallyUp. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         """
+
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     message = Mail(
         from_email=SENDGRID_FROM_EMAIL,
