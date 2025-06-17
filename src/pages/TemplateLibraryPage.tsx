@@ -158,8 +158,8 @@ const TemplateLibraryPage: React.FC = () => {
                 className="group"
               >
                 <div className="bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg flex flex-col h-full">
-                  <div className="p-3 bg-primary/10 rounded-xl w-fit mb-6 group-hover:bg-primary/20 transition-colors duration-300">
-                    {React.cloneElement(docType.icon, { size: 32, strokeWidth: 2 })}
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 bg-gradient-to-br from-[#4A90E2] to-[#2563eb] shadow-lg">
+                    {React.cloneElement(docType.icon, { size: 28, strokeWidth: 2, className: 'text-white' })}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{docType.name}</h3>
                   <p className="text-gray-600 mb-4">{docType.description}</p>
