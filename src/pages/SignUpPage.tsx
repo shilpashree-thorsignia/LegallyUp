@@ -21,6 +21,12 @@ const SignUpPage: React.FC = () => {
 
   const intendedTemplateInfo = location.state as { intendedTemplateId?: string; intendedTemplateName?: string } || {};
 
+  const [otpRequested, setOtpRequested] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState<'register' | 'otp'>('register');
+  const [otpMessage, setOtpMessage] = useState('');
+  const [otpError, setOtpError] = useState('');
+
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -53,37 +59,51 @@ const SignUpPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRequestOtp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
     if (!validateAndSetErrors()) { setIsLoading(false); return; }
     setIsLoading(true);
     try {
-      const registerResult = await register(name, email, password);
-      if (registerResult) {
-        if (intendedTemplateInfo?.intendedTemplateId) {
-            navigate(`/documents/generate/${intendedTemplateInfo.intendedTemplateId}`, { replace: true });
-        } else {
-            navigate('/dashboard', { replace: true });
-        }
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, purpose: 'register' }),
+      });
+      if (res.ok) {
+        setStep('otp');
+        setOtpMessage('OTP sent to your email. Please enter it below to complete registration.');
       } else {
-        setErrors({ general: 'Failed to create an account. The email might already be in use or the server encountered an issue.' });
+        const data = await res.json();
+        setErrors({ general: data.error || 'Failed to send OTP. Please try again.' });
       }
-    } catch (err: any) {
-      console.error("Sign-up error details:", err);
-      let generalErrorMessage = 'Failed to create an account. Please try again later.';
-      if (err.code) {
-        switch (err.code) {
-          case 'auth/email-already-in-use': setErrors({ email: 'This email address is already in use.' }); break;
-          case 'auth/invalid-email': setErrors({ email: 'The email address format is not valid.' }); break;
-          case 'auth/weak-password': setErrors({ password: 'Password is too weak (min. 6 characters).' }); break;
-          default: setErrors({ general: generalErrorMessage });
-        }
-      } else { setErrors({ general: err.message || generalErrorMessage }); }
+    } catch (err) {
+      setErrors({ general: 'Failed to send OTP. Please try again.' });
     }
     setIsLoading(false);
   };
 
+  const handleRegisterWithOtp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setOtpError('');
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name, email, password, otp }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        navigate('/dashboard', { replace: true });
+      } else {
+        setOtpError(data.error || 'Invalid OTP or registration failed.');
+      }
+    } catch (err) {
+      setOtpError('Failed to register. Please try again.');
+    }
+    setIsLoading(false);
+  };
 
   // Single relevant image for the right column
  const heroImageUrl = "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8b2ZmaWNlJTIwZGVzayUyMGRvY3VtZW50c3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=70";
@@ -130,27 +150,51 @@ const SignUpPage: React.FC = () => {
             </motion.div>
           )}
 
-          <motion.form className="space-y-6" onSubmit={handleSubmit} noValidate >
-            <motion.div variants={itemVariants}>
-              <FormField id="name" label="Full Name" type="text" value={name} onChange={(e)=>{setName(e.target.value); if(errors.name)setErrors(p=>({...p,name:undefined}));}} required placeholder="John Doe" error={errors.name}/>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <FormField id="email" label="Email address" type="email" value={email} onChange={(e)=>{setEmail(e.target.value); if(errors.email)setErrors(p=>({...p,email:undefined}));}} required placeholder="you@example.com" error={errors.email}/>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <FormField id="password" label="Password (min. 6 characters)" type="password" value={password} onChange={(e)=>{setPassword(e.target.value); if(errors.password)setErrors(p=>({...p,password:undefined}));}} required placeholder="••••••••" error={errors.password}/>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <FormField id="confirmPassword" label="Confirm Password" type="password" value={confirmPassword} onChange={(e)=>{setConfirmPassword(e.target.value); if(errors.confirmPassword)setErrors(p=>({...p,confirmPassword:undefined}));}} required placeholder="••••••••" error={errors.confirmPassword}/>
-            </motion.div>
+          {step === 'register' && (
+            <motion.form className="space-y-6" onSubmit={handleRequestOtp} noValidate >
+              <motion.div variants={itemVariants}>
+                <FormField id="name" label="Full Name" type="text" value={name} onChange={(e)=>{setName(e.target.value); if(errors.name)setErrors(p=>({...p,name:undefined}));}} required placeholder="John Doe" error={errors.name}/>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <FormField id="email" label="Email address" type="email" value={email} onChange={(e)=>{setEmail(e.target.value); if(errors.email)setErrors(p=>({...p,email:undefined}));}} required placeholder="you@example.com" error={errors.email}/>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <FormField id="password" label="Password (min. 6 characters)" type="password" value={password} onChange={(e)=>{setPassword(e.target.value); if(errors.password)setErrors(p=>({...p,password:undefined}));}} required placeholder="••••••••" error={errors.password}/>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <FormField id="confirmPassword" label="Confirm Password" type="password" value={confirmPassword} onChange={(e)=>{setConfirmPassword(e.target.value); if(errors.confirmPassword)setErrors(p=>({...p,confirmPassword:undefined}));}} required placeholder="••••••••" error={errors.confirmPassword}/>
+              </motion.div>
 
-            <motion.div variants={itemVariants}>
-              <button type="submit" disabled={isLoading} className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300 disabled:opacity-70">
-                {isLoading ? <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/> : <UserPlus size={22} className="transition-transform duration-200 group-hover:scale-110" />}
-                <span className="ml-2">{isLoading ? 'Creating Account...' : 'Create Account'}</span>
+              <motion.div variants={itemVariants}>
+                <button type="submit" disabled={isLoading} className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300 disabled:opacity-70">
+                  {isLoading ? <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/> : <UserPlus size={22} className="transition-transform duration-200 group-hover:scale-110" />}
+                  <span className="ml-2">{isLoading ? 'Sending OTP...' : 'Request OTP'}</span>
+                </button>
+              </motion.div>
+            </motion.form>
+          )}
+          {step === 'otp' && (
+            <form className="space-y-6" onSubmit={handleRegisterWithOtp} noValidate>
+              {otpMessage && <div className="text-green-600 text-sm">{otpMessage}</div>}
+              <FormField
+                id="otp"
+                label="OTP Code"
+                type="text"
+                value={otp}
+                onChange={e => setOtp(e.target.value)}
+                required
+                placeholder="Enter the OTP sent to your email"
+              />
+              {otpError && <div className="text-red-600 text-sm">{otpError}</div>}
+              <button
+                type="submit"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-md font-bold text-white bg-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Registering...' : 'Register'}
               </button>
-            </motion.div>
-          </motion.form>
+            </form>
+          )}
 
           <motion.p variants={itemVariants} className="text-center text-xs text-gray-500 mt-8">
             By creating an account, you agree to LegallyUp's{' '}
