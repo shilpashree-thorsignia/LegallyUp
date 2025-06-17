@@ -97,7 +97,6 @@ const PricingPage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<string | null>(faqsData[0]?.id || null); // Open first FAQ by default
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [pendingPlan, setPendingPlan] = useState<string | null>(null);
 
   const toggleFaq = (id: string) => {
     setOpenFaq(openFaq === id ? null : id);
@@ -105,7 +104,6 @@ const PricingPage: React.FC = () => {
 
   const handlePlanClick = (plan: string) => {
     if (!user) {
-      setPendingPlan(plan);
       setShowLoginPrompt(true);
     } else {
       window.location.href = `/signup?plan=${plan}`;

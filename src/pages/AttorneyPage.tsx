@@ -1,8 +1,8 @@
 // src/pages/AttorneyPage.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { Users, Search, Filter, MapPin, Briefcase, ChevronRight, Shield } from 'lucide-react'; // More icons
+import { useNavigate } from 'react-router-dom';
+import { Users, MapPin, ChevronRight, Shield } from 'lucide-react';
 
 // Updated placeholder data for attorneys with more details
 const mockAttorneys = [

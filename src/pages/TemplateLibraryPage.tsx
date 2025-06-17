@@ -56,22 +56,21 @@ const TemplateLibraryPage: React.FC = () => {
 //   const [searchTerm, setSearchTerm] = useState('');
 //   const [selectedCategory, setSelectedCategory] = useState('All');
 //   const [sortBy, setSortBy] = useState('name');
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
-  const [showTrash, setShowTrash] = useState(false);
-  const [loading, setLoading] = useState(false);
+//   const [templates, setTemplates] = useState<any[]>([]);
+//   const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(false);
 //   const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
-    setLoading(true);
+    // setLoading(true);
     const fetchTemplates = async () => {
       const url = showTrash ? `/api/templates/trash?user_id=${user.id}` : `/api/templates?user_id=${user.id}`;
       const res = await fetch(url);
       const data = await res.json();
-      if (showTrash) setTrashedTemplates(data.templates || []);
-      else setTemplates(data.templates || []);
-      setLoading(false);
+      // if (showTrash) setTrashedTemplates(data.templates || []);
+      // else setTemplates(data.templates || []);
+      // setLoading(false);
     };
     fetchTemplates();
   }, [user, showTrash]);

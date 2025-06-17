@@ -3,25 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import {
-  FileText,     // Main document icon
-  ShieldCheck,  // For security, trust
-  Lock,         // Confidentiality, NDA
-  Users,        // Collaboration, attorneys
-  CheckSquare,  // Compliance, completion
-  ArrowRight,    // For "Read more" or "Next"
-  BookOpen,     // For template library, resources
-  Layers,       // For templates, variety
-  Briefcase,    // For business documents
-  Home as HomeIcon, // For rental agreements
-  // Lock,         // Already imported for NDA, security
-  MessageSquare, // For testimonials, contact
-  Zap,          // For speed, efficiency
-  DollarSign,   // For cost-effectiveness
-  ThumbsUp,     // For user satisfaction
-  Lightbulb,    // For how it works, innovation
-  MousePointer,
-  Quote,
-  FileEdit, // For CTA
+  FileText, ShieldCheck, Lock, Users, CheckSquare, ArrowRight, BookOpen, Layers, Briefcase, Home as HomeIcon, Zap, ThumbsUp, MousePointer, FileEdit
 } from 'lucide-react';
 
 // Animation Variants

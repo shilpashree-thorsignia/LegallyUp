@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BookOpen, Search, Filter, HelpCircle, FileText as GuideIcon, ListChecks, Hash, ChevronRight } from 'lucide-react'; // Using more specific icons
+import { BookOpen, ListChecks, ChevronRight } from 'lucide-react';
 
 // Expanded placeholder data with a 'slug' for URL and more content for detail page
 const mockResources = [

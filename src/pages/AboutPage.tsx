@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Users, Sparkles, Handshake, ShieldCheck, Eye, Milestone, Target, Building, Lightbulb, Info, ChevronRight, Quote
+  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb, Info
 } from 'lucide-react';
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -123,7 +123,7 @@ const AboutPage: React.FC = () => {
     </motion.div>
     <motion.div variants={sectionVariants} className="order-1 lg:order-2 flex justify-center">
       <div className="w-72 h-72 rounded-full bg-primary/10 flex items-center justify-center shadow-xl">
-        <Milestone size={100} className="text-accent" strokeWidth={1.5} />
+        <Lightbulb size={100} className="text-accent" strokeWidth={1.5} />
       </div>
     </motion.div>
   </div>
@@ -157,7 +157,7 @@ const AboutPage: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
                 <motion.div variants={itemVariants} className="order-2 md:order-1 relative h-64 md:h-auto md:aspect-[5/4] rounded-2xl overflow-hidden shadow-xl">
                      <div className="absolute inset-0 bg-gradient-to-tl from-accent/30 to-primary/30 flex items-center justify-center">
-                        <Target size={120} className="text-white opacity-40 transform " />
+                        <Lightbulb size={120} className="text-white opacity-40 transform " />
                     </div>
                     <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YnVzaW5lc3MlMjBwbGFubmluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60" alt="Mission" className="w-full h-full object-cover"/>
                 </motion.div>

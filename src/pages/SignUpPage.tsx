@@ -15,7 +15,7 @@ const SignUpPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<Partial<Record<'name' | 'email' | 'password' | 'confirmPassword' | 'general', string>>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { user, register } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
