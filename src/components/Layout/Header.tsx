@@ -18,6 +18,7 @@ import {
   LogOut,
   UserPlus,
   UserCircle,
+  Newspaper,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,12 +47,13 @@ const Header: React.FC = () => {
 
 
   const navLinks = [
-    { path: '/', label: 'Home', icon: <Home size={18} /> }, // Reduced icon size slightly for this style
+    { path: '/', label: 'Home', icon: <Home size={18} /> },
     { path: '/about', label: 'About', icon: <Info size={18} /> },
     { path: '/templates', label: 'Templates', icon: <LayoutGrid size={18} /> },
     { path: '/documents/generate', label: 'Generate', icon: <FileText size={18} /> },
     { path: '/attorneys', label: 'Attorneys', icon: <Users size={18} /> },
     { path: '/pricing', label: 'Pricing', icon: <DollarSign size={18} /> },
+    { path: '/blogs', label: 'Blogs', icon: <Newspaper size={18} /> },
     { path: '/resources', label: 'Resources', icon: <BookOpen size={18} /> },
     { path: '/case-studies', label: 'Case Studies', icon: <Briefcase size={18} /> },
     { path: '/contact', label: 'Contact', icon: <MessageSquare size={18} /> },

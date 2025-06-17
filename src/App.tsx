@@ -31,6 +31,8 @@ import WebsiteServicesAgreementPage from './pages/Documents/WebsiteServicesAgree
 import CookiesPolicyPage from './pages/Documents/CookiesPolicyPage.tsx';
 import CaseStudyDetailPage from './pages/CaseStudyDetailPage.tsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import BlogsPage from './pages/BlogsPage';
+import BlogDetailPage from './pages/BlogDetailPage';
 
 
 // Protected route component
@@ -83,6 +85,8 @@ function App() {
           <Route path="/case-studies" element={<Layout><CaseStudiesPage /></Layout>} /> 
           <Route path="/case-studies/:caseStudySlug" element={<Layout><CaseStudyDetailPage /></Layout>} />
           <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+          <Route path="/blogs" element={<Layout><BlogsPage /></Layout>} />
+          <Route path="/blogs/:blogId" element={<Layout><BlogDetailPage /></Layout>} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Layout><DashboardPage /></Layout>
