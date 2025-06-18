@@ -52,11 +52,6 @@ const ScheduleConsultationPage: React.FC = () => {
   const attorneyName = attorney?.name || passedAttorneyInfo.attorneyName || "Selected Attorney";
 
   const { user } = useAuth();
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-
-  // const handleLogin = () => {
-  //   window.location.href = '/signin';
-  // };
 
   useEffect(() => {
     if (attorney && attorney.specialization.length > 0 && !formData.caseType) { // Only set if not already set
@@ -102,7 +97,6 @@ const ScheduleConsultationPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      setShowLoginPrompt(true);
       return;
     }
     if (!validateForm()) return;

@@ -43,7 +43,6 @@ const documentTypes = [
 const TemplateLibraryPage: React.FC = () => {
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -53,7 +52,6 @@ const TemplateLibraryPage: React.FC = () => {
   // Modal handler
   const handleGenerateClick = (path: string) => {
     if (!user) {
-      setPendingPath(path); // Save where user wanted to go
       setShowLoginPrompt(true);
     } else {
       window.location.href = path;
