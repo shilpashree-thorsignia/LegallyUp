@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Calendar, Clock, Tag } from 'lucide-react';
 import { blogsData, categories, type BlogPost } from '../lib/blogsData';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Lazy loaded blog card component
 const BlogCard: React.FC<{ post: BlogPost }> = ({ post }) => {
@@ -78,45 +79,32 @@ const BlogsPage: React.FC = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Hero Section - Simplified animations */}
-      <section className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative">
-        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse">
-                <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
-                <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#patt)"/>
-          </svg>
-        </div>
+      {/* Hero Section */}
+      <section className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px]">
+        <HeroBackground />
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <BookOpen size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
-            style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
-          >
-            Legal Insights & Updates
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
-          >
-            Stay informed with the latest legal trends, insights, and practical guides from our expert contributors.
-          </motion.p>
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <BookOpen size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+            </motion.div>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+            >
+              Legal Insights & Updates
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+            >
+              Stay informed with the latest legal trends, tips, and expert advice to help you navigate the legal landscape.
+            </motion.p>
+          </div>
         </div>
       </section>
 

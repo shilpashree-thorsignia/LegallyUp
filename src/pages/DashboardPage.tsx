@@ -9,6 +9,7 @@ import DocumentPreview from '../components/DocumentPreview';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 import { API_BASE } from '../lib/apiBase';
+import HeroBackground from '../components/ui/HeroBackground';
 
 declare global {
   interface Window {
@@ -229,6 +230,7 @@ const DashboardPage: React.FC = () => {
           variants={sectionVariants}
           className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-12 px-4 sm:px-6 lg:px-8"
         >
+          <HeroBackground variant="dashboard" />
           <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
               <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>

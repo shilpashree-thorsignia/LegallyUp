@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BookOpen, ListChecks, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Expanded placeholder data with a 'slug' for URL and more content for detail page
 const mockResources = [
@@ -14,32 +15,55 @@ const mockResources = [
     { id: 'glossary-force-majeure', slug: 'force-majeure-clause', type: 'Glossary', category: 'Contracts & Agreements', title: 'Force Majeure', summary: 'Definition and implications of force majeure clauses in contracts.', icon: <Hash size={24} className="text-purple-500" />, content: "A force majeure clause is a contract provision that relieves the parties from performing their contractual obligations when certain circumstances beyond their control arise, making performance inadvisable, commercially impracticable, illegal, or impossible. Such circumstances typically include acts of God, war, riots, or natural disasters..." },
 ];
 
+// Animation variants
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 }}
+};
 
-const sectionVariants = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, type: "spring", stiffness: 50 } } };
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' }}
+};
+
 const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
 
 const LegalResourcesPage: React.FC = () => {
   return (
-     <motion.div
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={{ visible: { transition: { staggerChildren: 0.1 }}}}
-      className="bg-gray-50 min-h-screen" // Overall page background
+      className="bg-gray-50 min-h-screen"
     >
-        <motion.section
-            variants={sectionVariants}
-            className="text-center py-16 md:py-20 bg-gradient-to-br from-primary to-accent text-white rounded-b-3xl md:rounded-b-[60px] shadow-xl mb-12 px-4"
-        >
-            <BookOpen size={64} className="mx-auto mb-6 opacity-80" />
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight">
-                Legal Resources Hub
-            </h1>
-            <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
-                Empowering you with knowledge. Find answers, understand legal terms, and explore helpful guides.
-            </p>
-        </motion.section>
+      <motion.section
+        variants={sectionVariants}
+        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12"
+      >
+        <HeroBackground />
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <BookOpen size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+            </motion.div>
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+            >
+              Legal Resources Hub
+            </motion.h1>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+            >
+              Empowering you with knowledge. Find answers, understand legal terms, and explore helpful guides.
+            </motion.p>
+          </div>
+        </div>
+      </motion.section>
 
-        {/* <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      {/* <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
             <div className="p-6 md:p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
                 <div className="flex items-center mb-6">
                     <Filter size={28} className="text-primary mr-3" />

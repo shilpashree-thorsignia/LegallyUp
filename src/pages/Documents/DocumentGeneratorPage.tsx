@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck, ChevronRight, Layers, Zap } from 'lucide-react'; // Added Zap for CTA
+import HeroBackground from '../../components/ui/HeroBackground';
 
 // Document types data (ensure paths are correct for your routing)
 const documentTypes = [
@@ -63,11 +64,12 @@ const DocumentGeneratorPage: React.FC = () => {
     >
       {/* Unique Hero Section */}
       <motion.section
-        className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative"
+        className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-b-[60px]"
         variants={heroContentVariants}
         initial="hidden"
         animate="visible"
       >
+        <HeroBackground variant="generator" />
         <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>

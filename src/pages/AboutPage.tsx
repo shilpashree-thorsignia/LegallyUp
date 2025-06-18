@@ -3,8 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb, Info
+  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb, Info, Shield
 } from 'lucide-react';
+import HeroBackground from '../components/ui/HeroBackground';
+
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -59,46 +61,37 @@ const AboutPage: React.FC = () => {
 
   return (
     <motion.div
-      initial="initial" // Renamed for clarity with pageVariants
+      initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
-      className="overflow-x-hidden bg-gray-100" // Softer overall page background
+      className="overflow-x-hidden bg-gray-100"
     >
       {/* Hero Section */}
       <motion.section
-        className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white px-6 py-20 md:py-28 overflow-hidden rounded-b-[30px] md:rounded-b-[50px] shadow-2xl"
-        style={{ backgroundImage: "" }}
+        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl"
         variants={contentBlockVariants}
       >
-        <div className="absolute inset-0 opacity-[0.03]"> {/* Subtle pattern or shapes */}
-          <Building size={500} className="absolute -bottom-20 -left-40 transform rotate-12" />
-          <Lightbulb size={400} className="absolute -top-32 -right-32 transform -rotate-12" />
-        </div>
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
-            <motion.div variants={itemVariants} className="mb-8">
-                <Info size={72} className="mx-auto opacity-90" strokeWidth={1.5}/>
+        <HeroBackground />
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <Shield size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
             </motion.div>
-            <motion.h1
-                variants={itemVariants}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-gray-900"
-                style={{ textShadow: '0 3px 12px rgba(0,0,0,0.25)'}}>
-                About LegallyUp
-            </motion.h1>
-            <motion.p
-                variants={itemVariants}
-                className="text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed text-white/90 mb-10"
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
             >
-                We're dedicated to simplifying legal processes, making them accessible, understandable, and affordable for everyone. Discover our story, mission, and the values that drive us forward.
+              About LegallyUp
+            </motion.h1>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+            >
+              Empowering individuals and businesses with accessible, reliable legal solutions through innovative technology.
             </motion.p>
-            <motion.div variants={itemVariants}>
-                <a
-                    href="#our-journey"
-                    className="inline-block bg-white text-primary px-10 py-4 rounded-xl text-lg font-semibold hover:bg-gray-200 transition-colors duration-300 shadow-xl transform hover:scale-105 active:scale-95"
-                >
-                    Learn Our Story
-                </a>
-            </motion.div>
+          </div>
         </div>
       </motion.section>
 

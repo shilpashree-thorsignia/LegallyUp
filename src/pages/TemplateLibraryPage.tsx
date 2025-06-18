@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
-  Layers, ChevronRight
+  Layers, ChevronRight, Search, Filter
 } from 'lucide-react';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Animation Variants
 // const pageVariants = {
@@ -21,10 +22,10 @@ import {
 //   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] } },
 // };
 
-// const itemVariants = { // For items within a content block, like text in hero, or individual filter elements
-//   hidden: { opacity: 0, y: 20 },
-//   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-// };
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
+};
 
 const cardGridVariants = {
   visible: { transition: { staggerChildren: 0.07 } }
@@ -99,42 +100,39 @@ const TemplateLibraryPage: React.FC = () => {
   }
 
   return (
-     <motion.div
+    <motion.div
       initial="initial"
       animate="animate"
       exit="exit"
       className="bg-gray-100 min-h-screen"
     >
-        {/* Hero Section (matching /generate, but with template library content) */}
+        {/* Hero Section (matching homepage style) */}
         <motion.section
-          className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative"
+          className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px]"
           variants={{ hidden: { opacity: 0, y: 30, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], delayChildren: 0.2, staggerChildren: 0.2 } } }}
           initial="hidden"
           animate="visible"
         >
-          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>
-              <rect width="100%" height="100%" fill="url(#patt)"/>
-            </svg>
-          </div>
+          <HeroBackground />
+          <div className="absolute inset-0 bg-black/20 z-0"></div>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
-              <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
-            </motion.div>
-            <motion.h1
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter text-gray-900"
-              style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
-            >
-              Template Library
-            </motion.h1>
-            <motion.p
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-              className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
-            >
-              Browse all available legal templates and manage your saved documents. Instantly generate, edit, or restore templates as needed.
-            </motion.p>
+            <div className="max-w-4xl mx-auto text-center">
+              <motion.div className="mb-8 flex justify-center">
+                <Layers size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+              </motion.div>
+              <motion.h1 
+                variants={itemVariants}
+                className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+              >
+                Legal Document Templates
+              </motion.h1>
+              <motion.p 
+                variants={itemVariants}
+                className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+              >
+                Browse our comprehensive collection of professional legal templates. Find the perfect document for your needs.
+              </motion.p>
+            </div>
           </div>
         </motion.section>
         {/* Built-in Templates Section */}

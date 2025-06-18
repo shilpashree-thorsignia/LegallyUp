@@ -13,6 +13,7 @@ import ExpertBacked from '../assets/Expert-Backed.webp';
 import Fast from '../assets/Fast.webp';
 import Secure from '../assets/Secure.webp';
 import Accessible from '../assets/Accessible.jpg';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Animation Variants
 const pageVariants = {
@@ -180,9 +181,10 @@ const HomePage: React.FC = () => {
     >
       {/* Hero Section */}
       <motion.section
-        className="relative bg-gradient-to-br from-primary to-accent min-h-[85vh] flex items-center justify-center overflow-hidden text-white rounded-b-[4rem]"
+        className="relative bg-gradient-to-br from-primary to-accent min-h-[85vh] flex items-center justify-center overflow-hidden text-white rounded-b-[60px]"
         variants={contentBlockVariants}
       >
+        <HeroBackground />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-20">

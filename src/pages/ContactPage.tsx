@@ -4,22 +4,23 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Send, Mail, Phone, ExternalLink, MessageSquare, Facebook, Twitter, Linkedin, Instagram, HelpCircle } from 'lucide-react';
 import FormField from '../components/forms/FormField'; // Assuming you have this reusable component
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Animation variants
 const pageVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.1 } },
+  animate: { opacity: 1 },
   exit: { opacity: 0 }
 };
 
 const contentBlockVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], staggerChildren: 0.15 } },
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6 }}
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' }}
 };
 
 // Note: FormField component needs to accept and display an 'error' prop for validation messages to show.
@@ -89,29 +90,28 @@ const ContactPage: React.FC = () => {
         {/* Hero Section */}
         <motion.section
             variants={contentBlockVariants}
-            className="relative text-center py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white rounded-b-[30px] md:rounded-b-[60px] shadow-xl mb-16 px-4"
+            className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12"
         >
-            <div className="absolute inset-0 opacity-[0.03]"> {/* Subtle pattern */}
-                <Mail size={500} className="absolute -bottom-20 -left-40 transform rotate-12" />
-                <MessageSquare size={400} className="absolute -top-32 -right-32 transform -rotate-12" />
-            </div>
-            <div className="relative z-10 max-w-4xl mx-auto">
-                <motion.div variants={itemVariants} className="mb-8">
-                    <MessageSquare size={72} className="mx-auto opacity-90" strokeWidth={1.5}/>
-                </motion.div>
-                <motion.h1
-                    variants={itemVariants}
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
-                    style={{ textShadow: '0 3px 12px rgba(0,0,0,0.25)'}}
-                >
-                    Get in Touch
-                </motion.h1>
-                <motion.p
-                    variants={itemVariants}
-                    className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
-                >
-                    We're here to help! Whether you have questions, feedback, or need support, please don't hesitate to reach out to our dedicated team.
-                </motion.p>
+            <HeroBackground />
+            <div className="absolute inset-0 bg-black/20 z-0"></div>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="max-w-4xl mx-auto text-center">
+                    <motion.div className="mb-8 flex justify-center">
+                        <MessageSquare size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+                    </motion.div>
+                    <motion.h1 
+                        variants={itemVariants}
+                        className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+                    >
+                        Get in Touch
+                    </motion.h1>
+                    <motion.p 
+                        variants={itemVariants}
+                        className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+                    >
+                        We're here to help! Whether you have questions, feedback, or need support, please don't hesitate to reach out to our dedicated team.
+                    </motion.p>
+                </div>
             </div>
         </motion.section>
 

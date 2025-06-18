@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BarChart3, Target, ChevronRight, Award, BookText } from 'lucide-react';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Updated mockCaseStudies with slug and more detailed content
 const mockCaseStudies = [
@@ -60,124 +61,144 @@ const mockCaseStudies = [
     },
 ];
 
-const sectionVariants = { hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, type: "spring", stiffness: 50 } } };
-const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 }}
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' }}
+};
 
 const CaseStudiesPage: React.FC = () => {
   return (
-     <motion.div
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={{ visible: { transition: { staggerChildren: 0.1 }}}}
-      className="bg-gray-100 min-h-screen" // Overall page background
+      className="bg-gray-50 min-h-screen"
     >
-        <motion.section
-            variants={sectionVariants}
-            className="text-center py-16 md:py-24 bg-gradient-to-br from-primary to-accent text-white rounded-b-3xl md:rounded-b-[60px] shadow-2xl mb-16 px-4"
-        >
-            <Award size={64} className="mx-auto mb-6 opacity-90" />
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight">
-                Real Success Stories
-            </h1>
-            <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
-                Discover how LegallyUp empowers businesses and individuals to navigate legal complexities with confidence and ease.
-            </p>
-        </motion.section>
+      <motion.section
+        variants={sectionVariants}
+        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12"
+      >
+        <HeroBackground />
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <Award size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+            </motion.div>
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+            >
+              Success Stories
+            </motion.h1>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+            >
+              Discover how we've helped businesses and individuals navigate complex legal challenges and achieve their goals.
+            </motion.p>
+          </div>
+        </div>
+      </motion.section>
 
-        <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
-            <div className="max-w-3xl mx-auto">
-                <Target size={48} className="mx-auto mb-6 text-primary" />
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Why Our Case Studies Matter</h2>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                    Explore tangible examples of how LegallyUp's intuitive platform and comprehensive templates deliver practical solutions to everyday legal challenges. Learn from the experiences of others and envision the benefits for your own needs.
-                </p>
-            </div>
-        </motion.section>
+      <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
+        <div className="max-w-3xl mx-auto">
+          <Target size={48} className="mx-auto mb-6 text-primary" />
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Why Our Case Studies Matter</h2>
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Explore tangible examples of how LegallyUp's intuitive platform and comprehensive templates deliver practical solutions to everyday legal challenges. Learn from the experiences of others and envision the benefits for your own needs.
+          </p>
+        </div>
+      </motion.section>
 
-        <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-16">
-             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center">
-                Featured Use Cases
-             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-                {mockCaseStudies.map(study => (
-                    <motion.div
-                        key={study.id}
-                        variants={cardVariants}
-                        className="bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col group transform hover:-translate-y-2"
-                    >
-                        <div className="relative">
-                            <img
-                                src={study.imageUrl}
-                                alt={study.title}
-                                className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 p-6">
-                                <span className="text-xs font-semibold text-white bg-accent/80 px-3 py-1 rounded-full uppercase tracking-wider">{study.industry}</span>
-                                <h3 className="text-xl lg:text-2xl font-bold text-white mt-2 leading-tight">{study.title}</h3>
-                            </div>
-                        </div>
-                        <div className="p-6 flex-grow flex flex-col">
-                            <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-grow">{study.summary}</p>
-                            <div className="mt-auto">
-                                <Link
-                                    to={`/case-studies/${study.slug}`}
-                                    className="inline-flex items-center text-accent hover:text-primary font-semibold group transition-colors duration-200"
-                                >
-                                    Read Full Study
-                                    <ChevronRight size={20} className="ml-1 group-hover:translate-x-1 transition-transform duration-200" />
-                                </Link>
-                            </div>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-        </motion.section>
+      <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center">
+          Featured Use Cases
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+          {mockCaseStudies.map(study => (
+            <motion.div
+              key={study.id}
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col group transform hover:-translate-y-2"
+            >
+              <div className="relative">
+                <img
+                  src={study.imageUrl}
+                  alt={study.title}
+                  className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-6">
+                  <span className="text-xs font-semibold text-white bg-accent/80 px-3 py-1 rounded-full uppercase tracking-wider">{study.industry}</span>
+                  <h3 className="text-xl lg:text-2xl font-bold text-white mt-2 leading-tight">{study.title}</h3>
+                </div>
+              </div>
+              <div className="p-6 flex-grow flex flex-col">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-grow">{study.summary}</p>
+                <div className="mt-auto">
+                  <Link
+                    to={`/case-studies/${study.slug}`}
+                    className="inline-flex items-center text-accent hover:text-primary font-semibold group transition-colors duration-200"
+                  >
+                    Read Full Study
+                    <ChevronRight size={20} className="ml-1 group-hover:translate-x-1 transition-transform duration-200" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
 
-        <motion.section variants={sectionVariants} className="py-16 bg-lightGray rounded-t-3xl md:rounded-t-[60px] mb-0 px-4 sm:px-6 lg:px-8">
-            <div className="container mx-auto">
-                <div className="flex items-center justify-center mb-12">
-                    <BarChart3 size={40} className="text-primary mr-4" />
-                    <h2 className="text-3xl md:text-4xl font-bold text-primary text-center">Measurable Impact</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    {[
-                        { value: "80%", title: "Time Saved", desc: "Average reduction in document creation time." },
-                        { value: "65%", title: "Cost Reduction", desc: "Typical savings vs. traditional legal routes." },
-                        { value: "95%+", title: "User Satisfaction", desc: "Reported by LegallyUp users." },
-                    ].map(metric => (
-                        <motion.div key={metric.title} variants={cardVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 transform hover:scale-105 transition-transform">
-                            <p className="text-5xl font-bold text-accent mb-3">{metric.value}</p>
-                            <h3 className="text-xl font-semibold text-primary">{metric.title}</h3>
-                            <p className="text-gray-600 text-sm mt-2">{metric.desc}</p>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </motion.section>
+      <motion.section variants={sectionVariants} className="py-16 bg-lightGray rounded-t-3xl md:rounded-t-[60px] mb-0 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center mb-12">
+            <BarChart3 size={40} className="text-primary mr-4" />
+            <h2 className="text-3xl md:text-4xl font-bold text-primary text-center">Measurable Impact</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            {[
+              { value: "80%", title: "Time Saved", desc: "Average reduction in document creation time." },
+              { value: "65%", title: "Cost Reduction", desc: "Typical savings vs. traditional legal routes." },
+              { value: "95%+", title: "User Satisfaction", desc: "Reported by LegallyUp users." },
+            ].map(metric => (
+              <motion.div key={metric.title} variants={itemVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 transform hover:scale-105 transition-transform">
+                <p className="text-5xl font-bold text-accent mb-3">{metric.value}</p>
+                <h3 className="text-xl font-semibold text-primary">{metric.title}</h3>
+                <p className="text-gray-600 text-sm mt-2">{metric.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
-        {/* Client Quotes Section can remain similar or be integrated into individual case studies */}
-        <motion.section variants={sectionVariants} className="py-16 bg-lightGray px-4 sm:px-6 lg:px-8">
-            <div className="container mx-auto">
-                <div className="flex items-center justify-center mb-12">
-                        <BookText size={40} className="text-primary mr-4" />
-                        <h2 className="text-3xl md:text-4xl font-bold text-primary text-center">What Our Clients Say</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <motion.div variants={cardVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 italic text-gray-700 relative">
-                        <span className="absolute top-4 left-4 text-6xl text-accent opacity-20 font-serif">“</span>
-                        <p className="mb-4 text-lg relative z-10">"Using LegallyUp's templates was a game-changer for our small business. Simple, fast, and professional documents every time."</p>
-                        <p className="font-semibold text-primary not-italic text-right">- Alex J., Innovatech Solutions</p>
-                    </motion.div>
-                    <motion.div variants={cardVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 italic text-gray-700 relative">
-                        <span className="absolute top-4 left-4 text-6xl text-accent opacity-20 font-serif">“</span>
-                        <p className="mb-4 text-lg relative z-10">"The platform saved me hours on drafting lease agreements. Highly efficient and trustworthy for property management."</p>
-                        <p className="font-semibold text-primary not-italic text-right">- Sarah B., Oak Property Management</p>
-                    </motion.div>
-                </div>
-            </div>
-        </motion.section>
+      {/* Client Quotes Section can remain similar or be integrated into individual case studies */}
+      <motion.section variants={sectionVariants} className="py-16 bg-lightGray px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center mb-12">
+            <BookText size={40} className="text-primary mr-4" />
+            <h2 className="text-3xl md:text-4xl font-bold text-primary text-center">What Our Clients Say</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div variants={itemVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 italic text-gray-700 relative">
+              <span className="absolute top-4 left-4 text-6xl text-accent opacity-20 font-serif">“</span>
+              <p className="mb-4 text-lg relative z-10">"Using LegallyUp's templates was a game-changer for our small business. Simple, fast, and professional documents every time."</p>
+              <p className="font-semibold text-primary not-italic text-right">- Alex J., Innovatech Solutions</p>
+            </motion.div>
+            <motion.div variants={itemVariants} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 italic text-gray-700 relative">
+              <span className="absolute top-4 left-4 text-6xl text-accent opacity-20 font-serif">“</span>
+              <p className="mb-4 text-lg relative z-10">"The platform saved me hours on drafting lease agreements. Highly efficient and trustworthy for property management."</p>
+              <p className="font-semibold text-primary not-italic text-right">- Sarah B., Oak Property Management</p>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
     </motion.div>
   );
 };

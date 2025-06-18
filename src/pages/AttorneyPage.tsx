@@ -2,7 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Users, MapPin, ChevronRight, Shield } from 'lucide-react';
+import { Users, MapPin, ChevronRight, Shield, Filter, Search } from 'lucide-react';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Updated placeholder data for attorneys with more details
 const mockAttorneys = [
@@ -35,15 +36,19 @@ const AttorneyPage: React.FC = () => {
     >
         <motion.section
             variants={sectionVariants}
-            className="text-center py-16 md:py-24 bg-gradient-to-br from-primary to-accent text-white rounded-b-3xl md:rounded-b-[60px] shadow-xl mb-12 px-4"
+            className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12 px-4"
         >
-            <Shield size={64} className="mx-auto mb-6 opacity-90" />
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight">
-                Connect with Legal Experts
-            </h1>
-            <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
-                Find qualified attorneys ready to provide personalized legal advice and services tailored to your unique needs.
-            </p>
+            <HeroBackground />
+            <div className="absolute inset-0 bg-black/20 z-0"></div>
+            <div className="container mx-auto relative z-10 text-center">
+                <Shield size={64} className="mx-auto mb-6 opacity-90" />
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-gray-900">
+                    Connect with Legal Experts
+                </h1>
+                <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
+                    Find qualified attorneys ready to provide personalized legal advice and services tailored to your unique needs.
+                </p>
+            </div>
         </motion.section>
 
         {/* <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">

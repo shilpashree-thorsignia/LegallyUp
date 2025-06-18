@@ -54,7 +54,7 @@ const ResourceDetailPage: React.FC = () => {
       className="bg-white min-h-screen"
     >
       {/* Hero section for the resource */}
-      <div className="py-12 md:py-16 bg-gradient-to-r from-primary/80 to-accent/80 text-white shadow-lg">
+      <div className="py-12 md:py-16 bg-gradient-to-r from-primary/80 to-accent/80 text-white shadow-lg rounded-b-[60px]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-block p-4 bg-white/20 rounded-full mb-6">
             <TypeIconComponent size={40} className="text-white" />

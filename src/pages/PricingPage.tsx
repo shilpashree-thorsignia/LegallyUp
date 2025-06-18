@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { DollarSign, CheckCircle, XCircle, HelpCircle, ChevronDown, Star, Zap, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import HeroBackground from '../components/ui/HeroBackground';
 
 // Animation variants
 const pageVariants = {
@@ -115,13 +116,40 @@ const PricingPage: React.FC = () => {
   };
 
   return (
-     <motion.div
+    <motion.div
       initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
       className="bg-gray-100 min-h-screen"
     >
+      <motion.section // Hero Section
+        variants={contentBlockVariants}
+        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-16"
+      >
+        <HeroBackground />
+        <div className="absolute inset-0 bg-black/20 z-0"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div className="mb-8 flex justify-center">
+              <DollarSign size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+            </motion.div>
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+            >
+              Simple, Transparent Pricing
+            </motion.h1>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+            >
+              Choose the perfect plan to unlock the full power of LegallyUp. No hidden fees, just straightforward value for your legal needs.
+            </motion.p>
+          </div>
+        </div>
+      </motion.section>
+
       {/* Login Prompt Modal */}
       {showLoginPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -143,159 +171,143 @@ const PricingPage: React.FC = () => {
           </div>
         </div>
       )}
-        <motion.section // Hero Section
-            variants={contentBlockVariants}
-            className="text-center py-20 md:py-28 bg-gradient-to-br from-primary to-accent text-white rounded-b-[30px] md:rounded-b-[60px] shadow-xl mb-16 px-4"
+
+      {/* Plan Cards Section */}
+      <motion.section
+        variants={contentBlockVariants}
+        className="container mx-auto px-4 sm:px-6 lg:px-8 mb-20 md:mb-28"
+      >
+        <motion.h2 variants={sectionHeaderVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-16 text-center tracking-tight">
+          Our Plans
+        </motion.h2>
+        <motion.div
+          variants={{ visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 }}}}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
         >
-            <motion.div variants={{visible: {transition: {staggerChildren: 0.1}}}}>
-                <motion.div variants={itemVariants} className="mb-6">
-                    <DollarSign size={72} className="mx-auto opacity-90" strokeWidth={1.5} />
-                </motion.div>
-                <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tighter" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.2)'}}>
-                    Simple, Transparent Pricing
-                </motion.h1>
-                <motion.p variants={itemVariants} className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-                    Choose the perfect plan to unlock the full power of LegallyUp. No hidden fees, just straightforward value for your legal needs.
-                </motion.p>
-            </motion.div>
-        </motion.section>
-
-        {/* Plan Cards Section */}
-       <motion.section
-            variants={contentBlockVariants}
-            className="container mx-auto px-4 sm:px-6 lg:px-8 mb-20 md:mb-28"
-        >
-            <motion.h2 variants={sectionHeaderVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-16 text-center tracking-tight">
-                Our Plans
-            </motion.h2>
-           <motion.div
-                variants={{ visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 }}}}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
-            >
-               {/* Free Tier Card */}
-               <motion.div
-                    variants={planCardVariants} whileHover="hover"
-                    className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200 flex flex-col transform transition-all duration-300"
-                >
-                   <div className="flex items-center gap-3 mb-5">
-                        <Users size={32} className="text-primary" />
-                        <h3 className="text-2xl font-bold text-primary">Free</h3>
-                   </div>
-                   <p className="text-5xl font-extrabold text-primary mb-2">$0<span className="text-xl text-gray-500 font-semibold">/month</span></p>
-                   <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">Basic access for individuals needing simple legal documents occasionally.</p>
-                   <ul className="text-gray-700 text-left space-y-3 mb-10 text-sm">
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> 3 Document generations/month</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Access to basic templates</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Standard email support</li>
-                       <li className="flex items-center"><XCircle size={18} className="text-gray-400 mr-2 flex-shrink-0" /> Premium Template Access</li>
-                   </ul>
-                   <Link
-                        to="/signup?plan=free"
-                        className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePlanClick('free');
-                        }}
-                    >
-                       Get Started Free
-                   </Link>
-               </motion.div>
-
-                {/* Pro Tier Card (Highlighted) */}
-               <motion.div
-                    variants={planCardVariants} whileHover="hover"
-                    className="bg-gradient-to-br from-primary to-accent text-white p-8 rounded-3xl shadow-2xl flex flex-col ring-4 ring-accent/50 transform lg:scale-105"
-                >
-                    <div className="flex justify-between items-center mb-5">
-                        <div className="flex items-center gap-3">
-                            <Star size={32} className="text-yellow-400" />
-                            <h3 className="text-3xl font-bold">Pro</h3>
-                        </div>
-                        <span className="bg-yellow-400 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Most Popular</span>
-                    </div>
-                   <p className="text-5xl font-extrabold mb-2">$29<span className="text-xl font-semibold">/month</span></p>
-                   <p className="text-white/90 text-sm mb-8 flex-grow leading-relaxed">Ideal for frequent users, small businesses, and startups with diverse and ongoing legal needs.</p>
-                   <ul className="text-left space-y-3 mb-10 text-sm">
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Unlimited document generations</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Access to ALL premium templates</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Secure cloud storage</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Priority email & chat support</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Discounted attorney consults</li>
-                   </ul>
-                   <Link
-                        to="/signup?plan=pro"
-                        className="mt-auto w-full text-center bg-white text-primary px-8 py-3.5 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold text-md shadow-lg"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePlanClick('pro');
-                        }}
-                    >
-                       Choose Pro Plan
-                   </Link>
-               </motion.div>
-
-                {/* Attorney Tier Card */}
-               <motion.div
-                    variants={planCardVariants} whileHover="hover"
-                    className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200 flex flex-col transform transition-all duration-300"
-                >
-                   <div className="flex items-center gap-3 mb-5">
-                        <Zap size={32} className="text-primary" />
-                        <h3 className="text-2xl font-bold text-primary">Attorney</h3>
-                   </div>
-                   <p className="text-5xl font-extrabold text-primary mb-2">$79<span className="text-xl text-gray-500 font-semibold">/month</span></p>
-                   <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">Designed for legal professionals to join our directory and connect with clients.</p>
-                   <ul className="text-gray-700 text-left space-y-3 mb-10 text-sm">
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Prominent Directory Listing</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Connect with LegallyUp Users</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Consultation Management Dashboard</li>
-                       <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Secure Client Communication Tools</li>
-                   </ul>
-                   <Link
-                        to="/signup?plan=attorney"
-                        className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePlanClick('attorney');
-                        }}
-                    >
-                       Join as Attorney
-                   </Link>
-               </motion.div>
-           </motion.div>
-       </motion.section>
-
-        {/* Enhanced FAQs Section */}
-       <motion.section
-            variants={contentBlockVariants}
-            className="py-20 md:py-28 bg-lightGray rounded-t-[30px] md:rounded-t-[50px] px-4 sm:px-6 lg:px-8"
-        >
-            <div className="container mx-auto max-w-4xl">
-                <motion.div variants={itemVariants} className="text-center mb-16">
-                    <HelpCircle size={60} className="text-accent mx-auto mb-6" strokeWidth={1.5}/>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary tracking-tight">
-                        Frequently Asked Questions
-                    </h2>
-                    <p className="text-lg text-textColor mt-4 max-w-2xl mx-auto">
-                        Find answers to common questions about our plans and services.
-                    </p>
-                </motion.div>
-
-                <motion.div
-                    variants={{visible: {transition: {staggerChildren: 0.05}}}}
-                    className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200"
-                >
-                    {faqsData.map((faq) => (
-                        <FaqItem
-                            key={faq.id}
-                            faq={faq}
-                            isOpen={openFaq === faq.id}
-                            onClick={() => toggleFaq(faq.id)}
-                        />
-                    ))}
-                </motion.div>
+          {/* Free Tier Card */}
+          <motion.div
+            variants={planCardVariants} whileHover="hover"
+            className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200 flex flex-col transform transition-all duration-300"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <Users size={32} className="text-primary" />
+              <h3 className="text-2xl font-bold text-primary">Free</h3>
             </div>
-       </motion.section>
+            <p className="text-5xl font-extrabold text-primary mb-2">$0<span className="text-xl text-gray-500 font-semibold">/month</span></p>
+            <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">Basic access for individuals needing simple legal documents occasionally.</p>
+            <ul className="text-gray-700 text-left space-y-3 mb-10 text-sm">
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> 3 Document generations/month</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Access to basic templates</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Standard email support</li>
+              <li className="flex items-center"><XCircle size={18} className="text-gray-400 mr-2 flex-shrink-0" /> Premium Template Access</li>
+            </ul>
+            <Link
+              to="/signup?plan=free"
+              className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePlanClick('free');
+              }}
+            >
+              Get Started Free
+            </Link>
+          </motion.div>
+
+          {/* Pro Tier Card (Highlighted) */}
+          <motion.div
+            variants={planCardVariants} whileHover="hover"
+            className="bg-gradient-to-br from-primary to-accent text-white p-8 rounded-3xl shadow-2xl flex flex-col ring-4 ring-accent/50 transform lg:scale-105"
+          >
+            <div className="flex justify-between items-center mb-5">
+              <div className="flex items-center gap-3">
+                <Star size={32} className="text-yellow-400" />
+                <h3 className="text-3xl font-bold">Pro</h3>
+              </div>
+              <span className="bg-yellow-400 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Most Popular</span>
+            </div>
+            <p className="text-5xl font-extrabold mb-2">$29<span className="text-xl font-semibold">/month</span></p>
+            <p className="text-white/90 text-sm mb-8 flex-grow leading-relaxed">Ideal for frequent users, small businesses, and startups with diverse and ongoing legal needs.</p>
+            <ul className="text-left space-y-3 mb-10 text-sm">
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Unlimited document generations</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Access to ALL premium templates</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Secure cloud storage</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Priority email & chat support</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-400 mr-2 flex-shrink-0" /> Discounted attorney consults</li>
+            </ul>
+            <Link
+              to="/signup?plan=pro"
+              className="mt-auto w-full text-center bg-white text-primary px-8 py-3.5 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold text-md shadow-lg"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePlanClick('pro');
+              }}
+            >
+              Choose Pro Plan
+            </Link>
+          </motion.div>
+
+          {/* Attorney Tier Card */}
+          <motion.div
+            variants={planCardVariants} whileHover="hover"
+            className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200 flex flex-col transform transition-all duration-300"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <Zap size={32} className="text-primary" />
+              <h3 className="text-2xl font-bold text-primary">Attorney</h3>
+            </div>
+            <p className="text-5xl font-extrabold text-primary mb-2">$79<span className="text-xl text-gray-500 font-semibold">/month</span></p>
+            <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">Designed for legal professionals to join our directory and connect with clients.</p>
+            <ul className="text-gray-700 text-left space-y-3 mb-10 text-sm">
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Prominent Directory Listing</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Connect with LegallyUp Users</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Consultation Management Dashboard</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Secure Client Communication Tools</li>
+            </ul>
+            <Link
+              to="/signup?plan=attorney"
+              className="mt-auto w-full text-center bg-gray-100 text-primary border border-gray-300 px-8 py-3.5 rounded-xl hover:bg-gray-200 hover:border-primary transition-all duration-300 font-semibold text-md"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePlanClick('attorney');
+              }}
+            >
+              Join as Attorney
+            </Link>
+          </motion.div>
+        </motion.div>
+      </motion.section>
+
+      {/* Enhanced FAQs Section */}
+      <motion.section
+        variants={contentBlockVariants}
+        className="py-20 md:py-28 bg-lightGray rounded-t-[30px] md:rounded-t-[50px] px-4 sm:px-6 lg:px-8"
+      >
+        <div className="container mx-auto max-w-4xl">
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <HelpCircle size={60} className="text-accent mx-auto mb-6" strokeWidth={1.5}/>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-textColor mt-4 max-w-2xl mx-auto">
+              Find answers to common questions about our plans and services.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={{visible: {transition: {staggerChildren: 0.05}}}}
+            className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200"
+          >
+            {faqsData.map((faq) => (
+              <FaqItem
+                key={faq.id}
+                faq={faq}
+                isOpen={openFaq === faq.id}
+                onClick={() => toggleFaq(faq.id)}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </motion.section>
     </motion.div>
   );
 };
