@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Send, Mail, Phone, ExternalLink, MessageSquare, Building2, Facebook, Twitter, Linkedin, Instagram, HelpCircle } from 'lucide-react';
+import { Send, Mail, Phone, ExternalLink, MessageSquare, Facebook, Twitter, Linkedin, Instagram, HelpCircle } from 'lucide-react';
 import FormField from '../components/forms/FormField'; // Assuming you have this reusable component
 
 // Animation variants
