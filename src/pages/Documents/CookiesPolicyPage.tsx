@@ -61,6 +61,8 @@ const CookiesPolicyPage: React.FC = () => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const totalFormSteps = formData.usesCookies === 'yes' ? 3 : 2; // Step 2 is conditional
 
@@ -73,6 +75,8 @@ const CookiesPolicyPage: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (saveError) setSaveError('');
+    if (showErrorModal) setShowErrorModal(false);
   };
 
   // Form validation is handled in handleDownloadDocx
@@ -111,9 +115,18 @@ const CookiesPolicyPage: React.FC = () => {
 
   const handleSaveToDashboard = async () => {
     if (!user) {
-      alert('You must be logged in to save documents.');
+      setSaveError('You must be logged in to save documents.');
+      setShowErrorModal(true);
       return;
     }
+    const isValid = validateBeforeSubmit();
+    if (!isValid) {
+      setSaveError('Please fill in all mandatory fields before saving the document.');
+      setShowErrorModal(true);
+      return;
+    }
+    setSaveError('');
+    setShowErrorModal(false);
     setIsSaving(true);
     const title = `Cookies Policy - ${formData.companyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
@@ -387,6 +400,20 @@ const CookiesPolicyPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {showErrorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-red-600 mb-4">Action Required</h3>
+            <p className="mb-6 text-gray-700">{saveError}</p>
+            <button
+              onClick={() => setShowErrorModal(false)}
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

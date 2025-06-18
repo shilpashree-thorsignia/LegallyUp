@@ -45,6 +45,8 @@ const NdaPage: React.FC = () => {
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 3;
   const [isSaving, setIsSaving] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const navigate = useNavigate();
 
   const {
@@ -78,6 +80,8 @@ const NdaPage: React.FC = () => {
       });
     }
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (saveError) setSaveError('');
+    if (showErrorModal) setShowErrorModal(false);
   };
 
   const handleNext = () => {
@@ -90,9 +94,18 @@ const NdaPage: React.FC = () => {
 
   const handleSaveToDashboard = async () => {
     if (!user) {
-      alert('You must be logged in to save documents.');
+      setSaveError('You must be logged in to save documents.');
+      setShowErrorModal(true);
       return;
     }
+    const isValid = validateBeforeSubmit();
+    if (!isValid) {
+      setSaveError('Please fill in all mandatory fields before saving the document.');
+      setShowErrorModal(true);
+      return;
+    }
+    setSaveError('');
+    setShowErrorModal(false);
     setIsSaving(true);
     const title = `NDA - ${formData.disclosingPartyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
@@ -106,10 +119,10 @@ const NdaPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        setSaveError('Failed to save: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
     } finally {
       setIsSaving(false);
     }
@@ -350,6 +363,20 @@ const NdaPage: React.FC = () => {
           <div className="flex-grow overflow-hidden rounded-lg border border-gray-300 shadow">
             {renderLivePreview()}
           </div>
+          {showErrorModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+                <h3 className="text-xl font-bold text-red-600 mb-4">Action Required</h3>
+                <p className="mb-6 text-gray-700">{saveError}</p>
+                <button
+                  onClick={() => setShowErrorModal(false)}
+                  className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleSaveToDashboard} 
