@@ -28,7 +28,7 @@ const createKeyValue = (key: string, value: any, isMultiLine: boolean = false) =
 
   const valueRuns: TextRun[] = [];
   // Ensure all TextRun options for value parts include the size property
-  const textRunOptions: Partial<IRunOptions> = { size: 22 };
+  const textRunOptions: Partial<IRunOptions> = { size: 24 };
 
   if (isMultiLine && typeof value === 'string') {
       const lines = value.split('\n');
@@ -45,7 +45,7 @@ const createKeyValue = (key: string, value: any, isMultiLine: boolean = false) =
 
   return new Paragraph({
       children: [
-          new TextRun({ text: `${key}: `, bold: true, size: 22 }), // 11pt
+          new TextRun({ text: `${key}: `, bold: true, size: 24 }), // 12pt
           ...valueRuns, // valueRuns now contain TextRuns already configured with size
       ],
       spacing: { after: 100 },
@@ -90,21 +90,21 @@ const createDocumentWithSetup = (children: Paragraph[], title: string = "Legal D
           paragraphStyles: [
               {
                   id: "Normal", name: "Normal", basedOn: "Normal", next: "Normal", quickFormat: true,
-                  run: { size: 22, font: "Calibri" }, paragraph: { spacing: { line: 276, before: 0, after: 100 } },
+                  run: { size: 24, font: "Times New Roman" }, paragraph: { spacing: { line: 276, before: 0, after: 100 } },
               },
               {
                   id: "FooterStyle", name: "Footer Style", basedOn: "Normal",
-                  run: { size: 18, font: "Calibri", italics: true }, paragraph: { alignment: AlignmentType.CENTER },
+                  run: { size: 20, font: "Times New Roman", italics: true }, paragraph: { alignment: AlignmentType.CENTER },
               },
               {
                   id: "HeaderStyle", name: "Header Style", basedOn: "Normal",
-                  run: { size: 18, font: "Calibri", italics: true },
+                  run: { size: 20, font: "Times New Roman", italics: true },
               },
               // Consider adding explicit styles for Heading1, Heading2, Heading3 if you want more control
               // than Word's defaults or the inline properties. For example:
               // {
               //   id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
-              //   run: { size: 32, bold: true, font: "Calibri" }, // e.g., 16pt bold
+              //   run: { size: 32, bold: true, font: "Times New Roman" }, // e.g., 16pt bold
               //   paragraph: { spacing: { before: 480, after: 240 }, alignment: AlignmentType.CENTER },
               // },
           ],

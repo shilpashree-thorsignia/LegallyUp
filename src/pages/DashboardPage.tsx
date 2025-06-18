@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Import the hook from the correct path
-import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers } from 'lucide-react';
+import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText } from 'lucide-react';
 import { generateDocx } from '../utils/docxGenerator';
 import { generatePdf } from '../utils/pdfGenerator';
 import { API_BASE } from '../lib/apiBase';
@@ -37,21 +37,30 @@ const DashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('az'); // 'az', 'za', 'newest', 'oldest'
 
+  // Document stats
+  const documentsCreated = templates.length + trashedTemplates.length;
+  const documentsTrashed = trashedTemplates.length;
+  const mostRecentDoc = templates.length > 0 ? templates[0] : null;
+  const firstDoc = templates.length > 0 ? templates[templates.length - 1] : null;
+
   // Fetch templates helper
-  const fetchTemplates = async (userId: string, trash = false) => {
+  const fetchTemplates = async (userId: string) => {
     setLoading(true);
-    const url = trash ? `${API_BASE}/templates/trash?user_id=${userId}` : `${API_BASE}/templates?user_id=${userId}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (trash) setTrashedTemplates(data.templates || []);
-    else setTemplates(data.templates || []);
+    // Fetch active templates
+    const resActive = await fetch(`${API_BASE}/templates?user_id=${userId}`);
+    const dataActive = await resActive.json();
+    setTemplates(dataActive.templates || []);
+    // Fetch trashed templates
+    const resTrashed = await fetch(`${API_BASE}/templates/trash?user_id=${userId}`);
+    const dataTrashed = await resTrashed.json();
+    setTrashedTemplates(dataTrashed.templates || []);
     setLoading(false);
   };
 
   useEffect(() => {
     if (!user) return;
-    fetchTemplates(user.id, showTrash);
-  }, [user, showTrash]);
+    fetchTemplates(user.id);
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -75,13 +84,13 @@ const DashboardPage: React.FC = () => {
   const handleDeleteDocument = async (docId: number) => {
     if (confirm(`Are you sure you want to move this document to trash?`)) {
       await fetch(`${API_BASE}/templates/${docId}/trash`, { method: 'POST' });
-      if (user) fetchTemplates(user.id, false);
+      if (user) fetchTemplates(user.id);
     }
   };
 
   const handleRestoreDocument = async (docId: number) => {
     await fetch(`${API_BASE}/templates/${docId}/restore`, { method: 'POST' });
-    if (user) fetchTemplates(user.id, true);
+    if (user) fetchTemplates(user.id);
   };
 
   const handleDownloadDocument = async (doc: any, format: 'pdf' | 'docx') => {
@@ -99,21 +108,8 @@ const DashboardPage: React.FC = () => {
     if (format === 'docx') {
       await generateDocx(data, doc.title, typeKey);
     } else if (format === 'pdf') {
-      // Render a hidden preview for PDF
-      const previewId = `pdf-preview-${doc.id}`;
-      let previewDiv = document.getElementById(previewId);
-      if (!previewDiv) {
-        previewDiv = document.createElement('div');
-        previewDiv.id = previewId;
-        previewDiv.style.position = 'absolute';
-        previewDiv.style.left = '-9999px';
-        previewDiv.style.top = '0';
-        document.body.appendChild(previewDiv);
-      }
-      // Render a simple preview (customize as needed)
-      previewDiv.innerHTML = `<h2>${doc.title}</h2><pre>${doc.content}</pre>`;
-      await generatePdf(previewDiv, `${doc.title}.pdf`);
-      document.body.removeChild(previewDiv);
+      // Use the new legal PDF template with documentTypeKey
+      await generatePdf({ title: doc.title, content: doc.content, documentTypeKey: typeKey }, `${doc.title}.pdf`);
     }
   };
 
@@ -234,65 +230,92 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             {loading ? (
-              <div className="text-center py-12 text-textColor/80 italic text-lg bg-lightGray p-6 rounded-2xl">Loading...</div>
+              <div className="flex justify-center items-center py-16">
+                <svg className="animate-spin h-10 w-10 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+              </div>
             ) : filteredAndSortedTemplates.length > 0 ? (
                 <div className="bg-lightGray p-6 rounded-2xl">
-                    <ul className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                          {filteredAndSortedTemplates.map(doc => (
-                             <li key={doc.id} className="bg-white p-4 rounded-lg shadow-sm border border-white flex flex-col md:flex-row justify-between items-center gap-3">
-                                 <div className="text-left flex-grow">
-                                     <span className="text-primary font-semibold text-lg">{doc.title}</span>
-                                     <span className="text-textColor/80 text-sm ml-2 italic">(Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''})</span>
+                      <div key={doc.id} className="bg-white rounded-xl shadow-md border border-white p-6 flex flex-col justify-between transition-transform hover:scale-[1.02] hover:shadow-lg">
+                        <div className="mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            {/* Optional: Badge for type */}
+                            <span className="inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">
+                              {(() => {
+                                const t = doc.title.toLowerCase();
+                                if (t.includes('nda')) return 'NDA';
+                                if (t.includes('privacy')) return 'Privacy Policy';
+                                if (t.includes('refund')) return 'Refund Policy';
+                                if (t.includes('power of attorney')) return 'Power of Attorney';
+                                if (t.includes('website services')) return 'Website Services';
+                                if (t.includes('cookies')) return 'Cookies Policy';
+                                if (t.includes('eula')) return 'EULA';
+                                return 'Document';
+                              })()}
+                            </span>
+                          </div>
+                          <h3 className="text-xl font-bold text-primary mb-1 truncate" title={doc.title}>{doc.title}</h3>
+                          <div className="text-sm text-textColor/70 mb-2">Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''}</div>
                                  </div>
-                                 <div className="flex flex-wrap gap-3 justify-center">
+                        <div className="flex gap-2 mt-auto">
                                       <button
                                           onClick={() => handleViewDocument(doc)}
-                                          className="text-accent hover:underline text-sm font-semibold flex items-center gap-1"
+                            className="p-2 rounded-full hover:bg-accent/10 transition group"
+                            title="View"
                                       >
-                                          <Eye size={16}/> View
+                            <Eye size={18} className="text-accent group-hover:scale-110 transition" />
                                       </button>
                                       <button
                                           onClick={() => handleEditDocument(doc)}
-                                          className="text-accent hover:underline text-sm font-semibold flex items-center gap-1"
+                            className="p-2 rounded-full hover:bg-accent/10 transition group"
+                            title="Edit"
                                       >
-                                          <Edit3 size={16}/> Edit
+                            <Edit3 size={18} className="text-accent group-hover:scale-110 transition" />
                                       </button>
                                       <button
                                           onClick={() => handleDownloadDocument(doc, 'pdf')}
-                                          className="text-primary hover:underline text-sm font-semibold"
+                            className="p-2 rounded-full hover:bg-primary/10 transition group"
+                            title="Download PDF"
                                       >
-                                          Download PDF
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l-6-6m6 6l6-6" /></svg>
                                       </button>
                                       <button
                                           onClick={() => handleDownloadDocument(doc, 'docx')}
-                                          className="text-primary hover:underline text-sm font-semibold"
+                            className="p-2 rounded-full hover:bg-primary/10 transition group"
+                            title="Download DOCX"
                                       >
-                                          Download DOCX
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75A2.25 2.25 0 0014.25 4.5h-4.5A2.25 2.25 0 007.5 6.75v10.5A2.25 2.25 0 009.75 19.5h4.5a2.25 2.25 0 002.25-2.25V13.5m-9-3h9m-9 3h6" /></svg>
                                       </button>
                                       {!showTrash ? (
                                         <button
                                             onClick={() => handleDeleteDocument(doc.id)}
-                                            className="text-red-600 hover:underline text-sm font-semibold flex items-center gap-1"
+                              className="p-2 rounded-full hover:bg-red-100 transition group"
+                              title="Move to Trash"
                                         >
-                                            <Trash2 size={16}/> Trash
+                              <Trash2 size={18} className="text-red-600 group-hover:scale-110 transition" />
                                         </button>
                                       ) : (
                                         <button
                                             onClick={() => handleRestoreDocument(doc.id)}
-                                            className="text-green-600 hover:underline text-sm font-semibold flex items-center gap-1"
+                              className="p-2 rounded-full hover:bg-green-100 transition group"
+                              title="Restore"
                                         >
-                                            <Undo2 size={16}/> Restore
+                              <Undo2 size={18} className="text-green-600 group-hover:scale-110 transition" />
                                         </button>
                                       )}
                                  </div>
-                             </li>
+                      </div>
                          ))}
-                    </ul>
+                  </div>
                  </div>
             ) : (
-                 <div className="text-center py-12 text-textColor/80 italic text-lg bg-lightGray p-6 rounded-2xl">
+                 <div className="flex flex-col items-center justify-center py-16 text-textColor/80 text-lg bg-lightGray p-6 rounded-2xl">
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" className="w-16 h-16 mb-4 text-accent"><rect width="48" height="48" rx="12" fill="#e0e7ff"/><path d="M16 20h16M16 28h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="12" y="12" width="24" height="24" rx="4" stroke="#6366f1" strokeWidth="2"/></svg>
                      {showTrash ? "No trashed documents found." : "You haven't saved any documents yet."}
-                      <br/>
                      <Link to="/generate" className="text-accent hover:underline mt-4 inline-block font-semibold">Start Generating One!</Link>
                  </div>
             )}
@@ -310,7 +333,7 @@ const DashboardPage: React.FC = () => {
 
          {/* Quick Links */}
           <motion.section variants={sectionVariants} className="py-8 mb-12">
-             <h2 className="text-4xl font-bold text-primary mb-8">Quick Actions</h2>
+             <h2 className="text-4xl font-bold text-primary mb-8 text-center md:text-left">Quick Actions</h2>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Grid for quick links */}
                  <Link to="/generate" className="block bg-white p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
                      <div className="text-accent text-4xl mb-3">📄</div> {/* Icon */}
@@ -330,40 +353,104 @@ const DashboardPage: React.FC = () => {
 
         {/* Profile Settings */}
        <motion.section variants={sectionVariants} className="py-8 mb-12">
-            <h2 className="text-4xl font-bold text-primary mb-8">Account Settings</h2>
-            <div className="bg-lightGray p-6 rounded-2xl space-y-6 text-left"> {/* Background, padding, spacing */}
-                {/* Placeholder for User Info */}
-                 <div>
-                     <h3 className="text-2xl font-semibold text-accent mb-4">Profile Information</h3>
-                      {/* Use currentUser data here later */}
-                     <p className="text-textColor text-lg"><span className="font-semibold text-primary">Email:</span> placeholder@example.com</p> {/* Dynamic email */}
-                      {/* Optional: Display Name */}
-                      {/* <p className="text-textColor text-lg"><span className="font-semibold text-primary">Name:</span> User Name</p> */}
-                      <button className="mt-4 text-accent hover:underline font-semibold text-sm">Edit Profile (Placeholder)</button>
+            <h2 className="text-4xl font-bold text-primary mb-8 text-center md:text-left">Account Settings</h2>
+            <div className="bg-lightGray p-8 rounded-2xl grid grid-cols-1 gap-8">
+                {/* Combined Profile & Plan Card */}
+                <div className="bg-white rounded-xl shadow-md p-8 flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-8">
+                  {/* Avatar and Basic Info */}
+                  <div className="flex flex-col items-center md:items-start w-full md:w-1/3">
+                    <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                      <svg xmlns='http://www.w3.org/2000/svg' className='w-16 h-16 text-accent' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14c3.866 0 7 1.343 7 3v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1c0-1.657 3.134-3 7-3z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14a5 5 0 100-10 5 5 0 000 10z' /></svg>
+                    </div>
+                    <h3 className="text-2xl font-semibold text-accent mb-1 flex items-center gap-2">{user?.name}
+                      {user?.verified && (
+                        <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Verified</span>
+                      )}
+                    </h3>
+                    <p className="text-textColor text-lg mb-1">{user?.email}</p>
+                    {user?.created_at && (
+                      <p className="text-xs text-gray-400 mb-2">Member since: {user.created_at.slice(0, 10)}</p>
+                    )}
+                    <p className="text-gray-500 text-sm mb-2">
+                      Welcome to LegallyUp! Here you can view and update your personal information, track your document activity, and manage your subscription plan. Take advantage of our growing library of legal templates and powerful tools to simplify your legal paperwork.
+                    </p>
+                    {/* Move document stats here */}
+                    <div className="w-full flex flex-col gap-2 mb-4">
+                      <div className="bg-lightGray rounded-lg p-3 flex flex-col items-start md:items-start text-center md:text-left">
+                        <span className="text-xs text-gray-500 text-center md:text-left w-full">Most Recent Document:</span>
+                        <span className="font-semibold text-primary text-sm text-center md:text-left w-full">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
+                        <span className="text-xs text-gray-400 text-center md:text-left w-full">{mostRecentDoc && mostRecentDoc.created_at ? mostRecentDoc.created_at.slice(0, 10) : ''}</span>
+                      </div>
+                      <div className="bg-lightGray rounded-lg p-3 flex flex-col items-start md:items-start text-center md:text-left">
+                        <span className="text-xs text-gray-500 text-center md:text-left w-full">First Document Created:</span>
+                        <span className="font-semibold text-primary text-sm text-center md:text-left w-full">{firstDoc ? firstDoc.title : '--'}</span>
+                        <span className="text-xs text-gray-400 text-center md:text-left w-full">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
+                      </div>
+                    </div>
+                    <button className="mt-2 px-4 py-2 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-sm">Edit Profile (Coming Soon)</button>
+                  </div>
+                  {/* Divider for desktop */}
+                  <div className="hidden md:block w-px bg-lightGray mx-8"></div>
+                  {/* Plan and Stats */}
+                  <div className="flex-1 flex flex-col items-center md:items-start">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
+                      <span className="text-primary font-semibold text-lg">Your Plan</span>
+                    </div>
+                    <p className="text-textColor text-lg mb-1"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
+                    <p className="text-gray-500 text-sm mb-2">
+                      {user?.plan === 'Pro'
+                        ? 'You are on the Pro plan. Enjoy unlimited access to all features and priority support.'
+                        : (
+                          <>
+                            You are on the Free plan. Enjoy access to essential legal templates and create up to 3 documents per month.<br />
+                            <span className="block mt-2 font-semibold text-primary">Upgrade to unlock:</span>
+                            <div className="bg-accent/5 rounded-lg p-4 mt-2">
+                              <ul className="space-y-3">
+                                <li className="flex items-center text-base font-semibold text-primary">
+                                  <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Unlimited document creation
+                                </li>
+                                <li className="flex items-center text-base font-semibold text-primary">
+                                  <CheckCircle className="w-5 h-5 mr-2 text-accent" /> All premium templates
+                                </li>
+                                <li className="flex items-center text-base font-semibold text-primary">
+                                  <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Advanced customization options
+                                </li>
+                                <li className="flex items-center text-base font-semibold text-primary">
+                                  <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Priority support from legal experts
+                                </li>
+                              </ul>
+                            </div>
+                          </>
+                        )}
+                    </p>
+                    <p className="text-xs text-gray-400 mb-2">
+                      {user?.plan === 'Pro' && user?.next_billing_date ? (
+                        <>Next billing date: {user.next_billing_date}</>
+                      ) : (
+                        <>No payment method on file</>
+                      )}
+                    </p>
+                    <Link to="/pricing" className="mt-2 px-4 py-2 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-sm inline-block">View Pricing / Upgrade</Link>
+                    {/* Extra content: Documents Created and Last Login */}
+                    <div className="mt-6 grid grid-cols-2 gap-6 w-full max-w-xs">
+                      <div className="flex flex-col items-center bg-white rounded-lg border border-blue-100 p-4 shadow-sm">
+                        <div className="bg-blue-50 rounded-full p-1.5 mb-2 flex items-center justify-center" aria-label='Documents Created'>
+                          <FileText className="w-6 h-6 text-accent" />
+                        </div>
+                        <span className="text-2xl font-extrabold text-primary mb-1">{documentsCreated}</span>
+                        <span className="text-xs text-gray-500 font-medium text-center leading-tight">Documents Created</span>
+                      </div>
+                      <div className="flex flex-col items-center bg-white rounded-lg border border-red-100 p-4 shadow-sm">
+                        <div className="bg-red-50 rounded-full p-1.5 mb-2 flex items-center justify-center" aria-label='Documents Trashed'>
+                          <Trash2 className="w-6 h-6 text-red-500" />
+                        </div>
+                        <span className="text-2xl font-extrabold text-red-600 mb-1">{documentsTrashed}</span>
+                        <span className="text-xs text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
                  </div>
-
-                 {/* Placeholder for Plan Info */}
-                  <div>
-                     <h3 className="text-2xl font-semibold text-accent mb-4">Your Plan</h3>
-                     <p className="text-textColor text-lg"><span className="font-semibold text-primary">Current Plan:</span> Free</p> {/* Dynamic plan */}
-                     {/* Optional: Upgrade/Manage button */}
-                     <Link to="/pricing" className="mt-4 text-accent hover:underline font-semibold text-sm inline-block">View Pricing / Upgrade</Link>
                  </div>
-
-                 {/* Placeholder for Security Settings */}
-                 <div>
-                     <h3 className="text-2xl font-semibold text-accent mb-4">Security</h3>
-                     <button className="text-accent hover:underline font-semibold text-sm">Change Password (Placeholder)</button>
-                     {/* Optional: Manage Connected Accounts (for Google/Facebook) */}
                  </div>
-
-                {/* Optional: Logout Button within settings, or keep in Header */}
-                {/*
-                 <div className="mt-8 pt-6 border-t border-lightGray">
-                      <button className="text-red-600 hover:underline font-semibold text-lg">Log Out (Placeholder)</button>
                  </div>
-                */}
-
             </div>
        </motion.section>
 

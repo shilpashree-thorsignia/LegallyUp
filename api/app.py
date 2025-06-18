@@ -213,7 +213,7 @@ def register():
 
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
         # Check if user already exists
         cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
         if cursor.fetchone():
@@ -223,11 +223,14 @@ def register():
         sql = "INSERT INTO users (username, email, password, verified) VALUES (%s, %s, %s, TRUE)"
         cursor.execute(sql, (username, email, password))
         conn.commit()
+        # Fetch the new user with plan
+        cursor.execute("SELECT id, username, email, plan FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
         cursor.close()
         conn.close()
         del otp_store[email]
         print('User registered and verified successfully')
-        return jsonify({'message': 'User registered and verified successfully'}), 201
+        return jsonify({'message': 'User registered and verified successfully', 'user': user}), 201
     except Error as e:
         print('Registration error:', e)
         return jsonify({'error': str(e)}), 500
@@ -246,7 +249,7 @@ def login():
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor(dictionary=True)
-        sql = "SELECT id, username, email FROM users WHERE email = %s AND password = %s"
+        sql = "SELECT id, username, email, plan FROM users WHERE email = %s AND password = %s"
         cursor.execute(sql, (email, password))
         user = cursor.fetchone()
         cursor.close()

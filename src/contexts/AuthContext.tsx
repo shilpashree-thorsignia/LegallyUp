@@ -7,6 +7,10 @@ interface User {
   id: string;
   email: string;
   name: string;
+  plan: string;
+  verified?: boolean;
+  created_at?: string;
+  next_billing_date?: string;
 }
 
 interface AuthContextType {
@@ -31,8 +35,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await response.json();
       if (response.ok && data.user) {
-        setUser(data.user);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        const mappedUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.username,
+          plan: data.user.plan,
+          verified: data.user.verified,
+          created_at: data.user.created_at,
+          next_billing_date: data.user.next_billing_date,
+        };
+        setUser(mappedUser);
+        localStorage.setItem('user', JSON.stringify(mappedUser));
         return true;
       } else {
         return false;
@@ -50,10 +63,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ username: name, email, password }),
       });
       const data = await response.json();
-      if (response.ok) {
-        const userWithoutPassword = { name, email, id: data.id || '' };
-        setUser(userWithoutPassword);
-        localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      if (response.ok && data.user) {
+        const mappedUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.username,
+          plan: data.user.plan,
+          verified: data.user.verified,
+          created_at: data.user.created_at,
+          next_billing_date: data.user.next_billing_date,
+        };
+        setUser(mappedUser);
+        localStorage.setItem('user', JSON.stringify(mappedUser));
         return true;
       } else {
         return false;
