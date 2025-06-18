@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
   const [viewModal, setViewModal] = useState<{ open: boolean, template?: any }>({ open: false });
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('az'); // 'az', 'za', 'newest', 'oldest'
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  // const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number|null>(null);
 

@@ -92,7 +92,7 @@ const PrivacyPolicyPage: React.FC = () => {
     jumpToStep,
     validateBeforeSubmit,
     setErrors
-  } = useFormValidation('privacy', formData, totalFormSteps);
+  } = useFormValidation('privacyPolicy', formData, totalFormSteps);
 
   const { user } = useAuth();
 
@@ -190,21 +190,23 @@ const PrivacyPolicyPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        setSaveError('Failed to save: ' + (data.error || 'Unknown error'));
+        setShowErrorModal(true);
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Add a handler for document generation/download with validation
   const handleDownload = async () => {
     if (typeof validateBeforeSubmit === 'function') {
       const isValid = validateBeforeSubmit();
       if (!isValid) {
-        alert('Please fill in all mandatory fields before generating the document.');
+        setSaveError('Please fill in all mandatory fields before generating the document.');
+        setShowErrorModal(true);
         return;
       }
     }

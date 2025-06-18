@@ -168,10 +168,12 @@ const PowerOfAttorneyPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        setSaveError('Failed to save: ' + (data.error || 'Unknown error'));
+        setShowErrorModal(true);
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
@@ -181,9 +183,12 @@ const PowerOfAttorneyPage: React.FC = () => {
     // First validate all steps
     const isValid = validateBeforeSubmit();
     if (!isValid) {
-      alert('Please fill in all mandatory fields before generating the document.');
+      setSaveError('Please fill in all mandatory fields before generating the document.');
+      setShowErrorModal(true);
       return;
     }
+    setSaveError('');
+    setShowErrorModal(false);
     setIsGenerating(true);
     try {
       // Render preview to hidden container
@@ -213,7 +218,8 @@ const PowerOfAttorneyPage: React.FC = () => {
       }, 1000);
     } catch (error) {
       setIsGenerating(false);
-      alert('Failed to generate PDF.');
+      setSaveError('Failed to generate PDF.');
+      setShowErrorModal(true);
     }
   };
 

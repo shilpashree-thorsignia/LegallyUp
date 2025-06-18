@@ -80,7 +80,7 @@ const RefundPolicyPage: React.FC = () => {
     jumpToStep,
     validateBeforeSubmit,
     setErrors
-  } = useFormValidation('refund', formData, totalFormSteps);
+  } = useFormValidation('refundPolicy', formData, totalFormSteps);
 
   useEffect(() => { 
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -138,10 +138,12 @@ const RefundPolicyPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        setSaveError('Failed to save: ' + (data.error || 'Unknown error'));
+        setShowErrorModal(true);
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
@@ -152,7 +154,8 @@ const RefundPolicyPage: React.FC = () => {
     if (typeof validateBeforeSubmit === 'function') {
       const isValid = validateBeforeSubmit();
       if (!isValid) {
-        alert('Please fill in all mandatory fields before generating the document.');
+        setSaveError('Please fill in all mandatory fields before generating the document.');
+        setShowErrorModal(true);
         return;
       }
     }

@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 interface WebsiteServicesAgreementData {
   // Step 1: Parties & Agreement Overview
@@ -104,6 +105,15 @@ const WebsiteServicesAgreementPage: React.FC = () => {
 
   const totalFormSteps = 5;
 
+  const {
+    // errors,
+    // nextStep,
+    // prevStep,
+    jumpToStep,
+    validateBeforeSubmit,
+    // setErrors
+  } = useFormValidation('websiteServicesAgreement', formData, totalFormSteps);
+
   useEffect(() => {
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
@@ -117,7 +127,6 @@ const WebsiteServicesAgreementPage: React.FC = () => {
 
   const handleNext = () => { if (currentStep < totalFormSteps) setCurrentStep(prev => prev + 1); };
   const handleBack = () => { if (currentStep > 1) setCurrentStep(prev => prev - 1); };
-  const jumpToStep = (step: number) => { if (step >= 1 && step <= totalFormSteps) setCurrentStep(step); };
 
   const handleSaveToDashboard = async () => {
     if (!user) {
@@ -146,41 +155,27 @@ const WebsiteServicesAgreementPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        setSaveError('Failed to save: ' + (data.error || 'Unknown error'));
+        setShowErrorModal(true);
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const validateBeforeSubmit = () => {
-    const requiredFields = [
-      'serviceProviderCompanyName', 'serviceProviderAddress', 'serviceProviderEmail',
-      'clientCompanyName', 'clientAddress', 'clientEmail',
-      'agreementDate', 'projectName', 'websiteDescription',
-      'servicesIncluded', 'specificDeliverables', 'projectStartDate',
-      'totalProjectCost', 'paymentSchedule', 'intellectualPropertyOwnership',
-      'confidentialityClause', 'agreementTerm', 'terminationConditions',
-      'governingLawAndJurisdiction', 'disputeResolutionMethod', 'agreementEffectiveDate'
-    ];
-
-    const missingFields = requiredFields.filter(field => !formData[field as keyof WebsiteServicesAgreementData]);
-    if (missingFields.length > 0) {
-      alert('Please fill in all required fields before downloading.');
-      return false;
-    }
-    return true;
   };
 
   const handleDownloadPdf = async () => {
     // First validate all steps
     const isValid = validateBeforeSubmit();
     if (!isValid) {
-      alert('Please fill in all mandatory fields before generating the document.');
+      setSaveError('Please fill in all mandatory fields before generating the document.');
+      setShowErrorModal(true);
       return;
     }
+    setSaveError('');
+    setShowErrorModal(false);
     setIsGenerating(true);
     try {
       // Render preview to hidden container

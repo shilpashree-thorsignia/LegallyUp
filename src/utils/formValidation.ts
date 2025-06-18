@@ -23,40 +23,90 @@ export const getRequiredFields = (documentType: string, step: number): string[] 
   // Define required fields for each document type and step
   const requiredFields: Record<string, Record<number, string[]>> = {
     privacyPolicy: {
-      1: ['companyName', 'websiteUrl', 'contactEmail'],
-      2: ['dataCollected', 'dataUsage', 'dataSharing'],
-      3: ['userRightsAccess', 'userRightsDeletion', 'policyUpdateNotification']
+      1: [
+        'companyName', 'businessType', 'businessAddress', 'countryRegion', 'contactEmail', 'websiteUrl', 'policyDate'
+      ],
+      2: [
+        'dataTypesCollected', 'usesCookies', 'collectsSensitiveData', 'purposeOfUsage', 'sendsMarketingEmails'
+      ],
+      3: [
+        'sharesWithThirdParties', 'securityMeasures', 'userRightsAccess', 'userRightsDelete', 'userRightsUpdate', 'policyUpdateNotification'
+      ]
     },
-    nda: {
-      1: ['disclosingPartyName', 'receivingPartyName', 'effectiveDate'],
-      2: ['purposeOfDisclosure', 'durationNDA', 'governingLaw'],
-      3: ['confidentialInformation', 'obligationsReceivingParty']
-    },
-    eula: {
-      1: ['licensorCompanyName', 'licensorEmail', 'productName', 'productDescription'],
-      2: ['licenseType', 'permittedUses', 'restrictions'],
-      3: ['licenseFee', 'paymentTerms'],
-      4: ['warrantyDisclaimer', 'limitationOfLiability'],
-      5: ['governingLawAndJurisdiction', 'eulaEffectiveDate']
+    powerOfAttorney: {
+      1: [
+        'poaType', 'principalFullName', 'principalAddress', 'principalPan', 'principalDob'
+      ],
+      2: [
+        'agentFullName', 'agentAddress', 'agentPan', 'agentRelationshipToPrincipal'
+      ],
+      3: [
+        'specificPowersGranted', 'limitationsOnPowers', 'durationOfPoa', 'governingLawAndJurisdiction'
+      ],
+      4: [
+        'witness1FullName', 'witness1Address', 'witness2FullName', 'witness2Address', 'poaEffectiveDate'
+      ]
     },
     refundPolicy: {
-      1: ['companyName', 'websiteUrl', 'contactEmail'],
-      2: ['refundEligibility', 'refundTimeframe'],
-      3: ['refundProcess', 'nonRefundableItems'],
-      4: ['policyEffectiveDate']
-    },
-    cookiesPolicy: {
-      1: ['companyName', 'websiteUrl', 'contactEmail', 'usesCookies'],
-      2: ['cookieTypes', 'cookiePurposes', 'cookieDuration'],
-      3: ['linkToPrivacyPolicy']
+      1: [
+        'companyName', 'businessType', 'contactEmail', 'websiteUrl', 'policyScope'
+      ],
+      2: [
+        'refundEligibilityConditions', 'howToRequestRefund', 'refundProcessingTimeframe'
+      ],
+      3: [
+        'nonRefundableItems', 'hasExchangePolicy', 'returnShippingResponsibility', 'returnShippingInstructions'
+      ],
+      4: [
+        'policyEffectiveDate'
+      ]
     },
     websiteServicesAgreement: {
-      1: ['serviceProviderCompanyName', 'clientCompanyName', 'serviceProviderEmail', 'clientEmail'],
-      2: ['scopeOfServices', 'projectTimeline', 'deliverables'],
-      3: ['serviceFees', 'paymentSchedule', 'latePaymentPolicy'],
-      4: ['intellectualPropertyOwnership', 'confidentialityClause'],
-      5: ['terminationConditions', 'governingLawAndJurisdiction']
+      1: [
+        'serviceProviderCompanyName', 'serviceProviderAddress', 'serviceProviderEmail', 'clientCompanyName', 'clientAddress', 'clientEmail', 'agreementDate', 'projectName'
+      ],
+      2: [
+        'websiteDescription', 'servicesIncluded', 'specificDeliverables', 'projectStartDate', 'projectCompletionDate'
+      ],
+      3: [
+        'totalProjectCost', 'paymentSchedule'
+      ],
+      4: [
+        'intellectualPropertyOwnership', 'confidentialityClause', 'agreementTerm'
+      ],
+      5: [
+        'terminationConditions', 'terminationNoticePeriod', 'governingLawAndJurisdiction', 'disputeResolutionMethod', 'agreementEffectiveDate'
+      ]
+    },
+    cookiesPolicy: {
+      1: [
+        'companyName', 'businessType', 'businessAddress', 'countryRegion', 'contactEmail', 'websiteUrl', 'usesCookies', 'lastUpdated'
+      ],
+      2: [
+        'typesOfCookiesUsed', 'cookieDetailsList', 'cookiePolicyManagement'
+      ],
+      3: [
+        'contactPersonPolicy', 'linkToPrivacyPolicy'
+      ]
+    },
+    eula: {
+      1: [
+        'licensorCompanyName', 'licensorAddress', 'licensorEmail', 'productName', 'platform', 'productDescription'
+      ],
+      2: [
+        'licenseType', 'licenseDuration', 'permittedUses'
+      ],
+      3: [
+        'usageRestrictions'
+      ],
+      4: [
+        'supportTerms', 'updatePolicy', 'intellectualPropertyStatement'
+      ],
+      5: [
+        'terminationConditions'
+      ]
     }
+    // Add other document types as needed
   };
 
   return requiredFields[documentType]?.[step] || [];
