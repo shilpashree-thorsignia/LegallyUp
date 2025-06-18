@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Send, Mail, Phone, ExternalLink, MessageSquare, Facebook, Twitter, Linkedin, Instagram, HelpCircle } from 'lucide-react';
 import FormField from '../components/forms/FormField'; // Assuming you have this reusable component
 import HeroBackground from '../components/ui/HeroBackground';
+import { API_BASE } from '../lib/apiBase';
 
 // Animation variants
 const pageVariants = {
@@ -67,13 +68,24 @@ const ContactPage: React.FC = () => {
         if (!validateForm()) return;
 
         setIsSubmitting(true);
-        // Simulate API call / Email sending
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log("Form Data Submitted:", formData);
+        try {
+            const response = await fetch(`${API_BASE}/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            if (response.ok) {
+                setSubmitSuccess(true);
+                setFormData({ name: '', email: '', subject: '', message: '' });
+                setTimeout(() => setSubmitSuccess(false), 6000);
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'Failed to submit contact form.');
+            }
+        } catch (error) {
+            alert('Network error. Please try again.');
+        }
         setIsSubmitting(false);
-        setSubmitSuccess(true);
-        setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
-        setTimeout(() => setSubmitSuccess(false), 6000); // Hide success message after 6s
     };
 
     // Define CSS variables in a style tag or your global CSS for gradients

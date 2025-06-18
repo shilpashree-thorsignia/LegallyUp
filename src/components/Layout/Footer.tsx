@@ -42,15 +42,14 @@ const Footer: React.FC = () => {
           <div>
             <h4 className={footerTitleClasses}>Legal</h4>
             <ul className="space-y-3">
-              <li><Link to="/documents/privacy-policy" className={footerLinkClasses}>Privacy Policy</Link></li>
-              <li><Link to="/documents/eula" className={footerLinkClasses}>Terms of Service</Link></li>
-              <li><Link to="/documents/cookies-policy" className={footerLinkClasses}>Cookies Policy</Link></li>
-              <li><Link to="/documents/refund-policy" className={footerLinkClasses}>Refund Policy</Link></li>
+              <li><Link to="/privacy" className={footerLinkClasses}>Privacy Policy</Link></li>
+              <li><Link to="/terms" className={footerLinkClasses}>Terms and Conditions</Link></li>
+              <li><Link to="/refund" className={footerLinkClasses}>Refund Policy</Link></li>
             </ul>
           </div>
 
           {/* Column 4: Brand & About */}
-          <div className="md:col-span-2 lg:col-span-1 xl:col-span-2 flex flex-col items-center md:items-end md:pl-8 lg:pl-0 text-center md:text-right">
+          <div className="xl:col-span-2">
             <Link to="/" className="inline-block mb-4 md:mb-6">
               <h2 className="text-4xl font-extrabold font-sans hover:opacity-90 transition-opacity">
                 <span className="text-gray-800">Legally</span><span className="text-[#3db6f2]">Up</span>

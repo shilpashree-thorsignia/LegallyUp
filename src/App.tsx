@@ -33,6 +33,9 @@ import CaseStudyDetailPage from './pages/CaseStudyDetailPage.tsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import BlogsPage from './pages/BlogsPage';
 import BlogDetailPage from './pages/BlogDetailPage';
+import PrivacyPolicy from './pages/policies/PrivacyPolicy';
+import TermsAndConditions from './pages/policies/TermsAndConditions';
+import RefundPolicy from './pages/policies/RefundPolicy';
 
 
 // Protected route component
@@ -97,8 +100,15 @@ function App() {
           <Route path="/signin" element={<Layout><SignInPage /></Layout>} />
           <Route path="/signup" element={<Layout><SignUpPage /></Layout>} />
 
-          {/* New route for editing privacy policy with an ID */}
-          <Route path="/documents/privacy-policy/:id" element={<Layout><PrivacyPolicyPage /></Layout>} />
+          {/* Policy Pages */}
+          <Route path="/privacy" element={<Layout><PrivacyPolicy /></Layout>} />
+          <Route path="/terms" element={<Layout><TermsAndConditions /></Layout>} />
+          <Route path="/refund" element={<Layout><RefundPolicy /></Layout>} />
+
+          {/* Document Generator Pages */}
+          <Route path="/documents/privacy-policy" element={<Layout><PrivacyPolicyPage /></Layout>} />
+          <Route path="/documents/terms-of-service" element={<Layout><EulaPage /></Layout>} />
+          <Route path="/documents/refund-policy" element={<Layout><RefundPolicyPage /></Layout>} />
 
           {/* New route for Forgot Password */}
           <Route path="/forgot-password" element={<Layout><ForgotPasswordPage /></Layout>} />

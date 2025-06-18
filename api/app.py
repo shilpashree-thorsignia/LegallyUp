@@ -83,6 +83,18 @@ def init_db():
                 metadata TEXT
             )
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_forms (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                subject VARCHAR(255),
+                message TEXT NOT NULL,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ''')
         cursor.close()
         conn.close()
     except Error as e:
@@ -562,6 +574,32 @@ def reset_password():
     except Exception as e:
         print('Reset password error:', e)
         return jsonify({'error': 'Failed to reset password'}), 500
+
+@app.route('/api/contact', methods=['POST'])
+def submit_contact_form():
+    data = request.get_json()
+    user_id = data.get('user_id')  # Optional, if user is logged in
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
+    if not name or not email or not message:
+        return jsonify({'error': 'Missing required fields'}), 400
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        sql = """
+            INSERT INTO contact_forms (user_id, name, email, subject, message)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(sql, (user_id, name, email, subject, message))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({'message': 'Contact form submitted successfully!'}), 201
+    except Exception as e:
+        print('Contact form error:', e)
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     # For local development only
