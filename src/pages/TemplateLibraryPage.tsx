@@ -1,7 +1,7 @@
 // src/pages/TemplateLibraryPage.tsx
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-// import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
@@ -43,6 +43,7 @@ const documentTypes = [
 const TemplateLibraryPage: React.FC = () => {
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -54,7 +55,7 @@ const TemplateLibraryPage: React.FC = () => {
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      window.location.href = path;
+      navigate(path);
     }
   };
 

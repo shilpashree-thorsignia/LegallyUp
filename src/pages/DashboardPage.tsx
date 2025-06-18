@@ -256,7 +256,7 @@ const DashboardPage: React.FC = () => {
             </motion.p>
             <div className="mt-8 space-x-4">
               <Link 
-                to="/generate" 
+                to="/templates" 
                 className="bg-accent text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold"
               >
                 Generate Document
