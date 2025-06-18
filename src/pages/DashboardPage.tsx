@@ -4,9 +4,17 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Import the hook from the correct path
 import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText } from 'lucide-react';
-import { generateDocx } from '../utils/docxGenerator';
-import { generatePdf } from '../utils/pdfGenerator';
+import ReactDOM from 'react-dom/client';
+import DocumentPreview from '../components/DocumentPreview';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 import { API_BASE } from '../lib/apiBase';
+
+declare global {
+  interface Window {
+    htmlDocx: any;
+  }
+}
 
 // Animation variants for sections
 const sectionVariants = {
@@ -16,13 +24,13 @@ const sectionVariants = {
 
 const getEditPath = (title = '') => {
   // Map template titles to generator routes
-  if (title.toLowerCase().includes('nda')) return '/documents/nda';
-  if (title.toLowerCase().includes('privacy')) return '/documents/privacy-policy';
-  if (title.toLowerCase().includes('refund')) return '/documents/refund-policy';
-  if (title.toLowerCase().includes('power of attorney')) return '/documents/power-of-attorney';
-  if (title.toLowerCase().includes('website services')) return '/documents/website-services-agreement';
-  if (title.toLowerCase().includes('cookies')) return '/documents/cookies-policy';
-  if (title.toLowerCase().includes('eula')) return '/documents/eula';
+  if (title.toLowerCase().includes('nda')) return '/documents/generate/nda';
+  if (title.toLowerCase().includes('privacy')) return '/documents/generate/privacy-policy';
+  if (title.toLowerCase().includes('refund')) return '/documents/generate/refund-policy';
+  if (title.toLowerCase().includes('power of attorney')) return '/documents/generate/power-of-attorney';
+  if (title.toLowerCase().includes('website services')) return '/documents/generate/website-services-agreement';
+  if (title.toLowerCase().includes('cookies')) return '/documents/generate/cookies-policy';
+  if (title.toLowerCase().includes('eula')) return '/documents/generate/eula';
   return '/generate';
 };
 
@@ -74,7 +82,7 @@ const DashboardPage: React.FC = () => {
   const handleEditDocument = (doc: any) => {
     const editPath = getEditPath(doc.title);
     // If privacy policy, use the new route with id
-    if (editPath === '/documents/privacy-policy') {
+    if (editPath === '/documents/generate/privacy-policy') {
       navigate(`/documents/privacy-policy/${doc.id}`, { state: { template: doc } });
     } else {
       navigate(editPath, { state: { template: doc } });
@@ -105,11 +113,80 @@ const DashboardPage: React.FC = () => {
     else if (doc.title.toLowerCase().includes('eula')) typeKey = 'eula';
     else typeKey = 'generic';
     const data = JSON.parse(doc.content);
-    if (format === 'docx') {
-      await generateDocx(data, doc.title, typeKey);
-    } else if (format === 'pdf') {
-      // Use the new legal PDF template with documentTypeKey
-      await generatePdf({ title: doc.title, content: doc.content, documentTypeKey: typeKey }, `${doc.title}.pdf`);
+    if (format === 'docx' || format === 'pdf') {
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.visibility = 'hidden';
+      container.style.pointerEvents = 'none';
+      container.style.width = '800px'; // match your preview width
+      container.style.left = '0';
+      container.style.top = '0';
+      document.body.appendChild(container);
+      const root = ReactDOM.createRoot(container);
+
+      // Debug: log data and typeKey
+      console.log('DocumentPreview data:', data, 'typeKey:', typeKey);
+
+      root.render(<DocumentPreview data={data} typeKey={typeKey} />);
+      setTimeout(async () => {
+        // Debug: log HTML
+        console.log('Container innerHTML:', container.innerHTML);
+
+        // Get the actual preview node (first child)
+        const previewNode = container.firstElementChild;
+
+        if (format === 'docx') {
+          let htmlDocx = window.htmlDocx;
+          if (!htmlDocx) {
+            htmlDocx = await new Promise((resolve) => {
+              const script = document.createElement('script');
+              script.src = 'https://cdn.jsdelivr.net/npm/html-docx-js/dist/html-docx.js';
+              script.onload = () => resolve(window.htmlDocx);
+              document.body.appendChild(script);
+            });
+          }
+          const previewHTML = container.innerHTML;
+          const docxHTML = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8" />
+                <style>
+                  body { background: #fff; color: #222; font-family: serif; }
+                  h2 { font-size: 24px; font-weight: 700; text-align: center; color: #3b82f6; margin-bottom: 8px; }
+                  h3 { font-size: 16px; font-weight: 600; margin-top: 16px; }
+                  p { text-align: justify; margin-bottom: 16px; }
+                  div[style*='background: rgb(241, 245, 249)'] { background: #f1f5f9 !important; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 8px; }
+                  /* Add any other styles your DocumentPreview uses here */
+                </style>
+              </head>
+              <body>${previewHTML}</body>
+            </html>
+          `;
+          const docxBlob = htmlDocx.asBlob(docxHTML);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(docxBlob);
+          a.download = `${doc.title}.docx`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            root.unmount();
+            document.body.removeChild(container);
+          }, 100);
+        } else if (format === 'pdf') {
+          await html2pdf().from(previewNode).set({
+            filename: `${doc.title}.pdf`,
+            margin: 0.5,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          }).save();
+          root.unmount();
+          document.body.removeChild(container);
+        }
+      }, 1000); // Increase delay to 1 second
+      return;
     }
   };
 
@@ -262,52 +339,45 @@ const DashboardPage: React.FC = () => {
                           <div className="text-sm text-textColor/70 mb-2">Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''}</div>
                                  </div>
                         <div className="flex gap-2 mt-auto">
-                                      <button
-                                          onClick={() => handleViewDocument(doc)}
+                          <button
+                            onClick={() => handleViewDocument(doc)}
                             className="p-2 rounded-full hover:bg-accent/10 transition group"
                             title="View"
-                                      >
+                          >
                             <Eye size={18} className="text-accent group-hover:scale-110 transition" />
-                                      </button>
-                                      <button
-                                          onClick={() => handleEditDocument(doc)}
+                          </button>
+                          <button
+                            onClick={() => handleEditDocument(doc)}
                             className="p-2 rounded-full hover:bg-accent/10 transition group"
                             title="Edit"
-                                      >
+                          >
                             <Edit3 size={18} className="text-accent group-hover:scale-110 transition" />
-                                      </button>
-                                      <button
-                                          onClick={() => handleDownloadDocument(doc, 'pdf')}
+                          </button>
+                          <button
+                            onClick={() => handleDownloadDocument(doc, 'pdf')}
                             className="p-2 rounded-full hover:bg-primary/10 transition group"
                             title="Download PDF"
-                                      >
+                          >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l-6-6m6 6l6-6" /></svg>
-                                      </button>
-                                      <button
-                                          onClick={() => handleDownloadDocument(doc, 'docx')}
-                            className="p-2 rounded-full hover:bg-primary/10 transition group"
-                            title="Download DOCX"
-                                      >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75A2.25 2.25 0 0014.25 4.5h-4.5A2.25 2.25 0 007.5 6.75v10.5A2.25 2.25 0 009.75 19.5h4.5a2.25 2.25 0 002.25-2.25V13.5m-9-3h9m-9 3h6" /></svg>
-                                      </button>
-                                      {!showTrash ? (
-                                        <button
-                                            onClick={() => handleDeleteDocument(doc.id)}
+                          </button>
+                          {!showTrash ? (
+                            <button
+                              onClick={() => handleDeleteDocument(doc.id)}
                               className="p-2 rounded-full hover:bg-red-100 transition group"
                               title="Move to Trash"
-                                        >
+                            >
                               <Trash2 size={18} className="text-red-600 group-hover:scale-110 transition" />
-                                        </button>
-                                      ) : (
-                                        <button
-                                            onClick={() => handleRestoreDocument(doc.id)}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleRestoreDocument(doc.id)}
                               className="p-2 rounded-full hover:bg-green-100 transition group"
                               title="Restore"
-                                        >
+                            >
                               <Undo2 size={18} className="text-green-600 group-hover:scale-110 transition" />
-                                        </button>
-                                      )}
-                                 </div>
+                            </button>
+                          )}
+                        </div>
                       </div>
                          ))}
                   </div>
@@ -325,7 +395,26 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 relative">
                   <button className="absolute top-3 right-3 text-gray-400 hover:text-red-500" onClick={() => setViewModal({ open: false })}><X size={22}/></button>
                   <h3 className="text-2xl font-bold text-primary mb-4">{viewModal.template.title}</h3>
-                  <pre className="bg-gray-100 rounded p-4 text-sm overflow-x-auto max-h-96 whitespace-pre-wrap">{viewModal.template.content}</pre>
+                  <div className="bg-gray-100 rounded p-4 text-sm overflow-x-auto max-h-96 whitespace-pre-wrap">
+                    <DocumentPreview 
+                      data={{
+                        title: viewModal.template.title,
+                        // Try to parse content as JSON, fallback to string
+                        ...(typeof viewModal.template.content === 'string' ? (() => { try { return JSON.parse(viewModal.template.content); } catch { return { content: viewModal.template.content }; } })() : viewModal.template.content)
+                      }}
+                      typeKey={(() => {
+                        const t = viewModal.template.title.toLowerCase();
+                        if (t.includes('privacy')) return 'privacyPolicy';
+                        if (t.includes('nda')) return 'nda';
+                        if (t.includes('refund')) return 'refundPolicy';
+                        if (t.includes('power of attorney')) return 'powerOfAttorney';
+                        if (t.includes('website services')) return 'websiteServicesAgreement';
+                        if (t.includes('cookies')) return 'cookiesPolicy';
+                        if (t.includes('eula')) return 'eula';
+                        return 'generic';
+                      })()}
+                    />
+                  </div>
                 </div>
               </div>
             )}

@@ -13,8 +13,10 @@ import {
   Save 
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
+import html2pdf from 'html2pdf.js';
+import ReactDOM from 'react-dom/client';
 
 // Components
 import FormField from '../../components/forms/FormField';
@@ -90,6 +92,7 @@ const PowerOfAttorneyPage: React.FC = () => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     currentStep,
@@ -104,6 +107,20 @@ const PowerOfAttorneyPage: React.FC = () => {
   useEffect(() => {
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
+
+  // On mount, if editing, prefill formData
+  React.useEffect(() => {
+    if (location.state && location.state.template) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        setFormData({ ...initialData, ...parsed });
+      } catch {
+        // fallback: do nothing
+      }
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -148,23 +165,40 @@ const PowerOfAttorneyPage: React.FC = () => {
     }
   };
 
-  const handleDownloadDocx = async () => {
+  const handleDownloadPdf = async () => {
+    // First validate all steps
+    const isValid = validateBeforeSubmit();
+    if (!isValid) return;
+    setIsGenerating(true);
     try {
-      // First validate all steps
-      const isValid = validateBeforeSubmit();
-      if (!isValid) {
-        // If not valid, the validation hook will have set the errors
-        // and scrolled to the first error field
-        return;
-      }
-      
-      setIsGenerating(true);
-      await generateDocx(formData, `Power-of-Attorney-${formData.principalFullName || 'Document'}.docx`, 'powerOfAttorney');
-    } catch (error: any) { 
-      console.error('Error generating DOCX:', error);
-      alert(`Failed to generate document: ${error.message || 'Unknown error occurred'}`);
-    } finally {
+      // Render preview to hidden container
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.visibility = 'hidden';
+      container.style.pointerEvents = 'none';
+      container.style.width = '800px';
+      container.style.left = '0';
+      container.style.top = '0';
+      document.body.appendChild(container);
+      // Use your live preview render function/component
+      const root = ReactDOM.createRoot(container);
+      root.render(renderLivePreview());
+      setTimeout(async () => {
+        const previewNode = container.firstElementChild;
+        await html2pdf().from(previewNode).set({
+          filename: `Power-of-Attorney-${formData.principalFullName || 'Document'}.pdf`,
+          margin: 0.5,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        }).save();
+        root.unmount();
+        document.body.removeChild(container);
+        setIsGenerating(false);
+      }, 1000);
+    } catch (error) {
       setIsGenerating(false);
+      alert('Failed to generate PDF.');
     }
   };
 
@@ -544,11 +578,11 @@ const PowerOfAttorneyPage: React.FC = () => {
               <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
             <button 
-              onClick={handleDownloadDocx} 
+              onClick={handleDownloadPdf} 
               disabled={isGenerating} 
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
             >
-              <Download size={18}/> {isGenerating ? 'Generating DOCX...' : 'Download DOCX'}
+              <Download size={18}/> {isGenerating ? 'Generating PDF...' : 'Download PDF'}
             </button>
           </div>
         </div>
