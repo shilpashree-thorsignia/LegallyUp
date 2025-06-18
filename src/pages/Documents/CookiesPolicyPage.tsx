@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
-import { generateDocx } from '../../utils/docxGenerator';  // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
@@ -136,45 +135,6 @@ const CookiesPolicyPage: React.FC = () => {
       setIsSaving(false);
     }
   };
-
-  const handleGenerateDocx = async () => {
-    try {
-      setIsGenerating(true);
-      await generateDocx(
-        formData,
-        'CookiesPolicy',
-        'cookiesPolicy'
-      );
-    } catch (error) {
-      console.error('Error generating DOCX:', error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // const handleDownloadDocx = async () => {
-  //   // Validate the form before generating the document
-  //   const isValid = validateBeforeSubmit();
-  //   if (!isValid) {
-  //     // Scroll to the first error field
-  //     const firstErrorField = Object.keys(errors || {})[0];
-  //     if (firstErrorField) {
-  //       const element = document.getElementById(firstErrorField);
-  //       element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  //     }
-  //     return;
-  //   }
-
-  //   try {
-  //     setIsGenerating(true);
-  //     await generateDocx(formData, `Cookies-Policy-${formData.companyName || 'Document'}.docx`, 'cookiesPolicy');
-  //   } catch (error: any) {
-  //     console.error('Error generating DOCX:', error);
-  //     alert(`Failed to generate document: ${error.message}`);
-  //   } finally {
-  //     setIsGenerating(false);
-  //   }
-  // };
 
   const renderStepFormContent = () => {
     const yesNoOptions = [
@@ -404,13 +364,6 @@ const CookiesPolicyPage: React.FC = () => {
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
               <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
-            </button>
-            <button 
-              onClick={handleGenerateDocx} 
-              disabled={isGenerating} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
-            >
-              <Download size={18}/> {isGenerating ? 'Generating DOCX...' : 'Download DOCX'}
             </button>
           </div>
         </div>

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
-import { generateDocx } from '../../utils/docxGenerator';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -130,27 +129,6 @@ const RefundPolicyPage: React.FC = () => {
       alert('Failed to save: ' + err);
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleDownloadDocx = async () => {
-    // First validate all steps
-    const isValid = validateBeforeSubmit();
-    if (!isValid) {
-      // If not valid, the validation hook will have set the errors
-      // and scrolled to the first error field
-      return;
-    }
-    
-    try {
-      setIsGenerating(true);
-      // Ensure we're passing the correct parameters to generateDocx
-      await generateDocx(formData, `Refund-Policy-${formData.companyName || 'Document'}.docx`, 'refund');
-    } catch (error: any) { 
-      console.error('Error generating DOCX:', error); 
-      alert(`Failed to generate DOCX document: ${error.message}`); 
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -382,13 +360,6 @@ const RefundPolicyPage: React.FC = () => {
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
               <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
-            </button>
-            <button 
-              onClick={handleDownloadDocx} 
-              disabled={isGenerating} 
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
-            >
-              <Download size={18}/> {isGenerating ? 'Generating DOCX...' : 'Download DOCX'}
             </button>
           </div>
         </div>
