@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Users, MapPin, ChevronRight, Shield, Filter, Search } from 'lucide-react';
+import { Users, MapPin, ChevronRight, Shield, } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
 
 // Updated placeholder data for attorneys with more details

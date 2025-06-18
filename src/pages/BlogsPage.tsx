@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Calendar, Clock, Tag } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { blogsData, categories, type BlogPost } from '../lib/blogsData';
 import HeroBackground from '../components/ui/HeroBackground';
 

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
-  Layers, ChevronRight, Search, Filter
+  Layers, ChevronRight,
 } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
 
