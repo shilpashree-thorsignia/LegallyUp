@@ -118,7 +118,10 @@ const NdaPage: React.FC = () => {
   const handleDownloadPdf = async () => {
     // First validate all steps
     const isValid = validateBeforeSubmit();
-    if (!isValid) return;
+    if (!isValid) {
+      alert('Please fill in all mandatory fields before generating the document.');
+      return;
+    }
     setIsGenerating(true);
     try {
       // Render preview to hidden container

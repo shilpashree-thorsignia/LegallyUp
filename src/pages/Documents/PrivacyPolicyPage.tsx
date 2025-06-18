@@ -88,7 +88,7 @@ const PrivacyPolicyPage: React.FC = () => {
     nextStep,
     prevStep,
     jumpToStep,
-    // validateBeforeSubmit,
+    validateBeforeSubmit,
     setErrors
   } = useFormValidation('privacy', formData, totalFormSteps);
 
@@ -182,6 +182,19 @@ const PrivacyPolicyPage: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Add a handler for document generation/download with validation
+  const handleDownload = async () => {
+    if (typeof validateBeforeSubmit === 'function') {
+      const isValid = validateBeforeSubmit();
+      if (!isValid) {
+        alert('Please fill in all mandatory fields before generating the document.');
+        return;
+      }
+    }
+    // Place your document generation logic here (e.g., download PDF, DOCX, etc.)
+    alert('Document would be generated here (implement actual logic)');
   };
 
   const yesNoOptions = [ { value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }];
@@ -386,6 +399,12 @@ const PrivacyPolicyPage: React.FC = () => {
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
               <Save size={18}/> {isSaving ? (editingTemplate ? 'Updating...' : 'Saving...') : (editingTemplate ? 'Update Document' : 'Save to Dashboard')}
+            </button>
+            <button
+              onClick={handleDownload}
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            >
+              Download Document
             </button>
           </div>
         </div>
