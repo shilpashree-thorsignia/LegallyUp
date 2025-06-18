@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb, Info, Shield
+  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb,  Shield
 } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
 

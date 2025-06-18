@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Eye, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -55,7 +55,7 @@ const stepVariants = {
 const CookiesPolicyPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<CookiesPolicyData>(initialCookiesPolicyData);
-  const [isGenerating, setIsGenerating] = useState(false);
+  // const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();

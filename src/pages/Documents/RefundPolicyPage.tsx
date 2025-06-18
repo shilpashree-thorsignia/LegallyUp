@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3,  Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
@@ -62,7 +62,7 @@ const stepVariants = {
 
 const RefundPolicyPage: React.FC = () => {
   const [formData, setFormData] = useState<RefundPolicyData>(initialData);
-  const [isGenerating, setIsGenerating] = useState(false);
+  // const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
   const totalFormSteps = 4;
@@ -76,7 +76,7 @@ const RefundPolicyPage: React.FC = () => {
     nextStep,
     prevStep,
     jumpToStep,
-    validateBeforeSubmit,
+    // validateBeforeSubmit,
     setErrors
   } = useFormValidation('refund', formData, totalFormSteps);
 

@@ -142,6 +142,25 @@ const WebsiteServicesAgreementPage: React.FC = () => {
     }
   };
 
+  const validateBeforeSubmit = () => {
+    const requiredFields = [
+      'serviceProviderCompanyName', 'serviceProviderAddress', 'serviceProviderEmail',
+      'clientCompanyName', 'clientAddress', 'clientEmail',
+      'agreementDate', 'projectName', 'websiteDescription',
+      'servicesIncluded', 'specificDeliverables', 'projectStartDate',
+      'totalProjectCost', 'paymentSchedule', 'intellectualPropertyOwnership',
+      'confidentialityClause', 'agreementTerm', 'terminationConditions',
+      'governingLawAndJurisdiction', 'disputeResolutionMethod', 'agreementEffectiveDate'
+    ];
+
+    const missingFields = requiredFields.filter(field => !formData[field as keyof WebsiteServicesAgreementData]);
+    if (missingFields.length > 0) {
+      alert('Please fill in all required fields before downloading.');
+      return false;
+    }
+    return true;
+  };
+
   const handleDownloadPdf = async () => {
     // First validate all steps
     const isValid = validateBeforeSubmit();
