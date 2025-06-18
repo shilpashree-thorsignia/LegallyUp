@@ -1,7 +1,7 @@
 // src/pages/TemplateLibraryPage.tsx
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
