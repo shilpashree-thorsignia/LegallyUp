@@ -50,7 +50,9 @@ def init_db():
                 username VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
-                verified BOOLEAN DEFAULT FALSE
+                verified BOOLEAN DEFAULT FALSE,
+                plan VARCHAR(32) DEFAULT 'free',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
         cursor.execute('''
@@ -61,6 +63,15 @@ def init_db():
                 content TEXT NOT NULL,
                 is_trashed BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS document_generation_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                document_type VARCHAR(255),
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         ''')
@@ -93,6 +104,31 @@ def init_db():
                 message TEXT NOT NULL,
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS payments (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            plan ENUM('free', 'pro', 'attorney') NOT NULL,
+            payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            amount DECIMAL(10, 2) NOT NULL,
+            status ENUM('success', 'failed') NOT NULL,
+            transaction_id VARCHAR(100) UNIQUE NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS plan_changes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                old_plan VARCHAR(32) NOT NULL,
+                new_plan VARCHAR(32) NOT NULL,
+                payment_id INT,
+                change_reason ENUM('payment', 'system', 'expiration', 'user_request') NOT NULL,
+                changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE SET NULL
             )
         ''')
         cursor.close()
@@ -283,8 +319,15 @@ def create_template():
     user_id = data.get('user_id')
     title = data.get('title')
     content = data.get('content')
+    
     if not user_id or not title or not content:
         return jsonify({'error': 'Missing required fields'}), 400
+
+    # Check if user can generate document
+    can_generate, error_message = check_and_log_document_generation(user_id)
+    if not can_generate:
+        return jsonify({'error': error_message}), 403
+
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
@@ -600,6 +643,495 @@ def submit_contact_form():
     except Exception as e:
         print('Contact form error:', e)
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/payments/select-plan', methods=['POST'])
+def select_plan():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    plan = data.get('plan')
+
+    if not user_id or not plan:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    if plan not in ['free', 'pro', 'attorney']:
+        return jsonify({'error': 'Invalid plan selected'}), 400
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # Check current user plan
+        cursor.execute("SELECT plan FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        current_plan = user['plan']
+
+        # For free plan selection
+        if plan == 'free':
+            # Prevent unnecessary free plan selection if already on free plan
+            if current_plan == 'free':
+                return jsonify({'message': 'User is already on free plan'}), 400
+
+            # Generate a transaction ID for record keeping
+            transaction_id = f"FREE-{user_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+            
+            # Record the free plan selection
+            sql = """
+                INSERT INTO payments (user_id, plan, amount, status, transaction_id)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql, (user_id, plan, 0.00, 'success', transaction_id))
+
+            # Update user's plan
+            cursor.execute("UPDATE users SET plan = %s WHERE id = %s", (plan, user_id))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            return jsonify({
+                'message': 'Free plan activated successfully',
+                'transaction_id': transaction_id,
+                'previous_plan': current_plan
+            }), 200
+
+        else:
+            # For paid plans, return error as payment processing is not implemented yet
+            return jsonify({
+                'error': 'Payment processing for paid plans not implemented yet'
+            }), 501
+
+    except Error as e:
+        print('Plan selection error:', e)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/payments/user-plan', methods=['GET'])
+def get_user_plan():
+    user_id = request.args.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # Get current plan
+        cursor.execute("SELECT plan FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # Get payment history
+        cursor.execute("""
+            SELECT plan, payment_date, amount, status, transaction_id 
+            FROM payments 
+            WHERE user_id = %s 
+            ORDER BY payment_date DESC
+        """, (user_id,))
+        payment_history = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            'current_plan': user['plan'],
+            'payment_history': payment_history
+        }), 200
+
+    except Error as e:
+        print('Get user plan error:', e)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/payments/plan-features', methods=['GET'])
+def get_plan_features():
+    # Define plan features and pricing
+    plan_details = {
+        'free': {
+            'name': 'Free Plan',
+            'price': 0.00,
+            'features': [
+                'Access to basic document templates',
+                'Limited document generation',
+                'Basic legal resources'
+            ],
+            'limits': {
+                'templates_per_month': 3,
+                'documents_per_month': 5
+            }
+        },
+        'pro': {
+            'name': 'Pro Plan',
+            'price': 29.99,
+            'features': [
+                'Access to all document templates',
+                'Unlimited document generation',
+                'Priority support',
+                'Advanced legal resources',
+                'Document storage'
+            ],
+            'limits': {
+                'templates_per_month': 'Unlimited',
+                'documents_per_month': 'Unlimited'
+            }
+        },
+        'attorney': {
+            'name': 'Attorney Plan',
+            'price': 99.99,
+            'features': [
+                'All Pro Plan features',
+                'Direct attorney consultation',
+                'Custom document review',
+                'Priority support',
+                'Legal advisory services'
+            ],
+            'limits': {
+                'templates_per_month': 'Unlimited',
+                'documents_per_month': 'Unlimited',
+                'attorney_consultations_per_month': 2
+            }
+        }
+    }
+    
+    return jsonify(plan_details), 200
+
+@app.route('/api/documents/check-daily-limit', methods=['GET'])
+def check_daily_limit():
+    user_id = request.args.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # Get user's plan
+        cursor.execute("SELECT plan FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # If user is not on free plan, they have unlimited generations
+        if user['plan'] != 'free':
+            return jsonify({
+                'can_generate': True,
+                'daily_limit': 'unlimited',
+                'generations_today': 0,
+                'remaining_generations': 'unlimited'
+            }), 200
+
+        # Count today's generations for free users
+        cursor.execute("""
+            SELECT COUNT(*) as count
+            FROM document_generation_logs
+            WHERE user_id = %s
+            AND DATE(generated_at) = CURDATE()
+        """, (user_id,))
+        result = cursor.fetchone()
+        generations_today = result['count']
+
+        daily_limit = 3  # Updated: Free plan daily limit increased to 3
+        remaining_generations = max(0, daily_limit - generations_today)
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            'can_generate': remaining_generations > 0,
+            'daily_limit': daily_limit,
+            'generations_today': generations_today,
+            'remaining_generations': remaining_generations
+        }), 200
+
+    except Error as e:
+        print('Check daily limit error:', e)
+        return jsonify({'error': str(e)}), 500
+
+def check_subscription_status(user_id):
+    """
+    Check if user has an active paid subscription
+    Returns (is_paid, plan_type, expiry_date)
+    """
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # First check user's current plan in users table
+        cursor.execute("SELECT plan FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return False, None, None  # User not found
+            
+        # If user is explicitly on free plan, no need to check payments
+        if user['plan'] == 'free':
+            return False, 'free', None
+
+        # Only check payment status for paid plans
+        cursor.execute("""
+            SELECT *
+            FROM payments
+            WHERE user_id = %s 
+            AND status = 'success'
+            AND plan != 'free'
+            ORDER BY payment_date DESC
+            LIMIT 1
+        """, (user_id,))
+        
+        latest_payment = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        # If user's plan is paid but no payment found, something's wrong
+        if not latest_payment:
+            # Reset to free plan as no valid payment found
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET plan = 'free' WHERE id = %s", (user_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return False, 'free', None
+
+        # Check if payment is still valid
+        payment_date = latest_payment['payment_date']
+        expiry_date = payment_date + timedelta(days=30)
+        is_active = datetime.utcnow() < expiry_date
+
+        if not is_active:
+            # If subscription expired, update user to free plan
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET plan = 'free' WHERE id = %s", (user_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return False, 'free', None
+
+        return True, latest_payment['plan'], expiry_date
+
+    except Error as e:
+        print('Subscription check error:', e)
+        return False, 'free', None
+
+def update_user_plan(user_id, new_plan, payment_id=None):
+    """
+    Update user's plan and log the change
+    Args:
+        user_id: The user's ID
+        new_plan: The new plan ('free', 'pro', 'attorney')
+        payment_id: Optional payment ID that triggered this change
+    Returns:
+        (success, error_message)
+    """
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # Get current plan
+        cursor.execute("SELECT plan FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return False, "User not found"
+
+        old_plan = user['plan']
+        
+        # Update the plan
+        cursor.execute("UPDATE users SET plan = %s WHERE id = %s", (new_plan, user_id))
+        
+        # Log the plan change
+        cursor.execute("""
+            INSERT INTO plan_changes (
+                user_id, 
+                old_plan, 
+                new_plan, 
+                payment_id, 
+                change_reason
+            ) VALUES (%s, %s, %s, %s, %s)
+        """, (
+            user_id, 
+            old_plan, 
+            new_plan, 
+            payment_id,
+            'payment' if payment_id else 'system'
+        ))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True, None
+
+    except Error as e:
+        print('Plan update error:', e)
+        return False, str(e)
+
+@app.route('/api/payments/subscription-status', methods=['GET'])
+def get_subscription_status():
+    user_id = request.args.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+
+    is_paid, plan_type, expiry_date = check_subscription_status(user_id)
+    
+    return jsonify({
+        'is_paid': is_paid,
+        'plan_type': plan_type,
+        'expiry_date': expiry_date.isoformat() if expiry_date else None,
+        'days_remaining': (expiry_date - datetime.utcnow()).days if expiry_date else 0
+    }), 200
+
+@app.route('/api/payments/process-payment', methods=['POST'])
+def process_payment():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    plan = data.get('plan')
+    payment_method = data.get('payment_method')
+    amount = data.get('amount')
+
+    if not all([user_id, plan, payment_method, amount]):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    if plan not in ['pro', 'attorney']:
+        return jsonify({'error': 'Invalid plan selected'}), 400
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        # Generate a transaction ID
+        transaction_id = f"PAID-{user_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+        # Start transaction
+        conn.start_transaction()
+
+        try:
+            # Record the payment first
+            cursor.execute("""
+                INSERT INTO payments (user_id, plan, amount, status, transaction_id)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (user_id, plan, amount, 'success', transaction_id))
+            
+            # Get the payment ID
+            payment_id = cursor.lastrowid
+
+            # Update user's plan
+            success, error = update_user_plan(user_id, plan, payment_id)
+            
+            if not success:
+                conn.rollback()
+                return jsonify({'error': f'Failed to update plan: {error}'}), 500
+
+            conn.commit()
+            
+            return jsonify({
+                'message': 'Payment processed and plan updated successfully',
+                'transaction_id': transaction_id,
+                'plan': plan,
+                'expiry_date': (datetime.utcnow() + timedelta(days=30)).isoformat()
+            }), 200
+
+        except Error as e:
+            conn.rollback()
+            raise e
+
+    except Error as e:
+        print('Payment processing error:', e)
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/payments/history', methods=['GET'])
+def get_payment_history():
+    user_id = request.args.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT plan, payment_date, amount, status, transaction_id
+            FROM payments
+            WHERE user_id = %s
+            ORDER BY payment_date DESC
+        """, (user_id,))
+        
+        payments = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'payments': payments}), 200
+        
+    except Error as e:
+        print('Payment history error:', e)
+        return jsonify({'error': str(e)}), 500
+
+def check_and_log_document_generation(user_id):
+    """
+    Check if user can generate a document and log the generation if allowed.
+    Returns (can_generate, error_message)
+    """
+    try:
+        is_paid, plan_type, _ = check_subscription_status(user_id)
+
+        # If user has paid plan, they can always generate
+        if is_paid:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            # Still log the generation but don't enforce limits
+            cursor.execute("""
+                INSERT INTO document_generation_logs (user_id)
+                VALUES (%s)
+            """, (user_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return True, None
+
+        # For free users, check daily limit
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        # Check today's generation count
+        cursor.execute("""
+            SELECT COUNT(*) as count
+            FROM document_generation_logs
+            WHERE user_id = %s
+            AND DATE(generated_at) = CURDATE()
+        """, (user_id,))
+        result = cursor.fetchone()
+        generations_today = result['count']
+
+        if generations_today >= 3:  # Free plan daily limit
+            cursor.close()
+            conn.close()
+            return False, "Daily document generation limit reached for free plan. Upgrade to generate more documents!"
+
+        # Log the generation
+        cursor.execute("""
+            INSERT INTO document_generation_logs (user_id)
+            VALUES (%s)
+        """, (user_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True, None
+
+    except Error as e:
+        print('Document generation check error:', e)
+        return False, str(e)
 
 if __name__ == "__main__":
     # For local development only
