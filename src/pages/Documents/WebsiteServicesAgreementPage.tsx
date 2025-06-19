@@ -94,8 +94,7 @@ const stepVariants = {
 const WebsiteServicesAgreementPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
-  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
-  const initialFormData = React.useMemo(() => {
+  const [editingTemplate] = useState<any>(location.state?.template || null);  const initialFormData = React.useMemo(() => {
     if (editingTemplate && editingTemplate.content) {
       try {
         const parsed = typeof editingTemplate.content === 'string'

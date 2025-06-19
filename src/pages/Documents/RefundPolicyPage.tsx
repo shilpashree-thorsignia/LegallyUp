@@ -5,7 +5,7 @@ import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { API_BASE } from '../../lib/apiBase';
+// import { API_BASE } from '../../lib/apiBase';
 
 interface RefundPolicyData {
   // Step 1: Business Information & Policy Scope
@@ -62,8 +62,7 @@ const stepVariants = {
 
 const RefundPolicyPage: React.FC = () => {
   const location = useLocation();
-  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
-  const initialFormData = React.useMemo(() => {
+  const [editingTemplate] = useState<any>(location.state?.template || null);  const initialFormData = React.useMemo(() => {
     if (editingTemplate && editingTemplate.content) {
       try {
         const parsed = typeof editingTemplate.content === 'string'

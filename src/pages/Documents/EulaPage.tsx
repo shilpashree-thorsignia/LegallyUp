@@ -5,7 +5,7 @@ import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Edit3 } from 'lucide-react'; // Relevant icons
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { API_BASE } from '../../lib/apiBase';
+// import { API_BASE } from '../../lib/apiBase';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
 
@@ -64,8 +64,7 @@ const stepVariants = { /* ... (same as before) ... */ initial: { opacity: 0, y: 
 
 const EulaPage: React.FC = () => {
   const location = useLocation();
-  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
-  const initialFormData = React.useMemo(() => {
+  const [editingTemplate] = useState<any>(location.state?.template || null);  const initialFormData = React.useMemo(() => {
     if (editingTemplate && editingTemplate.content) {
       try {
         const parsed = typeof editingTemplate.content === 'string'

@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucid
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { API_BASE } from '../../lib/apiBase';
+// import { API_BASE } from '../../lib/apiBase';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
 
@@ -40,8 +40,7 @@ const stepVariants = {
 
 const NdaPage: React.FC = () => {
   const location = useLocation();
-  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
-  const initialFormData = React.useMemo(() => {
+  const [editingTemplate] = useState<any>(location.state?.template || null);  const initialFormData = React.useMemo(() => {
     if (editingTemplate && editingTemplate.content) {
       try {
         const parsed = typeof editingTemplate.content === 'string'

@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Eye, Save } from 'lucide-rea
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { API_BASE } from '../../lib/apiBase';
+// import { API_BASE } from '../../lib/apiBase';
 
 interface CookiesPolicyData {
   // Step 1: Business & Basic Cookie Info
@@ -54,8 +54,7 @@ const stepVariants = {
 
 const CookiesPolicyPage: React.FC = () => {
   const location = useLocation();
-  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
-  const initialFormData = React.useMemo(() => {
+const [editingTemplate] = useState<any>(location.state?.template || null);  const initialFormData = React.useMemo(() => {
     if (editingTemplate && editingTemplate.content) {
       try {
         const parsed = typeof editingTemplate.content === 'string'
