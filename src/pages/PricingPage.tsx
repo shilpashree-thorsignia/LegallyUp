@@ -196,7 +196,7 @@ const PricingPage: React.FC = () => {
             <p className="text-5xl font-extrabold text-primary mb-2">$0<span className="text-xl text-gray-500 font-semibold">/month</span></p>
             <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">Basic access for individuals needing simple legal documents occasionally.</p>
             <ul className="text-gray-700 text-left space-y-3 mb-10 text-sm">
-              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> 3 Document generations/month</li>
+              <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> 3 Document generations/Day</li>
               <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Access to basic templates</li>
               <li className="flex items-center"><CheckCircle size={18} className="text-green-500 mr-2 flex-shrink-0" /> Standard email support</li>
               <li className="flex items-center"><XCircle size={18} className="text-gray-400 mr-2 flex-shrink-0" /> Premium Template Access</li>
