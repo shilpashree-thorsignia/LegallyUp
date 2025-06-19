@@ -54,19 +54,20 @@ const stepVariants = {
 
 const CookiesPolicyPage: React.FC = () => {
   const location = useLocation();
+  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
   const initialFormData = React.useMemo(() => {
-    if (location.state && location.state.template && location.state.template.content) {
+    if (editingTemplate && editingTemplate.content) {
       try {
-        const parsed = typeof location.state.template.content === 'string'
-          ? JSON.parse(location.state.template.content)
-          : location.state.template.content;
+        const parsed = typeof editingTemplate.content === 'string'
+          ? JSON.parse(editingTemplate.content)
+          : editingTemplate.content;
         return { ...initialCookiesPolicyData, ...parsed };
       } catch {
         return initialCookiesPolicyData;
       }
     }
     return initialCookiesPolicyData;
-  }, [location.state]);
+  }, [editingTemplate]);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<CookiesPolicyData>(initialFormData);
   // const [isGenerating, setIsGenerating] = useState(false);
@@ -145,11 +146,20 @@ const CookiesPolicyPage: React.FC = () => {
     const title = `Cookies Policy - ${formData.companyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch(`${API_BASE}/templates`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: user.id, title, content }),
-      });
+      let res;
+      if (editingTemplate) {
+        res = await fetch(`/api/templates/${editingTemplate.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content }),
+        });
+      } else {
+        res = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, title, content }),
+        });
+      }
       if (res.ok) {
         navigate('/dashboard');
       } else {

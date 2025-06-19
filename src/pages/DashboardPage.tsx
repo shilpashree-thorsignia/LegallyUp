@@ -85,12 +85,7 @@ const DashboardPage: React.FC = () => {
 
   const handleEditDocument = (doc: any) => {
     const editPath = getEditPath(doc.title);
-    // If privacy policy, use the new route with id
-    if (editPath === '/documents/generate/privacy-policy') {
-      navigate(`/documents/privacy-policy/${doc.id}`, { state: { template: doc } });
-    } else {
-      navigate(editPath, { state: { template: doc } });
-    }
+    navigate(editPath, { state: { template: doc } });
   };
 
   const handleDeleteDocument = async (docId: number) => {

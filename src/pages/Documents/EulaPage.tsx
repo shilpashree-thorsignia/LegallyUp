@@ -64,19 +64,20 @@ const stepVariants = { /* ... (same as before) ... */ initial: { opacity: 0, y: 
 
 const EulaPage: React.FC = () => {
   const location = useLocation();
+  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
   const initialFormData = React.useMemo(() => {
-    if (location.state && location.state.template && location.state.template.content) {
+    if (editingTemplate && editingTemplate.content) {
       try {
-        const parsed = typeof location.state.template.content === 'string'
-          ? JSON.parse(location.state.template.content)
-          : location.state.template.content;
+        const parsed = typeof editingTemplate.content === 'string'
+          ? JSON.parse(editingTemplate.content)
+          : editingTemplate.content;
         return { ...initialData, ...parsed };
       } catch {
         return initialData;
       }
     }
     return initialData;
-  }, [location.state]);
+  }, [editingTemplate]);
   const [formData, setFormData] = useState<EulaData>(initialFormData);
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -144,11 +145,20 @@ const EulaPage: React.FC = () => {
     const title = `EULA - ${formData.licensorCompanyName || 'Untitled'}`;
     const content = JSON.stringify(formData, null, 2);
     try {
-      const res = await fetch(`${API_BASE}/templates`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: user.id, title, content }),
-      });
+      let res;
+      if (editingTemplate) {
+        res = await fetch(`/api/templates/${editingTemplate.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content }),
+        });
+      } else {
+        res = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, title, content }),
+        });
+      }
       if (res.ok) {
         navigate('/dashboard');
       } else {

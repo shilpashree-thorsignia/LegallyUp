@@ -83,13 +83,13 @@ const PrivacyPolicyPage: React.FC = () => {
     return initialData;
   }, [editingTemplate]);
   const [formData, setFormData] = useState<PrivacyPolicyData>(initialFormData);
-  // const [isGenerating, setIsGenerating] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const formColumnRef = useRef<HTMLDivElement>(null);
-  const totalFormSteps = 3;
   const [isSaving, setIsSaving] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const previewRef = useRef<HTMLDivElement>(null);
+  const formColumnRef = useRef<HTMLDivElement>(null);
+  const totalFormSteps = 3;
+  const { user } = useAuth();
 
   const {
     currentStep,
@@ -101,14 +101,8 @@ const PrivacyPolicyPage: React.FC = () => {
     setErrors
   } = useFormValidation('privacyPolicy', formData, totalFormSteps);
 
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-
-  useEffect(() => { 
-    formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); 
+  useEffect(() => {
+    formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
 
   useEffect(() => {
@@ -129,9 +123,13 @@ const PrivacyPolicyPage: React.FC = () => {
     }
   }, [editingTemplate, id, navigate]);
 
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+  if (loading) return <div className="text-center py-12 text-primary">Loading...</div>;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    // Clear error for the field being edited
     if (errors?.[name as keyof typeof errors]) {
       setErrors((prev: Record<string, string>) => {
         const newErrors = { ...prev };
@@ -144,13 +142,8 @@ const PrivacyPolicyPage: React.FC = () => {
     if (showErrorModal) setShowErrorModal(false);
   };
 
-  const handleNext = () => {
-    nextStep();
-  };
-
-  const handleBack = () => {
-    prevStep();
-  };
+  const handleNext = () => nextStep();
+  const handleBack = () => prevStep();
 
   const handleSaveToDashboard = async () => {
     if (!user) {
@@ -345,9 +338,6 @@ const PrivacyPolicyPage: React.FC = () => {
   const progressSteps = [1, 2, 3];
   const progressLabels = ["Business Info", "Data & Usage", "Security & Rights"];
 
-  if (loading) return <div className="text-center py-12 text-primary">Loading...</div>;
-  if (id && !editingTemplate) return <div className="text-center py-12 text-red-600">No template found. Please return to the dashboard.</div>;
-
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">
       <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2 text-center">{editingTemplate ? 'Edit Privacy Policy' : 'Generate Privacy Policy'}</h1>
@@ -441,6 +431,9 @@ const PrivacyPolicyPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Last fallback error message */}
+      <div className="text-center py-12 text-red-600">Something went wrong. Please try again or contact support.</div>
     </motion.div>
   );
 };
