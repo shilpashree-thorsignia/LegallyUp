@@ -7,50 +7,46 @@ import HeroBackground from '../components/ui/HeroBackground';
 
 // Lazy loaded blog card component
 const BlogCard: React.FC<{ post: BlogPost }> = ({ post }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-
   return (
     <motion.article
       layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+      className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
     >
       <Link to={`/blogs/${post.id}`} className="block h-full">
-        <div className="relative w-full h-48">
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-          )}
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            onLoad={() => setImageLoaded(true)}
-            loading="lazy"
+        <div className="relative w-full h-52 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 group-hover:scale-110 transition-transform duration-300"></div>
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+          <BookOpen 
+            size={64} 
+            className="relative z-10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" 
           />
         </div>
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-blue-600 font-medium">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-4">
+            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
               {post.category}
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 font-medium">
               {post.readTime}
             </span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors line-clamp-2">
             {post.title}
           </h2>
-          <p className="text-gray-600 mb-4 line-clamp-2">
+          <p className="text-gray-600 mb-6 line-clamp-2 text-base">
             {post.excerpt}
           </p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-gray-300"></div>
-              <span className="ml-2 text-sm text-gray-600">{post.author}</span>
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                <span className="text-primary font-medium text-sm">
+                  {post.author.charAt(0)}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">{post.author}</span>
             </div>
             <span className="text-sm text-gray-500">{post.date}</span>
           </div>

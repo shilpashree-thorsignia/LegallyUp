@@ -2,18 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BookOpen, ListChecks, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';
+import { BookOpen, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
-
-// Expanded placeholder data with a 'slug' for URL and more content for detail page
-const mockResources = [
-    { id: 'faq-nda', slug: 'what-is-an-nda', type: 'FAQ', category: 'Contracts & Agreements', title: 'What is an NDA?', summary: 'Explains the basics of a Non-Disclosure Agreement, its purpose, and key elements.', icon: <HelpCircle size={24} className="text-indigo-500" />, content: "A Non-Disclosure Agreement (NDA), also known as a confidentiality agreement, is a legal contract between at least two parties that outlines confidential material, knowledge, or information that the parties wish to share with one another for certain purposes, but wish to restrict access to or by third parties..." },
-    { id: 'guide-rental', slug: 'guide-to-rental-agreements', type: 'Guide', category: 'Real Estate', title: 'Guide to Creating a Rental Agreement', summary: 'Step-by-step instructions and considerations for landlords and tenants when drafting a lease.', icon: <GuideIcon size={24} className="text-green-500" />, content: "Creating a comprehensive rental agreement is crucial for both landlords and tenants. This guide covers essential clauses like rent, security deposit, lease term, tenant responsibilities, landlord responsibilities, and local regulations..." },
-    { id: 'glossary-arbitration', slug: 'arbitration-defined', type: 'Glossary', category: 'Legal Terms', title: 'Arbitration', summary: 'Definition of arbitration as an alternative dispute resolution method.', icon: <Hash size={24} className="text-purple-500" />, content: "Arbitration is a form of alternative dispute resolution (ADR) in which a dispute is submitted to one or more arbitrators who make a binding decision on the dispute. It is often used for the resolution of commercial disputes and can be either voluntary or mandatory..." },
-    { id: 'faq-ip', slug: 'protecting-intellectual-property', type: 'FAQ', category: 'Intellectual Property', title: 'How to Protect Your Intellectual Property', summary: 'Overview of patents, trademarks, copyrights, and trade secrets.', icon: <HelpCircle size={24} className="text-indigo-500" />, content: "Protecting your intellectual property (IP) is vital for businesses and creators. This involves understanding patents (for inventions), trademarks (for brands), copyrights (for original creative works), and trade secrets (for confidential business information)..." },
-    { id: 'guide-employment-contract', slug: 'understanding-employment-contracts', type: 'Guide', category: 'Employment Law', title: 'Understanding Employment Contracts', summary: 'Key elements to look for in an employment agreement before signing.', icon: <GuideIcon size={24} className="text-green-500" />, content: "An employment contract outlines the terms and conditions of employment between an employer and an employee. Key elements include job title and responsibilities, compensation, benefits, duration of employment (if not at-will), confidentiality clauses, non-compete agreements (where lawful), and termination conditions..." },
-    { id: 'glossary-force-majeure', slug: 'force-majeure-clause', type: 'Glossary', category: 'Contracts & Agreements', title: 'Force Majeure', summary: 'Definition and implications of force majeure clauses in contracts.', icon: <Hash size={24} className="text-purple-500" />, content: "A force majeure clause is a contract provision that relieves the parties from performing their contractual obligations when certain circumstances beyond their control arise, making performance inadvisable, commercially impracticable, illegal, or impossible. Such circumstances typically include acts of God, war, riots, or natural disasters..." },
-];
 
 // Animation variants
 const sectionVariants = {
@@ -26,9 +16,116 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' }}
 };
 
-const cardVariants = { hidden: { opacity: 0, y: 30, scale: 0.98 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }};
+const ResourceCard: React.FC<{
+  type: string;
+  category: string;
+  title: string;
+  summary: string;
+  slug: string;
+}> = ({ type, category, title, summary, slug }) => {
+  const getIcon = () => {
+    switch (type) {
+      case 'FAQ':
+        return <HelpCircle size={24} className="text-primary" />;
+      case 'Guide':
+        return <GuideIcon size={24} className="text-primary" />;
+      case 'Glossary':
+        return <Hash size={24} className="text-primary" />;
+      default:
+        return <BookOpen size={24} className="text-primary" />;
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+    >
+      <Link to={`/resources/${slug}`} className="block h-full">
+        <div className="p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 group-hover:scale-110 transition-transform duration-300">
+              {getIcon()}
+            </div>
+            <div>
+              <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                {type}
+              </span>
+            </div>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors line-clamp-2">
+            {title}
+          </h3>
+          
+          <p className="text-gray-600 mb-6 line-clamp-2 text-base">
+            {summary}
+          </p>
+          
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <span className="text-sm font-medium text-gray-500">
+              {category}
+            </span>
+            <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform duration-300">
+              <span className="mr-2 font-medium">Read More</span>
+              <ChevronRight size={20} />
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
 
 const LegalResourcesPage: React.FC = () => {
+  // Example resources - replace with your actual data source
+  const resources = [
+    {
+      type: 'FAQ',
+      category: 'Contracts & Agreements',
+      title: 'What is an NDA?',
+      summary: 'Explains the basics of a Non-Disclosure Agreement, its purpose, and key elements.',
+      slug: 'what-is-an-nda'
+    },
+    {
+      type: 'Guide',
+      category: 'Real Estate',
+      title: 'Guide to Creating a Rental Agreement',
+      summary: 'Step-by-step instructions and considerations for landlords and tenants when drafting a lease.',
+      slug: 'guide-to-rental-agreements'
+    },
+    {
+      type: 'Glossary',
+      category: 'Legal Terms',
+      title: 'Arbitration',
+      summary: 'Definition of arbitration as an alternative dispute resolution method.',
+      slug: 'arbitration-defined'
+    },
+    {
+      type: 'FAQ',
+      category: 'Intellectual Property',
+      title: 'How to Protect Your Intellectual Property',
+      summary: 'Overview of patents, trademarks, copyrights, and trade secrets.',
+      slug: 'protecting-intellectual-property'
+    },
+    {
+      type: 'Guide',
+      category: 'Employment Law',
+      title: 'Understanding Employment Contracts',
+      summary: 'Key elements to look for in an employment agreement before signing.',
+      slug: 'understanding-employment-contracts'
+    },
+    {
+      type: 'Glossary',
+      category: 'Contracts & Agreements',
+      title: 'Force Majeure',
+      summary: 'Definition and implications of force majeure clauses in contracts.',
+      slug: 'force-majeure-clause'
+    }
+  ];
+
   return (
     <motion.div
       initial="hidden"
@@ -36,20 +133,25 @@ const LegalResourcesPage: React.FC = () => {
       variants={{ visible: { transition: { staggerChildren: 0.1 }}}}
       className="bg-gray-50 min-h-screen"
     >
+      {/* Hero Section */}
       <motion.section
         variants={sectionVariants}
-        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12"
+        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px]"
       >
         <HeroBackground />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
-              <BookOpen size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />
+              <BookOpen 
+                size={72} 
+                className="mx-auto text-white transition-transform duration-300 hover:scale-110" 
+                strokeWidth={1.5} 
+              />
             </motion.div>
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-gray-900"
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight"
             >
               Legal Resources Hub
             </motion.h1>
@@ -63,85 +165,17 @@ const LegalResourcesPage: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-            <div className="p-6 md:p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
-                <div className="flex items-center mb-6">
-                    <Filter size={28} className="text-primary mr-3" />
-                    <h2 className="text-2xl font-semibold text-primary">Explore Our Resources</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                    <div>
-                        <label htmlFor="resource-search" className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
-                            <input id="resource-search" type="text" placeholder="Keywords, title..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 shadow-sm"/>
-                        </div>
-                    </div>
-                    <div>
-                        <label htmlFor="resource-category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        <select id="resource-category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none">
-                            {uniqueCategories.map(category => (<option key={category} value={category}>{category}</option>))}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="resource-type" className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                        <select id="resource-type" value={selectedType} onChange={(e) => setSelectedType(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-gray-700 bg-white shadow-sm appearance-none">
-                            <option value="All">All Types</option>
-                            {uniqueTypes.map(type => (<option key={type} value={type}>{type}</option>))}
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </motion.section> */}
-
-        <motion.section variants={sectionVariants} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* <h2 className="text-3xl font-bold text-primary mb-8">
-                Found <span className="text-accent">{filteredResources.length}</span> Resources
-            </h2> */}
-            {mockResources.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {mockResources.map(resource => (
-                        <motion.div
-                            key={resource.id}
-                            variants={cardVariants}
-                            className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 flex flex-col group transform hover:-translate-y-2"
-                        >
-                            <div className="p-6 md:p-8 flex-grow">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="p-3 bg-lightGray rounded-full">
-                                        {resource.icon || <BookOpen size={24} className="text-primary" />}
-                                    </div>
-                                    <div>
-                                        <span className="text-xs font-semibold text-accent uppercase tracking-wider">{resource.type}</span>
-                                        <h3 className="text-lg md:text-xl font-semibold text-primary group-hover:text-accent transition-colors mt-1">{resource.title}</h3>
-                                    </div>
-                                </div>
-                                <p className="text-gray-600 text-sm mb-6 leading-relaxed min-h-[80px]">{resource.summary}</p>
-                                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{resource.category}</span>
-                            </div>
-                             <div className="px-6 md:px-8 pb-6 pt-2">
-                                <Link
-                                    to={`/resources/${resource.slug}`} // Use slug for cleaner URL
-                                    className="inline-flex items-center text-accent hover:text-primary font-semibold group transition-colors duration-200"
-                                >
-                                    Read More
-                                    <ChevronRight size={20} className="ml-1 group-hover:translate-x-1 transition-transform duration-200" />
-                                </Link>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            ) : (
-                <motion.div variants={cardVariants} className="text-center py-20 px-6 text-gray-500 italic text-lg bg-white rounded-xl shadow-md border">
-                    <ListChecks size={64} className="mx-auto mb-6 text-gray-400" />
-                    <p className="text-xl font-semibold text-gray-700 mb-2">No resources match your criteria.</p>
-                    <p>Try adjusting your search terms or broadening your filters.</p>
-                </motion.div>
-            )}
-       </motion.section>
+      {/* Resources Grid */}
+      <motion.section 
+        variants={sectionVariants} 
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-16"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {resources.map((resource, index) => (
+            <ResourceCard key={index} {...resource} />
+          ))}
+        </div>
+      </motion.section>
     </motion.div>
   );
 };
