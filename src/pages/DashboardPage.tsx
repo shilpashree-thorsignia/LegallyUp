@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Import the hook from the correct path
+import { useAuth } from '../contexts/AuthContext'; 
 import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText } from 'lucide-react';
 import ReactDOM from 'react-dom/client';
 import DocumentPreview from '../components/DocumentPreview';
@@ -261,7 +261,7 @@ const DashboardPage: React.FC = () => {
         {/* Hero Section (modern, animated) */}
         <motion.section
           variants={sectionVariants}
-          className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-12 px-4 sm:px-6 lg:px-8"
+          className="w-full min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center py-6 md:py-20 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
         >
           <HeroBackground variant="dashboard" />
           <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none">
@@ -270,55 +270,57 @@ const DashboardPage: React.FC = () => {
               <rect width="100%" height="100%" fill="url(#patt)"/>
             </svg>
           </div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
-              <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
-            </motion.div>
-            <motion.h1
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter"
-              style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
-            >
-              Dashboard
-            </motion.h1>
-            <motion.p
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-              className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-4"
-            >
-              Welcome back, <span className="font-bold">{user?.name || 'User'}</span>! Manage your legal documents, edit, download, or restore them anytime.
-            </motion.p>
-            <div className="mt-8 space-x-4">
-              <Link 
-                to="/templates" 
-                className="bg-accent text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold"
+          <div className="container mx-auto relative z-10 flex flex-col justify-center h-full">
+            <div className="max-w-xl mx-auto text-center space-y-4 md:space-y-6">
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-2 md:mb-6">
+                <Layers size={48} className="mx-auto opacity-90 md:h-16 md:w-16" strokeWidth={1.2} />
+              </motion.div>
+              <motion.h1
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+                className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-extrabold leading-tight tracking-tighter"
+                style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
               >
-                Generate Document
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-white text-primary px-6 py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold"
+                Dashboard
+              </motion.h1>
+              <motion.p
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
+                className="text-sm sm:text-base md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
               >
-                Logout
-              </button>
+                Welcome back, <span className="font-bold">{user?.name || 'User'}</span>! Manage your legal documents, edit, download, or restore them anytime.
+              </motion.p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center mt-4 md:mt-6">
+                <Link 
+                  to="/templates" 
+                  className="bg-accent text-white px-6 py-2.5 md:py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold w-full sm:w-auto text-sm md:text-base"
+                >
+                  Generate Document
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-white text-primary px-6 py-2.5 md:py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold w-full sm:w-auto text-sm md:text-base"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </motion.section>
 
         {/* Saved or Trashed Documents */}
-        <motion.section variants={sectionVariants} className="py-8 mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-4xl font-bold text-primary">
+        <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 md:gap-0">
+            <h2 className="text-2xl sm:text-4xl font-bold text-primary text-center md:text-left">
               {showTrash ? 'Trashed Documents' : 'Your Documents'}
             </h2>
             <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50 transition-colors duration-200`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50 transition-colors duration-200 mx-auto md:mx-0`}
               onClick={() => setShowTrash(t => !t)}
             >
               {showTrash ? <Undo2 size={18} className="text-green-600"/> : <Trash2 size={18}/>} <span className={showTrash ? 'text-green-600 font-semibold' : ''}>{showTrash ? 'Back to Documents' : 'View Trash'}</span>
             </button>
           </div>
           {/* Search and Sort Bar */}
-          <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
+          <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
             <div className="flex-1">
               <label htmlFor="dashboard-search" className="block text-sm font-medium text-gray-700 mb-1.5">Search Documents</label>
               <div className="relative">
@@ -471,119 +473,114 @@ const DashboardPage: React.FC = () => {
         </motion.section>
 
         {/* Quick Links */}
-        <motion.section variants={sectionVariants} className="py-8 mb-12">
-          <h2 className="text-4xl font-bold text-primary mb-8 text-center md:text-left">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Grid for quick links */}
-            <Link to="/generate" className="block bg-white p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-4xl mb-3">📄</div> {/* Icon */}
-              <h3 className="text-xl font-semibold text-primary">Generate New Document</h3>
+        <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
+          <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-8 text-center md:text-left">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link to="/generate" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
+              <div className="text-accent text-3xl sm:text-4xl mb-3">📄</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary">Generate New Document</h3>
             </Link>
-            <Link to="/templates" className="block bg-white p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-4xl mb-3">📚</div> {/* Icon */}
-              <h3 className="text-xl font-semibold text-primary">Browse Templates</h3>
+            <Link to="/templates" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
+              <div className="text-accent text-3xl sm:text-4xl mb-3">📚</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary">Browse Templates</h3>
             </Link>
-            <Link to="/resources" className="block bg-white p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-4xl mb-3">📖</div> {/* Icon */}
-              <h3 className="text-xl font-semibold text-primary">Explore Legal Resources</h3>
+            <Link to="/resources" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
+              <div className="text-accent text-3xl sm:text-4xl mb-3">📖</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary">Explore Legal Resources</h3>
             </Link>
           </div>
         </motion.section>
 
         {/* Profile Settings */}
-        <motion.section variants={sectionVariants} className="py-8 mb-12">
-          <h2 className="text-4xl font-bold text-primary mb-8 text-center md:text-left">Account Settings</h2>
-          <div className="bg-lightGray p-8 rounded-2xl grid grid-cols-1 gap-8">
-            {/* Combined Profile & Plan Card */}
-            <div className="bg-white rounded-xl shadow-md p-8 flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-8">
-              {/* Avatar and Basic Info */}
+        <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
+          <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-8 text-center">Account Settings</h2>
+          <div className="bg-lightGray p-4 sm:p-8 rounded-2xl grid grid-cols-1 gap-6">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-8 flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
               <div className="flex flex-col items-center md:items-start w-full md:w-1/3">
-                <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-4 mx-auto md:mx-0">
                   <svg xmlns='http://www.w3.org/2000/svg' className='w-16 h-16 text-accent' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14c3.866 0 7 1.343 7 3v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1c0-1.657 3.134-3 7-3z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14a5 5 0 100-10 5 5 0 000 10z' /></svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-accent mb-1 flex items-center gap-2">{user?.name}
+                <h3 className="text-2xl sm:text-2xl font-semibold text-accent mb-2 text-center w-full">{user?.name}
                   {user?.verified && (
-                    <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Verified</span>
+                    <span className="inline-block bg-green-100 text-green-700 text-sm font-semibold px-2 py-0.5 rounded-full ml-2">Verified</span>
                   )}
                 </h3>
-                <p className="text-textColor text-lg mb-1">{user?.email}</p>
+                <p className="text-textColor text-lg sm:text-lg mb-2 text-left w-full">{user?.email}</p>
                 {user?.created_at && (
-                  <p className="text-xs text-gray-400 mb-2">Member since: {user.created_at.slice(0, 10)}</p>
+                  <p className="text-sm text-gray-400 mb-2 text-left w-full">Member since: {user.created_at.slice(0, 10)}</p>
                 )}
-                <p className="text-gray-500 text-sm mb-2">
+                <p className="text-gray-500 text-sm sm:text-sm mb-4 text-left w-full">
                   Welcome to LegallyUp! Here you can view and update your personal information, track your document activity, and manage your subscription plan. Take advantage of our growing library of legal templates and powerful tools to simplify your legal paperwork.
                 </p>
-                {/* Move document stats here */}
-                <div className="w-full flex flex-col gap-2 mb-4">
-                  <div className="bg-lightGray rounded-lg p-3 flex flex-col items-start md:items-start text-center md:text-left">
-                    <span className="text-xs text-gray-500 text-center md:text-left w-full">Most Recent Document:</span>
-                    <span className="font-semibold text-primary text-sm text-center md:text-left w-full">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
-                    <span className="text-xs text-gray-400 text-center md:text-left w-full">{mostRecentDoc && mostRecentDoc.created_at ? mostRecentDoc.created_at.slice(0, 10) : ''}</span>
+                <div className="w-full flex flex-col gap-3 mb-4">
+                  <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
+                    <span className="text-sm text-gray-500">Most Recent Document:</span>
+                    <span className="font-semibold text-primary text-base sm:text-sm">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
+                    <span className="text-sm text-gray-400">{mostRecentDoc && mostRecentDoc.created_at ? mostRecentDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
-                  <div className="bg-lightGray rounded-lg p-3 flex flex-col items-start md:items-start text-center md:text-left">
-                    <span className="text-xs text-gray-500 text-center md:text-left w-full">First Document Created:</span>
-                    <span className="font-semibold text-primary text-sm text-center md:text-left w-full">{firstDoc ? firstDoc.title : '--'}</span>
-                    <span className="text-xs text-gray-400 text-center md:text-left w-full">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
+                  <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
+                    <span className="text-sm text-gray-500">First Document Created:</span>
+                    <span className="font-semibold text-primary text-base sm:text-sm">{firstDoc ? firstDoc.title : '--'}</span>
+                    <span className="text-sm text-gray-400">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
                 </div>
-                <button className="mt-2 px-4 py-2 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-sm">Edit Profile (Coming Soon)</button>
+                <button className="mt-2 px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base sm:text-sm w-full">Edit Profile (Coming Soon)</button>
               </div>
-              {/* Divider for desktop */}
               <div className="hidden md:block w-px bg-lightGray mx-8"></div>
-              {/* Plan and Stats */}
               <div className="flex-1 flex flex-col items-center md:items-start">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
-                  <span className="text-primary font-semibold text-lg">Your Plan</span>
+                <div className="flex items-center gap-3 mb-3 justify-center w-full">
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
+                  <span className="text-primary font-semibold text-lg sm:text-lg">Your Plan</span>
                 </div>
-                <p className="text-textColor text-lg mb-1"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
-                <p className="text-gray-500 text-sm mb-2">
+                <p className="text-textColor text-lg sm:text-lg mb-2 text-left w-full"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
+                <p className="text-gray-500 text-sm sm:text-sm mb-3 text-left w-full">
                   {user?.plan === 'Pro'
                     ? 'You are on the Pro plan. Enjoy unlimited access to all features and priority support.'
                     : (
                       <>
                         You are on the Free plan. Enjoy access to essential legal templates and create up to 3 documents per month.<br />
-                        <span className="block mt-2 font-semibold text-primary">Upgrade to unlock:</span>
-                        <div className="bg-accent/5 rounded-lg p-4 mt-2">
+                        <span className="block mt-3 font-semibold text-primary text-base text-center">Upgrade to unlock:</span>
+                        <div className="bg-accent/5 rounded-lg p-4 mt-3">
                           <ul className="space-y-3">
-                            <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Unlimited document creation
+                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Unlimited document creation
                             </li>
-                            <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-2 text-accent" /> All premium templates
+                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> All premium templates
                             </li>
-                            <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Advanced customization options
+                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Advanced customization options
                             </li>
-                            <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Priority support from legal experts
+                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Priority support from legal experts
                             </li>
                           </ul>
                         </div>
                       </>
                     )}
                 </p>
-                <p className="text-xs text-gray-400 mb-2">
+                <p className="text-sm text-gray-400 mb-3 text-left w-full">
                   {user?.plan === 'Pro' && user?.next_billing_date ? (
                     <>Next billing date: {user.next_billing_date}</>
                   ) : (
                     <>No payment method on file</>
                   )}
                 </p>
-                <Link to="/pricing" className="mt-2 px-4 py-2 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-sm inline-block">View Pricing / Upgrade</Link>
-                {/* Extra content: Documents Created and Last Login */}
-                <div className="mt-6 grid grid-cols-2 gap-6 w-full max-w-xs">
+                <Link to="/pricing" className="mt-2 px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base sm:text-sm w-full text-center">View Pricing / Upgrade</Link>
+                <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 w-full max-w-xs">
                   <div className="flex flex-col items-center bg-white rounded-lg border border-blue-100 p-4 shadow-sm">
-                    <div className="bg-blue-50 rounded-full p-1.5 mb-2 flex items-center justify-center" aria-label='Documents Created'>
-                      <FileText className="w-6 h-6 text-accent" />
+                    <div className="bg-blue-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Created'>
+                      <FileText className="w-6 h-6 sm:w-6 sm:h-6 text-accent" />
                     </div>
-                    <span className="text-2xl font-extrabold text-primary mb-1">{documentsCreated}</span>
-                    <span className="text-xs text-gray-500 font-medium text-center leading-tight">Documents Created</span>
+                    <span className="text-2xl sm:text-2xl font-extrabold text-primary mb-1 text-center">{documentsCreated}</span>
+                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Created</span>
                   </div>
                   <div className="flex flex-col items-center bg-white rounded-lg border border-red-100 p-4 shadow-sm">
-                    <div className="bg-red-50 rounded-full p-1.5 mb-2 flex items-center justify-center" aria-label='Documents Trashed'>
-                      <Trash2 className="w-6 h-6 text-red-500" />
+                    <div className="bg-red-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Trashed'>
+                      <Trash2 className="w-6 h-6 sm:w-6 sm:h-6 text-red-500" />
                     </div>
-                    <span className="text-2xl font-extrabold text-red-600 mb-1">{documentsTrashed}</span>
+                    <span className="text-2xl sm:text-2xl font-extrabold text-red-600 mb-1 text-center">{documentsTrashed}</span>
+                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
                   </div>
                 </div>
               </div>
