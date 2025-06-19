@@ -4,7 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Save, Edit3 } from 'lucide-react'; // Relevant icons
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
@@ -63,7 +63,21 @@ const initialData: EulaData = {
 const stepVariants = { /* ... (same as before) ... */ initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }, exit: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeIn" } }};
 
 const EulaPage: React.FC = () => {
-  const [formData, setFormData] = useState<EulaData>(initialData);
+  const location = useLocation();
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialData, ...parsed };
+      } catch {
+        return initialData;
+      }
+    }
+    return initialData;
+  }, [location.state]);
+  const [formData, setFormData] = useState<EulaData>(initialFormData);
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);

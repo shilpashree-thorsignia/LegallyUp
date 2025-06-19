@@ -4,7 +4,7 @@ import FormField from '../../components/forms/FormField';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ArrowLeft, ArrowRight, CheckCircle, Edit3,  Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
 
 interface RefundPolicyData {
@@ -61,7 +61,21 @@ const stepVariants = {
 };
 
 const RefundPolicyPage: React.FC = () => {
-  const [formData, setFormData] = useState<RefundPolicyData>(initialData);
+  const location = useLocation();
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialData, ...parsed };
+      } catch {
+        return initialData;
+      }
+    }
+    return initialData;
+  }, [location.state]);
+  const [formData, setFormData] = useState<RefundPolicyData>(initialFormData);
   // const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);

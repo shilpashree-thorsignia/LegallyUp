@@ -4,7 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path
 import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Eye, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
 
 interface CookiesPolicyData {
@@ -53,8 +53,22 @@ const stepVariants = {
 };
 
 const CookiesPolicyPage: React.FC = () => {
+  const location = useLocation();
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialCookiesPolicyData, ...parsed };
+      } catch {
+        return initialCookiesPolicyData;
+      }
+    }
+    return initialCookiesPolicyData;
+  }, [location.state]);
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<CookiesPolicyData>(initialCookiesPolicyData);
+  const [formData, setFormData] = useState<CookiesPolicyData>(initialFormData);
   // const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);

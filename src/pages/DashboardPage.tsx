@@ -378,44 +378,59 @@ const DashboardPage: React.FC = () => {
                       <h3 className="text-xl font-bold text-primary mb-1 truncate" title={doc.title}>{doc.title}</h3>
                       <div className="text-sm text-textColor/70 mb-2">Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''}</div>
                     </div>
-                    <div className="flex gap-2 mt-auto">
-                      <button
-                        onClick={() => handleViewDocument(doc)}
-                        className="p-2 rounded-full hover:bg-accent/10 transition group"
-                        title="View"
-                      >
-                        <Eye size={18} className="text-accent group-hover:scale-110 transition" />
-                      </button>
-                      <button
-                        onClick={() => handleEditDocument(doc)}
-                        className="p-2 rounded-full hover:bg-accent/10 transition group"
-                        title="Edit"
-                      >
-                        <Edit3 size={18} className="text-accent group-hover:scale-110 transition" />
-                      </button>
-                      <button
-                        onClick={() => handleDownloadDocument(doc, 'pdf')}
-                        className="p-2 rounded-full hover:bg-primary/10 transition group"
-                        title="Download PDF"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l-6-6m6 6l6-6" /></svg>
-                      </button>
+                    <div className="grid grid-cols-4 gap-0 mt-auto">
+                      <div className="flex flex-col items-center group cursor-pointer">
+                        <button
+                          onClick={() => handleViewDocument(doc)}
+                          className="p-2 rounded-full group-hover:bg-accent/10 transition"
+                          title="View"
+                        >
+                          <Eye size={20} className="text-accent group-hover:scale-110 transition" />
+                        </button>
+                        <span className="text-xs font-semibold text-gray-600 group-hover:text-accent mt-1 transition">View</span>
+                      </div>
+                      <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
+                        <button
+                          onClick={() => handleEditDocument(doc)}
+                          className="p-2 rounded-full group-hover:bg-accent/10 transition"
+                          title="Edit"
+                        >
+                          <Edit3 size={20} className="text-accent group-hover:scale-110 transition" />
+                        </button>
+                        <span className="text-xs font-semibold text-gray-600 group-hover:text-accent mt-1 transition">Edit</span>
+                      </div>
+                      <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
+                        <button
+                          onClick={() => handleDownloadDocument(doc, 'pdf')}
+                          className="p-2 rounded-full group-hover:bg-primary/10 transition"
+                          title="Download PDF"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l-6-6m6 6l6-6" /></svg>
+                        </button>
+                        <span className="text-xs font-semibold text-gray-600 group-hover:text-primary mt-1 transition">Download</span>
+                      </div>
                       {!showTrash ? (
-                        <button
-                          onClick={() => handleDeleteDocument(doc.id)}
-                          className="p-2 rounded-full hover:bg-red-100 transition group"
-                          title="Move to Trash"
-                        >
-                          <Trash2 size={18} className="text-red-600 group-hover:scale-110 transition" />
-                        </button>
+                        <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
+                          <button
+                            onClick={() => handleDeleteDocument(doc.id)}
+                            className="p-2 rounded-full group-hover:bg-red-100 transition"
+                            title="Move to Trash"
+                          >
+                            <Trash2 size={20} className="text-red-600 group-hover:scale-110 transition" />
+                          </button>
+                          <span className="text-xs font-semibold text-gray-600 group-hover:text-red-600 mt-1 transition">Delete</span>
+                        </div>
                       ) : (
-                        <button
-                          onClick={() => handleRestoreDocument(doc.id)}
-                          className="p-2 rounded-full hover:bg-green-100 transition group"
-                          title="Restore"
-                        >
-                          <Undo2 size={18} className="text-green-600 group-hover:scale-110 transition" />
-                        </button>
+                        <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
+                          <button
+                            onClick={() => handleRestoreDocument(doc.id)}
+                            className="p-2 rounded-full group-hover:bg-green-100 transition"
+                            title="Restore"
+                          >
+                            <Undo2 size={20} className="text-green-600 group-hover:scale-110 transition" />
+                          </button>
+                          <span className="text-xs font-semibold text-gray-600 group-hover:text-green-600 mt-1 transition">Restore</span>
+                        </div>
                       )}
                     </div>
                   </div>

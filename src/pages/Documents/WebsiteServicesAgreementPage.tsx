@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Users, Tv2, DollarSign, Lock, FileSignature, Save } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
 import { useFormValidation } from '../../hooks/useFormValidation';
@@ -93,7 +93,23 @@ const stepVariants = {
 
 const WebsiteServicesAgreementPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<WebsiteServicesAgreementData>(initialData);
+  const location = useLocation();
+  // Check if editing: if location.state?.template exists, use its content
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        // Content is usually a JSON string
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialData, ...parsed };
+      } catch {
+        return initialData;
+      }
+    }
+    return initialData;
+  }, [location.state]);
+  const [formData, setFormData] = useState<WebsiteServicesAgreementData>(initialFormData);
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);

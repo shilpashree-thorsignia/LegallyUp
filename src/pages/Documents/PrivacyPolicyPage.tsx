@@ -68,14 +68,21 @@ const PrivacyPolicyPage: React.FC = () => {
   const location = useLocation();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState(location.state?.template);
-  const [formData, setFormData] = useState<PrivacyPolicyData>(() => {
-    try {
-      return editingTemplate ? JSON.parse(editingTemplate.content) : initialData;
-    } catch {
-      return initialData;
+  const [editingTemplate, setEditingTemplate] = useState<any>(location.state?.template || null);
+  const initialFormData = React.useMemo(() => {
+    if (editingTemplate && editingTemplate.content) {
+      try {
+        const parsed = typeof editingTemplate.content === 'string'
+          ? JSON.parse(editingTemplate.content)
+          : editingTemplate.content;
+        return { ...initialData, ...parsed };
+      } catch {
+        return initialData;
+      }
     }
-  });
+    return initialData;
+  }, [editingTemplate]);
+  const [formData, setFormData] = useState<PrivacyPolicyData>(initialFormData);
   // const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
@@ -110,24 +117,17 @@ const PrivacyPolicyPage: React.FC = () => {
       fetch(`/api/templates/${id}`)
         .then(res => res.json())
         .then(data => {
-          if (data.template) setEditingTemplate(data.template);
-          else navigate('/dashboard');
+          if (data.template) {
+            setEditingTemplate(data.template);
+            setFormData(data.template.content ? JSON.parse(data.template.content) : data.template);
+          } else {
+            navigate('/dashboard');
+          }
         })
         .catch(() => navigate('/dashboard'))
         .finally(() => setLoading(false));
     }
   }, [editingTemplate, id, navigate]);
-
-  useEffect(() => {
-    if (editingTemplate) {
-      try {
-        setFormData(JSON.parse(editingTemplate.content));
-      } catch {
-        setFormData(initialData);
-      }
-    }
-    // eslint-disable-next-line
-  }, [editingTemplate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

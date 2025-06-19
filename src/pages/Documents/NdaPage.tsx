@@ -4,7 +4,7 @@ import FormField from '../../components/forms/FormField'; // Adjust path if nece
 import { ArrowLeft, ArrowRight, CheckCircle, Download, Edit3, Save } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../lib/apiBase';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
@@ -39,7 +39,21 @@ const stepVariants = {
 };
 
 const NdaPage: React.FC = () => {
-  const [formData, setFormData] = useState<NdaData>(initialNdaData);
+  const location = useLocation();
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialNdaData, ...parsed };
+      } catch {
+        return initialNdaData;
+      }
+    }
+    return initialNdaData;
+  }, [location.state]);
+  const [formData, setFormData] = useState<NdaData>(initialFormData);
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);

@@ -83,7 +83,21 @@ const stepVariants = {
 };
 
 const PowerOfAttorneyPage: React.FC = () => {
-  const [formData, setFormData] = useState<PowerOfAttorneyData>(initialData);
+  const location = useLocation();
+  const initialFormData = React.useMemo(() => {
+    if (location.state && location.state.template && location.state.template.content) {
+      try {
+        const parsed = typeof location.state.template.content === 'string'
+          ? JSON.parse(location.state.template.content)
+          : location.state.template.content;
+        return { ...initialData, ...parsed };
+      } catch {
+        return initialData;
+      }
+    }
+    return initialData;
+  }, [location.state]);
+  const [formData, setFormData] = useState<PowerOfAttorneyData>(initialFormData);
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const formColumnRef = useRef<HTMLDivElement>(null);
@@ -91,7 +105,6 @@ const PowerOfAttorneyPage: React.FC = () => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
 
@@ -108,20 +121,6 @@ const PowerOfAttorneyPage: React.FC = () => {
   useEffect(() => {
     formColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
-
-  // On mount, if editing, prefill formData
-  React.useEffect(() => {
-    if (location.state && location.state.template) {
-      try {
-        const parsed = typeof location.state.template.content === 'string'
-          ? JSON.parse(location.state.template.content)
-          : location.state.template.content;
-        setFormData({ ...initialData, ...parsed });
-      } catch {
-        // fallback: do nothing
-      }
-    }
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
