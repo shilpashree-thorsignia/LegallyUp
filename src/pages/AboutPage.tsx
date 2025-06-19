@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Users, Sparkles, Handshake, ShieldCheck, Building, Lightbulb,  Shield
+  Users, Sparkles, Handshake, ShieldCheck, Lightbulb,  Shield
 } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
 
@@ -65,7 +65,7 @@ const AboutPage: React.FC = () => {
       animate="animate"
       exit="exit"
       variants={pageVariants}
-      className="overflow-x-hidden bg-gray-100"
+      className="overflow-x-hidden bg-white"
     >
       {/* Hero Section */}
       <motion.section
@@ -101,22 +101,27 @@ const AboutPage: React.FC = () => {
 <motion.section
   id="our-journey"
   variants={sectionVariants}
-  className="py-28 px-6 bg-lightGray/60 text-gray-900"
+  className="py-28 px-6 bg-white text-gray-900"
 >
   <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <motion.div variants={sectionVariants} className="order-2 lg:order-1">
-      <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6">Our Journey: From Idea to Impact</h2>
-      <p className="text-lg md:text-xl leading-relaxed mb-6">
-        LegallyUp was conceived from a universal challenge: the often daunting, expensive, and time-consuming nature of legal tasks. Our founders, a dynamic fusion of seasoned legal minds and forward-thinking technologists, envisioned a world where legal empowerment wasn't a privilege, but a readily available tool.
-      </p>
-      <p className="text-lg md:text-xl leading-relaxed">
-        Our initial focus was clear: to build an intuitive platform offering reliable, easily customizable legal templates. As we've grown, so has our ambition. Today, LegallyUp is a comprehensive ecosystem—providing not just document generation, but also rich educational resources and seamless connections to a network of vetted legal professionals. Our journey is one of continuous innovation, driven by a steadfast commitment to making the law work for everyone.
-      </p>
-    </motion.div>
-    <motion.div variants={sectionVariants} className="order-1 lg:order-2 flex justify-center">
-      <div className="w-72 h-72 rounded-full bg-primary/10 flex items-center justify-center shadow-xl">
-        <Lightbulb size={100} className="text-accent" strokeWidth={1.5} />
+    <motion.div variants={sectionVariants} className="order-1 flex justify-center relative">
+      {/* Sprinkles Animation */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <span className="sprinkle sprinkle-1"></span>
+        <span className="sprinkle sprinkle-2"></span>
+        <span className="sprinkle sprinkle-3"></span>
+        <span className="sprinkle sprinkle-4"></span>
+        <span className="sprinkle sprinkle-5"></span>
       </div>
+      <div className="w-72 h-72 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-xl relative z-10">
+        <Lightbulb size={100} className="text-white" strokeWidth={1.5} />
+      </div>
+    </motion.div>
+    <motion.div variants={sectionVariants} className="order-2">
+      <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Our Journey From Idea to Impact</h2>
+      <p className="text-lg md:text-xl leading-relaxed">
+        LegallyUp was founded to make legal empowerment accessible to everyone. What began as a mission to simplify and streamline legal documents has grown into a platform that offers intuitive templates, educational resources, and connections to trusted legal professionals. Our journey is driven by innovation and a commitment to making the law work for all.
+      </p>
     </motion.div>
   </div>
 </motion.section>
@@ -125,36 +130,48 @@ const AboutPage: React.FC = () => {
       {/* Vision & Mission - Two-Column Layout on lightGray */}
       <motion.section
         variants={contentBlockVariants}
-        className="py-20 md:py-28 px-6 rounded-t-[30px] md:rounded-t-[50px] rounded-b-[30px] md:rounded-b-[50px] my-12 md:my-16 mx-auto max-w-7xl lg:px-8" // Constrain width and center
+        className="py-20 md:py-28 px-6 bg-white rounded-t-[30px] md:rounded-t-[50px] rounded-b-[30px] md:rounded-b-[50px] my-12 md:my-16 mx-auto max-w-7xl lg:px-8" // Constrain width and center
       >
         <div className="container mx-auto">
             {/* Our Vision */}
             <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center mb-16 md:mb-24">
-  <motion.div variants={itemVariants} className="text-center md:text-left">
-    <Lightbulb size={60} className="text-primary mb-6 mx-auto md:mx-0" strokeWidth={1.5} />
+  <motion.div variants={itemVariants} className="text-center md:text-left order-2 md:order-1">
     <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6 tracking-tight">Our Vision for the Future</h2>
     <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
       To be the globally trusted and indispensable platform where individuals and businesses confidently navigate their legal landscapes with unparalleled clarity, efficiency, and ease, fostering a future where expert legal support and understanding are accessible to all through innovative technology.
     </p>
   </motion.div>
-  <motion.div variants={itemVariants} className="relative h-64 md:h-auto md:aspect-[5/4] rounded-2xl overflow-hidden shadow-xl">
-    <div className="absolute inset-0 bg-gradient-to-br from-accent/30 to-primary/30 flex items-center justify-center">
-      <Lightbulb size={120} className="text-white opacity-40 transform " />
+  <motion.div variants={itemVariants} className="flex justify-center md:justify-end order-1 md:order-2 relative">
+    {/* Sprinkles Animation */}
+    <div className="absolute inset-0 z-0 pointer-events-none">
+      <span className="sprinkle sprinkle-1"></span>
+      <span className="sprinkle sprinkle-2"></span>
+      <span className="sprinkle sprinkle-3"></span>
+      <span className="sprinkle sprinkle-4"></span>
+      <span className="sprinkle sprinkle-5"></span>
     </div>
-    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVldGluZyUyMHRlYW18ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Vision" className="w-full h-full object-cover" />
+    <div className="w-60 h-60 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-xl relative z-10">
+      <Sparkles size={100} className="text-white" strokeWidth={1.5} />
+    </div>
   </motion.div>
 </div>
 
             {/* Our Mission */}
             <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-                <motion.div variants={itemVariants} className="order-2 md:order-1 relative h-64 md:h-auto md:aspect-[5/4] rounded-2xl overflow-hidden shadow-xl">
-                     <div className="absolute inset-0 bg-gradient-to-tl from-accent/30 to-primary/30 flex items-center justify-center">
-                        <Lightbulb size={120} className="text-white opacity-40 transform " />
-                    </div>
-                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YnVzaW5lc3MlMjBwbGFubmluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60" alt="Mission" className="w-full h-full object-cover"/>
+                <motion.div variants={itemVariants} className="flex justify-center md:justify-start order-1 md:order-1 relative">
+                  {/* Sprinkles Animation */}
+                  <div className="absolute inset-0 z-0 pointer-events-none">
+                    <span className="sprinkle sprinkle-1"></span>
+                    <span className="sprinkle sprinkle-2"></span>
+                    <span className="sprinkle sprinkle-3"></span>
+                    <span className="sprinkle sprinkle-4"></span>
+                    <span className="sprinkle sprinkle-5"></span>
+                  </div>
+                  <div className="w-60 h-60 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-xl relative z-10">
+                    <Handshake size={100} className="text-white" strokeWidth={1.5} />
+                  </div>
                 </motion.div>
-                <motion.div variants={itemVariants} className="order-1 md:order-2 text-center md:text-left">
-                    <Building size={60} className="text-primary mb-6 mx-auto md:mx-0" strokeWidth={1.5}/>
+                <motion.div variants={itemVariants} className="text-center md:text-left order-2 md:order-2">
                     <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6 tracking-tight">Our Core Mission</h2>
                     <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
                         Our mission is to <strong className="text-accent font-semibold">democratize access to legal resources and support</strong>. We achieve this by providing exceptionally intuitive, highly affordable, and consistently reliable solutions designed to empower you at every turn—from drafting essential documents to connecting with seasoned legal professionals.

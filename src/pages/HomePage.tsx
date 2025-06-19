@@ -343,7 +343,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div variants={contentBlockVariants} className="text-center mb-16">
             <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Document Templates
+              Legal Templates
             </motion.h2>
             <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Browse our extensive collection of professional legal templates
@@ -360,14 +360,16 @@ const HomePage: React.FC = () => {
               >
                 <Link
                   to={`/templates#${category.slug}`}
-                  className="block bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg"
+                  className="block bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg flex flex-col items-center"
                 >
                   <div className="p-3 bg-primary/10 rounded-xl w-fit mb-6 group-hover:bg-primary/20 transition-colors duration-300">
                     {category.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{category.title}</h3>
-                  <p className="text-gray-600 mb-4">{category.desc}</p>
-                  <p className="text-sm text-primary font-medium">{category.count}</p>
+                  <div className="w-full text-left">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{category.title}</h3>
+                    <p className="text-gray-600 mb-4">{category.desc}</p>
+                    <p className="text-sm text-primary font-medium">{category.count}</p>
+                  </div>
                 </Link>
               </motion.div>
             ))}
@@ -396,7 +398,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div variants={contentBlockVariants} className="text-center mb-16">
             <motion.h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Choose LegallyUp
+              Why To Choose LegallyUp
             </motion.h2>
             <motion.p className="text-xl text-gray-600 max-w-3xl mx-auto">
               We combine legal expertise with modern technology to make document creation simple and reliable
