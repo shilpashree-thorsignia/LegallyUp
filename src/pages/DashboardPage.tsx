@@ -284,43 +284,38 @@ const DashboardPage: React.FC = () => {
         {/* Hero Section (modern, animated) */}
         <motion.section
           variants={sectionVariants}
-          className="w-full min-h-[45vh] flex flex-col justify-center py-10 sm:py-16 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
+          className="w-full min-h-[85vh] flex flex-col justify-center py-10 sm:py-16 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-b-[60px] mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
         >
           <HeroBackground variant="dashboard" />
-          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>
-              <rect width="100%" height="100%" fill="url(#patt)"/>
-            </svg>
-          </div>
+          <div className="absolute inset-0 bg-black/20 z-0"></div>
           <div className="container mx-auto relative z-10 flex flex-col justify-center h-full">
-            <div className="max-w-xl mx-auto text-center space-y-4">
-              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-2">
-                <Layers size={36} className="mx-auto opacity-90 md:size-12" strokeWidth={1.2} />
+            <div className="max-w-4xl mx-auto text-center space-y-4">
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
+                <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.5} />
               </motion.div>
               <motion.h1
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-                className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tighter"
+                className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tighter"
                 style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
               >
-                Dashboard
+                Your Legal Hub
               </motion.h1>
               <motion.p
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-                className="text-sm sm:text-lg text-white/90 max-w-md mx-auto leading-relaxed"
+                className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed"
               >
                 Welcome back, <span className="font-bold">{user?.name || 'User'}</span>! Manage your legal documents, edit, download, or restore them anytime.
               </motion.p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center mt-4 md:mt-6">
-                <Link 
-                  to="/templates" 
-                  className="bg-accent text-white px-6 py-2 sm:py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold w-full sm:w-auto text-sm"
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center mt-6 md:mt-8">
+                <Link
+                  to="/templates"
+                  className="bg-accent text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold w-full sm:w-auto text-base"
                 >
                   Generate Document
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-white text-primary px-6 py-2 sm:py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold w-full sm:w-auto text-sm"
+                  className="bg-white text-primary px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold w-full sm:w-auto text-base"
                 >
                   Logout
                 </button>
@@ -335,11 +330,11 @@ const DashboardPage: React.FC = () => {
             <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-4">
               {showTrash ? 'Trashed Documents' : 'Your Documents'}
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            {/* <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               {showTrash 
                 ? 'Review and restore documents you have moved to the trash, or permanently delete them.' 
                 : 'Easily manage, edit, download, and organize all of your saved legal documents in one place.'}
-            </p>
+            </p> */}
           </div>
           {/* Search and Sort Bar */}
           <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
@@ -432,7 +427,7 @@ const DashboardPage: React.FC = () => {
                     {openMenuId === doc.id && (
                       <div ref={menuRef} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-100 py-1">
                         <button onClick={() => handleActionClick(() => handleViewDocument(doc))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><Eye size={16} /> View</button>
-                        <button onClick={() => handleActionClick(() => handleDownloadDocument(doc, 'pdf'))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l-3-3m3 3l3-3m6-5a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7z" /></svg> Download</button>
+                        <button onClick={() => handleActionClick(() => handleDownloadDocument(doc, 'pdf'))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m0 0l-3-3m3 3l3-3m6-5a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7z" /></svg> Download</button>
                         <div className="my-1 h-px bg-gray-100"></div>
                         {!showTrash ? (
                           <button onClick={() => handleActionClick(() => handleDeleteDocument(doc.id))} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={16} /> Move to Trash</button>
@@ -515,21 +510,21 @@ const DashboardPage: React.FC = () => {
                 <FilePlus2 className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
               </div>
               <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Generate New Document</h3>
-              <p className="text-sm text-gray-500 mt-1">Create a new legal document from scratch.</p>
+              <p className="text-base text-gray-500 mt-1">Create a new legal document from scratch.</p>
             </Link>
             <Link to="/templates" className="group block bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-accent/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
               <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-accent">
                 <LayoutGrid className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
               </div>
               <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Browse Templates</h3>
-              <p className="text-sm text-gray-500 mt-1">Explore our library of professional templates.</p>
+              <p className="text-base text-gray-500 mt-1">Explore our library of professional templates.</p>
             </Link>
             <Link to="/resources" className="group block bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-accent/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
               <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-accent">
                 <BookOpenCheck className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
               </div>
               <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Explore Legal Resources</h3>
-              <p className="text-sm text-gray-500 mt-1">Read articles and guides on legal topics.</p>
+              <p className="text-base text-gray-500 mt-1">Read articles and guides on legal topics.</p>
             </Link>
           </div>
         </motion.section>
@@ -543,27 +538,27 @@ const DashboardPage: React.FC = () => {
                 <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-4 mx-auto md:mx-0">
                   <svg xmlns='http://www.w3.org/2000/svg' className='w-16 h-16 text-accent' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14c3.866 0 7 1.343 7 3v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1c0-1.657 3.134-3 7-3z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14a5 5 0 100-10 5 5 0 000 10z' /></svg>
                 </div>
-                <h3 className="text-2xl sm:text-2xl font-semibold text-accent mb-2 text-center w-full">{user?.name}
+                <h3 className="text-2xl font-semibold text-accent mb-2 text-center w-full">{user?.name}
                   {user?.verified && (
                     <span className="inline-block bg-green-100 text-green-700 text-sm font-semibold px-2 py-0.5 rounded-full ml-2">Verified</span>
                   )}
                 </h3>
-                <p className="text-textColor text-lg sm:text-lg mb-2 text-left w-full">{user?.email}</p>
+                <p className="text-textColor text-lg mb-2 text-left w-full">{user?.email}</p>
                 {user?.created_at && (
-                  <p className="text-sm text-gray-400 mb-2 text-left w-full">Member since: {user.created_at.slice(0, 10)}</p>
+                  <p className="text-base text-gray-400 mb-2 text-left w-full">Member since: {user.created_at.slice(0, 10)}</p>
                 )}
-                <p className="text-gray-500 text-sm sm:text-sm mb-4 text-left w-full">
+                <p className="text-gray-500 text-base mb-4 text-left w-full">
                   Welcome to LegallyUp! Here you can view and update your personal information, track your document activity, and manage your subscription plan. Take advantage of our growing library of legal templates and powerful tools to simplify your legal paperwork.
                 </p>
                 <div className="w-full flex flex-col gap-3 mb-4">
                   <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
-                    <span className="text-sm text-gray-500">Most Recent Document:</span>
-                    <span className="font-semibold text-primary text-base sm:text-sm">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
+                    <span className="text-base text-gray-500">Most Recent Document:</span>
+                    <span className="font-semibold text-primary text-base">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
                     <span className="text-sm text-gray-400">{mostRecentDoc && mostRecentDoc.created_at ? mostRecentDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
                   <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
-                    <span className="text-sm text-gray-500">First Document Created:</span>
-                    <span className="font-semibold text-primary text-base sm:text-sm">{firstDoc ? firstDoc.title : '--'}</span>
+                    <span className="text-base text-gray-500">First Document Created:</span>
+                    <span className="font-semibold text-primary text-base">{firstDoc ? firstDoc.title : '--'}</span>
                     <span className="text-sm text-gray-400">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
                 </div>
@@ -573,10 +568,10 @@ const DashboardPage: React.FC = () => {
               <div className="flex-1 flex flex-col items-center md:items-start">
                 <div className="flex items-center gap-3 mb-3 justify-center w-full">
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
-                  <span className="text-primary font-semibold text-lg sm:text-lg">Your Plan</span>
+                  <span className="text-primary font-semibold text-lg">Your Plan</span>
                 </div>
-                <p className="text-textColor text-lg sm:text-lg mb-2 text-left w-full"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
-                <p className="text-gray-500 text-sm sm:text-sm mb-3 text-left w-full">
+                <p className="text-textColor text-lg mb-2 text-left w-full"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
+                <p className="text-gray-500 text-base mb-3 text-left w-full">
                   {user?.plan === 'Pro'
                     ? 'You are on the Pro plan. Enjoy unlimited access to all features and priority support.'
                     : (
@@ -585,17 +580,17 @@ const DashboardPage: React.FC = () => {
                         <span className="block mt-3 font-semibold text-primary text-base text-center">Upgrade to unlock:</span>
                         <div className="bg-accent/5 rounded-lg p-4 mt-3">
                           <ul className="space-y-3">
-                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Unlimited document creation
+                            <li className="flex items-center text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Unlimited document creation
                             </li>
-                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> All premium templates
+                            <li className="flex items-center text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> All premium templates
                             </li>
-                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Advanced customization options
+                            <li className="flex items-center text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Advanced customization options
                             </li>
-                            <li className="flex items-center text-base sm:text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 mr-3 text-accent" /> Priority support from legal experts
+                            <li className="flex items-center text-base font-semibold text-primary">
+                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Priority support from legal experts
                             </li>
                           </ul>
                         </div>
@@ -613,17 +608,17 @@ const DashboardPage: React.FC = () => {
                 <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 w-full max-w-xs">
                   <div className="flex flex-col items-center bg-white rounded-lg border border-blue-100 p-4 shadow-sm">
                     <div className="bg-blue-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Created'>
-                      <FileText className="w-6 h-6 sm:w-6 sm:h-6 text-primary" />
+                      <FileText className="w-6 h-6 text-primary" />
                     </div>
-                    <span className="text-2xl sm:text-2xl font-extrabold text-primary mb-1 text-center">{documentsCreated}</span>
-                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Created</span>
+                    <span className="text-2xl font-extrabold text-primary mb-1 text-center">{documentsCreated}</span>
+                    <span className="text-base text-gray-500 font-medium text-center leading-tight">Documents Created</span>
                   </div>
                   <div className="flex flex-col items-center bg-white rounded-lg border border-red-100 p-4 shadow-sm">
                     <div className="bg-red-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Trashed'>
-                      <Trash2 className="w-6 h-6 sm:w-6 sm:h-6 text-red-500" />
+                      <Trash2 className="w-6 h-6 text-red-500" />
                     </div>
-                    <span className="text-2xl sm:text-2xl font-extrabold text-red-600 mb-1 text-center">{documentsTrashed}</span>
-                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
+                    <span className="text-2xl font-extrabold text-red-600 mb-1 text-center">{documentsTrashed}</span>
+                    <span className="text-base text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
                   </div>
                 </div>
               </div>
