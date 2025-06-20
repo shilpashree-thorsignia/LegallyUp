@@ -177,6 +177,7 @@ const documentTemplates: DocumentTemplate[] = [
 const TemplateLibraryPage: React.FC = () => {
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const navigate = useNavigate();
   const [shuffledTemplates, setShuffledTemplates] = useState<DocumentTemplate[]>([]);
 
@@ -190,9 +191,11 @@ const TemplateLibraryPage: React.FC = () => {
     // Removed showTrash logic
   }, [user]);
 
-  const handleGenerateClick = (path: string) => {
+  const handleGenerateClick = (path: string, isPremium: boolean) => {
     if (!user) {
       setShowLoginPrompt(true);
+    } else if (isPremium && user.plan === 'free') {
+      setShowUpgradePrompt(true);
     } else {
       navigate(path);
     }
@@ -273,7 +276,7 @@ const TemplateLibraryPage: React.FC = () => {
         </div>
 
         <button
-          onClick={() => handleGenerateClick(document.path)}
+          onClick={() => handleGenerateClick(document.path, document.isPremium)}
           className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium transition-all text-sm mt-auto ${
             document.isPremium 
               ? 'bg-yellow-400 hover:bg-yellow-500 text-black'
@@ -349,13 +352,35 @@ const TemplateLibraryPage: React.FC = () => {
             <h3 className="text-xl font-bold text-primary mb-4">Please log in to continue</h3>
             <p className="mb-6 text-gray-600">You need to be logged in to generate a template.</p>
             <button
-              onClick={() => window.location.href = '/signin'}
+              onClick={() => navigate('/signin')}
               className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition mb-2"
             >
               Log in
             </button>
             <button
               onClick={() => setShowLoginPrompt(false)}
+              className="w-full py-2 text-gray-500 hover:text-primary text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-primary mb-4">Upgrade to Premium</h3>
+            <p className="mb-6 text-gray-600">You need a premium plan to use this template.</p>
+            <button
+              onClick={() => navigate('/pricing')}
+              className="w-full bg-yellow-400 text-black py-3 rounded-xl font-semibold hover:bg-yellow-500 transition mb-2"
+            >
+              Upgrade Plan
+            </button>
+            <button
+              onClick={() => setShowUpgradePrompt(false)}
               className="w-full py-2 text-gray-500 hover:text-primary text-sm"
             >
               Cancel
