@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; 
-import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText, MoreHorizontal } from 'lucide-react';
+import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText, MoreHorizontal, FilePlus2, LayoutGrid, BookOpenCheck } from 'lucide-react';
 import ReactDOM from 'react-dom/client';
 import DocumentPreview from '../components/DocumentPreview';
 // @ts-ignore
@@ -284,7 +284,7 @@ const DashboardPage: React.FC = () => {
         {/* Hero Section (modern, animated) */}
         <motion.section
           variants={sectionVariants}
-          className="w-full min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center py-6 md:py-20 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
+          className="w-full min-h-[45vh] flex flex-col justify-center py-10 sm:py-16 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-3xl mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
         >
           <HeroBackground variant="dashboard" />
           <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none">
@@ -294,33 +294,33 @@ const DashboardPage: React.FC = () => {
             </svg>
           </div>
           <div className="container mx-auto relative z-10 flex flex-col justify-center h-full">
-            <div className="max-w-xl mx-auto text-center space-y-4 md:space-y-6">
-              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-2 md:mb-6">
-                <Layers size={48} className="mx-auto opacity-90 md:h-16 md:w-16" strokeWidth={1.2} />
+            <div className="max-w-xl mx-auto text-center space-y-4">
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-2">
+                <Layers size={36} className="mx-auto opacity-90 md:size-12" strokeWidth={1.2} />
               </motion.div>
               <motion.h1
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-                className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-extrabold leading-tight tracking-tighter"
+                className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tighter"
                 style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
               >
                 Dashboard
               </motion.h1>
               <motion.p
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
-                className="text-sm sm:text-base md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
+                className="text-sm sm:text-lg text-white/90 max-w-md mx-auto leading-relaxed"
               >
                 Welcome back, <span className="font-bold">{user?.name || 'User'}</span>! Manage your legal documents, edit, download, or restore them anytime.
               </motion.p>
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center mt-4 md:mt-6">
                 <Link 
                   to="/templates" 
-                  className="bg-accent text-white px-6 py-2.5 md:py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold w-full sm:w-auto text-sm md:text-base"
+                  className="bg-accent text-white px-6 py-2 sm:py-3 rounded-md hover:bg-blue-600 transition-colors font-semibold w-full sm:w-auto text-sm"
                 >
                   Generate Document
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-white text-primary px-6 py-2.5 md:py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold w-full sm:w-auto text-sm md:text-base"
+                  className="bg-white text-primary px-6 py-2 sm:py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold w-full sm:w-auto text-sm"
                 >
                   Logout
                 </button>
@@ -331,16 +331,15 @@ const DashboardPage: React.FC = () => {
 
         {/* Saved or Trashed Documents */}
         <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 md:gap-0">
-            <h2 className="text-2xl sm:text-4xl font-bold text-primary text-center md:text-left">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-4">
               {showTrash ? 'Trashed Documents' : 'Your Documents'}
             </h2>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showTrash ? 'bg-red-100 text-red-600' : 'bg-white text-primary'} shadow-sm hover:bg-red-50 transition-colors duration-200 mx-auto md:mx-0`}
-              onClick={() => setShowTrash(t => !t)}
-            >
-              {showTrash ? <Undo2 size={18} className="text-green-600"/> : <Trash2 size={18}/>} <span className={showTrash ? 'text-green-600 font-semibold' : ''}>{showTrash ? 'Back to Documents' : 'View Trash'}</span>
-            </button>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              {showTrash 
+                ? 'Review and restore documents you have moved to the trash, or permanently delete them.' 
+                : 'Easily manage, edit, download, and organize all of your saved legal documents in one place.'}
+            </p>
           </div>
           {/* Search and Sort Bar */}
           <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
@@ -365,6 +364,12 @@ const DashboardPage: React.FC = () => {
                 <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none"><ArrowDownUp size={18} className="text-gray-400" /></div>
               </div>
             </div>
+            <button
+              className={`flex items-center gap-2 px-5 py-3.5 rounded-xl border ${showTrash ? 'bg-red-100 text-red-600 border-red-200' : 'bg-white text-primary border-gray-300'} shadow-sm hover:bg-red-50 transition-colors duration-200`}
+              onClick={() => setShowTrash(t => !t)}
+            >
+              {showTrash ? <Undo2 size={18} className="text-green-600"/> : <Trash2 size={18}/>} <span className={showTrash ? 'text-green-600 font-semibold' : ''}>{showTrash ? 'Back to Docs' : 'View Trash'}</span>
+            </button>
           </div>
           {loading ? (
             <div className="flex justify-center items-center py-16">
@@ -500,19 +505,31 @@ const DashboardPage: React.FC = () => {
 
         {/* Quick Links */}
         <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
-          <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-8 text-center md:text-left">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link to="/generate" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-3xl sm:text-4xl mb-3">📄</div>
-              <h3 className="text-lg sm:text-xl font-semibold text-primary">Generate New Document</h3>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-4">Quick Actions</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Get started quickly with our most popular features, from creating new documents to browsing templates.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Link to="/generate" className="group block bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-accent/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-accent">
+                <FilePlus2 className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Generate New Document</h3>
+              <p className="text-sm text-gray-500 mt-1">Create a new legal document from scratch.</p>
             </Link>
-            <Link to="/templates" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-3xl sm:text-4xl mb-3">📚</div>
-              <h3 className="text-lg sm:text-xl font-semibold text-primary">Browse Templates</h3>
+            <Link to="/templates" className="group block bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-accent/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-accent">
+                <LayoutGrid className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Browse Templates</h3>
+              <p className="text-sm text-gray-500 mt-1">Explore our library of professional templates.</p>
             </Link>
-            <Link to="/resources" className="block bg-white p-4 sm:p-6 rounded-xl shadow-md border border-lightGray hover:border-accent transition-colors duration-200 text-center">
-              <div className="text-accent text-3xl sm:text-4xl mb-3">📖</div>
-              <h3 className="text-lg sm:text-xl font-semibold text-primary">Explore Legal Resources</h3>
+            <Link to="/resources" className="group block bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-accent/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-accent">
+                <BookOpenCheck className="w-8 h-8 text-primary transition-colors duration-300 group-hover:text-white" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-lg font-semibold text-primary transition-colors duration-300 group-hover:text-accent">Explore Legal Resources</h3>
+              <p className="text-sm text-gray-500 mt-1">Read articles and guides on legal topics.</p>
             </Link>
           </div>
         </motion.section>
@@ -596,7 +613,7 @@ const DashboardPage: React.FC = () => {
                 <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 w-full max-w-xs">
                   <div className="flex flex-col items-center bg-white rounded-lg border border-blue-100 p-4 shadow-sm">
                     <div className="bg-blue-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Created'>
-                      <FileText className="w-6 h-6 sm:w-6 sm:h-6 text-accent" />
+                      <FileText className="w-6 h-6 sm:w-6 sm:h-6 text-primary" />
                     </div>
                     <span className="text-2xl sm:text-2xl font-extrabold text-primary mb-1 text-center">{documentsCreated}</span>
                     <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Created</span>
