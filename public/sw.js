@@ -50,8 +50,8 @@ self.addEventListener('fetch', (event) => {
         
         return cache.match(request).then((cachedResponse) => {
           const fetchPromise = fetch(request).then((networkResponse) => {
-            // Only cache successful GET responses
-            if (networkResponse.status === 200) {
+            // Only cache successful GET responses for GET requests
+            if (networkResponse.status === 200 && request.method === 'GET') {
               cache.put(request, networkResponse.clone());
             }
             return networkResponse;
