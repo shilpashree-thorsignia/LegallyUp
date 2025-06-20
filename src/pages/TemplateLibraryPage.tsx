@@ -4,11 +4,10 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck,
-  Layers, ChevronRight,
+  FileText, ShieldCheck, Settings2, RotateCcw, Users,  UserCheck,
+  Layers, ChevronRight, Star, Lock, Crown
 } from 'lucide-react';
 import HeroBackground from '../components/ui/HeroBackground';
-
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -29,28 +28,168 @@ const cardItemVariants = {
   }
 };
 
-// Add the documentTypes array from DocumentGeneratorPage
-const documentTypes = [
-  { id: 'nda', name: 'Non-Disclosure Agreement (NDA)', description: 'Protect confidential information shared with others.', path: '/documents/generate/nda', icon: <FileText size={28} /> },
-  { id: 'privacy-policy', name: 'Privacy Policy', description: 'Outline how your business collects, uses, and protects user personal data.', path: '/documents/generate/privacy-policy', icon: <ShieldCheck size={28} /> },
-  { id: 'cookies-policy', name: 'Cookies Policy', description: 'Inform users about the cookies your website uses and how they can manage them.', path: '/documents/generate/cookies-policy', icon: <Settings2 size={28} /> },
-  { id: 'refund-policy', name: 'Refund Policy', description: 'Define terms for product/service refunds and exchanges.', path: '/documents/generate/refund-policy', icon: <RotateCcw size={28} /> },
-  { id: 'power-of-attorney', name: 'Power of Attorney (PoA)', description: 'Grant legal authority to another person to act on your behalf.', path: '/documents/generate/power-of-attorney', icon: <Users size={28} /> },
-  { id: 'website-services-agreement', name: 'Website Services Agreement', description: 'Formalize terms for website design, development, or maintenance.', path: '/documents/generate/website-services-agreement', icon: <Tv2 size={28} /> },
-  { id: 'eula', name: 'End User License Agreement (EULA)', description: 'Set terms for users to license and use your software product.', path: '/documents/generate/eula', icon: <UserCheck size={28} /> },
+interface DocumentTemplate {
+  id: string;
+  name: string;
+  description: string;
+  path: string;
+  icon: React.ReactElement;
+  features: string[];
+  isPremium: boolean;
+  layoutType?: 'large' | 'medium' | 'small';
+}
+
+// All document templates in a single, mixed array
+const documentTemplates: DocumentTemplate[] = [
+  {
+    id: 'nda',
+    name: 'Non-Disclosure Agreement',
+    description: 'Basic NDA template with standard confidentiality terms',
+    path: '/documents/generate/nda',
+    icon: <FileText size={28} />,
+    features: [
+      'Standard confidentiality terms',
+      'Basic customization options',
+      'Simple formatting',
+      'PDF download',
+      'Email delivery'
+    ],
+    isPremium: false,
+    layoutType: 'medium'
+  },
+  {
+    id: 'premium-privacy-policy',
+    name: 'Privacy Policy',
+    description: 'Comprehensive privacy policy with international compliance',
+    path: '/documents/generate/privacy-policy',
+    icon: <ShieldCheck size={28} />,
+    features: [
+      'Full GDPR compliance',
+      'CCPA compliance',
+      'International regulations',
+      'Premium formatting',
+      'Multiple export formats',
+      'Priority support'
+    ],
+    isPremium: true,
+    layoutType: 'large'
+  },
+  {
+    id: 'cookies-policy',
+    name: 'Cookies Policy',
+    description: 'Basic cookies policy template',
+    path: '/documents/generate/cookies-policy',
+    icon: <Settings2 size={28} />,
+    features: [
+      'Essential cookies information',
+      'Basic cookie categories',
+      'Simple customization',
+      'PDF download',
+      'Easy integration'
+    ],
+    isPremium: false,
+    layoutType: 'small'
+  },
+  {
+    id: 'premium-nda',
+    name: 'NDA',
+    description: 'Advanced NDA with comprehensive legal protection',
+    path: '/documents/generate/nda',
+    icon: <FileText size={28} />,
+    features: [
+      'Advanced confidentiality terms',
+      'Industry-specific clauses',
+      'Attorney-reviewed template',
+      'Premium formatting',
+      'Multiple export formats',
+      'Priority support'
+    ],
+    isPremium: true,
+    layoutType: 'medium'
+  },
+  {
+    id: 'power-of-attorney',
+    name: 'Power of Attorney',
+    description: 'Basic power of attorney template',
+    path: '/documents/generate/power-of-attorney',
+    icon: <Users size={28} />,
+    features: [
+      'Standard POA clauses',
+      'Basic customization',
+      'Simple formatting',
+      'PDF download',
+      'Legal compliance'
+    ],
+    isPremium: false,
+    layoutType: 'small'
+  },
+  {
+    id: 'premium-eula',
+    name: 'EULA',
+    description: 'Advanced EULA with comprehensive protection',
+    path: '/documents/generate/eula',
+    icon: <UserCheck size={28} />,
+    features: [
+      'Advanced license terms',
+      'Industry-specific clauses',
+      'International compliance',
+      'Premium formatting',
+      'Multiple export formats',
+      'Priority support'
+    ],
+    isPremium: true,
+    layoutType: 'large'
+  },
+  {
+    id: 'privacy-policy',
+    name: 'Privacy Policy',
+    description: 'Basic privacy policy template',
+    path: '/documents/generate/privacy-policy',
+    icon: <ShieldCheck size={28} />,
+    features: [
+      'GDPR basics',
+      'Cookie policy',
+      'Data collection disclosure',
+      'Basic formatting',
+      'Easy customization'
+    ],
+    isPremium: false,
+    layoutType: 'medium'
+  },
+  {
+    id: 'premium-refund-policy',
+    name: 'Refund Policy',
+    description: 'Comprehensive refund policy with advanced terms',
+    path: '/documents/generate/refund-policy',
+    icon: <RotateCcw size={28} />,
+    features: [
+      'Advanced refund terms',
+      'Industry-specific clauses',
+      'International compliance',
+      'Premium formatting',
+      'Multiple export formats'
+    ],
+    isPremium: true,
+    layoutType: 'small'
+  },
 ];
 
 const TemplateLibraryPage: React.FC = () => {
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const navigate = useNavigate();
+  const [shuffledTemplates, setShuffledTemplates] = useState<DocumentTemplate[]>([]);
+
+  useEffect(() => {
+    const shuffled = [...documentTemplates].sort(() => Math.random() - 0.5);
+    setShuffledTemplates(shuffled);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
     // Removed showTrash logic
   }, [user]);
 
-  // Modal handler
   const handleGenerateClick = (path: string) => {
     if (!user) {
       setShowLoginPrompt(true);
@@ -58,6 +197,96 @@ const TemplateLibraryPage: React.FC = () => {
       navigate(path);
     }
   };
+
+  const FeatureItem: React.FC<{ text: string, isPremium?: boolean }> = ({ text, isPremium }) => (
+    <div className="flex items-center gap-2 text-gray-600 text-sm">
+      {isPremium ? (
+        <Star className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+      ) : (
+        <Star className="w-4 h-4 text-gray-400 flex-shrink-0" />
+      )}
+      <span>{text}</span>
+    </div>
+  );
+
+  const getCardClasses = (layoutType: string, isPremium: boolean) => {
+    const baseClasses = `rounded-3xl h-full ${isPremium ? 'bg-yellow-50 border-2 border-yellow-100' : 'bg-white border border-gray-100'}`;
+    
+    switch (layoutType) {
+      case 'large':
+        return `${baseClasses} p-8`;
+      case 'small':
+        return `${baseClasses} p-4`;
+      default:
+        return `${baseClasses} p-6`;
+    }
+  };
+
+  const getGridClasses = () => {
+    return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch";
+  };
+
+  const DocumentCard: React.FC<{ document: DocumentTemplate }> = ({ document }) => (
+    <motion.div
+      variants={cardItemVariants}
+      className={getCardClasses(document.layoutType || 'medium', document.isPremium)}
+      whileHover="hover"
+    >
+      <div className="flex flex-col h-full relative">
+        {/* Premium Crown Badge - Top Right Corner */}
+        {document.isPremium && (
+          <div className="absolute top-0 right-0 -mt-2 -mr-2 z-10">
+            <div className="bg-yellow-400 rounded-full p-2 shadow-lg">
+              <Crown className="w-4 h-4 text-yellow-800" />
+            </div>
+          </div>
+        )}
+        
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${
+          document.isPremium ? 'bg-yellow-400' : 'bg-primary'
+        } ${document.layoutType === 'small' ? 'w-8 h-8 mb-3' : ''}`}>
+          {React.cloneElement(document.icon, { 
+            size: document.layoutType === 'small' ? 18 : 24, 
+            className: 'text-white' 
+          })}
+        </div>
+        
+        <h3 className={`font-semibold mb-2 ${
+          document.layoutType === 'large' ? 'text-xl' : 
+          document.layoutType === 'small' ? 'text-lg' : 'text-lg'
+        }`}>
+          {document.name}
+        </h3>
+        
+        <p className={`text-gray-600 mb-4 ${
+          document.layoutType === 'small' ? 'text-sm' : 'text-sm'
+        }`}>
+          {document.description}
+        </p>
+        
+        <div className={`space-y-2 mb-6 flex-grow ${
+          document.layoutType === 'large' ? 'space-y-3' : 'space-y-2'
+        }`}>
+          {document.features.slice(0, 5).map((feature, index) => (
+            <FeatureItem key={index} text={feature} isPremium={document.isPremium} />
+          ))}
+        </div>
+
+        <button
+          onClick={() => handleGenerateClick(document.path)}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium transition-all text-sm mt-auto ${
+            document.isPremium 
+              ? 'bg-yellow-400 hover:bg-yellow-500 text-black'
+              : 'bg-primary hover:bg-primary/90 text-white'
+          } ${document.layoutType === 'small' ? 'py-2 text-xs' : ''}`}
+        >
+          {document.isPremium && <Lock className="w-3 h-3" />}
+          Use Template
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
 
   return (
     <motion.div
@@ -95,45 +324,24 @@ const TemplateLibraryPage: React.FC = () => {
           </div>
         </div>
       </motion.section>
-      {/* Built-in Templates Section */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      {/* Mixed Layout Templates Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-3xl font-bold text-primary mb-8">
           All Available Templates
         </h2>
-        <motion.div
+        <motion.div 
+          className={getGridClasses()}
           variants={cardGridVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-8"
         >
-          {documentTypes.map(docType => (
-            <motion.div
-              key={docType.id}
-              variants={cardItemVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              className="group"
-            >
-              <div className="bg-white p-8 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg flex flex-col h-full">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 bg-gradient-to-br from-[#4A90E2] to-[#2563eb] shadow-lg">
-                  {React.cloneElement(docType.icon, { size: 28, strokeWidth: 2, className: 'text-white' })}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{docType.name}</h3>
-                <p className="text-gray-600 mb-4">{docType.description}</p>
-                <div className="mt-auto">
-                  <button
-                    className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent transition-colors duration-200"
-                    onClick={() => handleGenerateClick(docType.path)}
-                  >
-                    Generate Document <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
+          {shuffledTemplates.map((doc) => (
+            <DocumentCard key={doc.id} document={doc} />
           ))}
         </motion.div>
       </section>
+
       {/* Login Prompt Modal */}
       {showLoginPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -155,8 +363,6 @@ const TemplateLibraryPage: React.FC = () => {
           </div>
         </div>
       )}
-      {/* Template Grid Section */}
-      {/* Removed user-generated templates section as requested */}
     </motion.div>
   );
 };
