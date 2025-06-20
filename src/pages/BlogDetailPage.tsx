@@ -91,6 +91,9 @@ const BlogDetailPage: React.FC = () => {
             src={blog.imageUrl}
             alt={blog.title}
             className="w-full h-full object-cover opacity-40"
+            width="1200"
+            height="600"
+            loading="eager"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
         </div>

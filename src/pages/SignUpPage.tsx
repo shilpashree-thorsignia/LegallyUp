@@ -233,7 +233,10 @@ const SignUpPage: React.FC = () => {
             <img
               src={heroImageUrl}
               alt={heroImageAlt}
-              className="w-full h-auto object-cover" // h-auto to maintain aspect ratio
+              className="w-full h-auto object-cover"
+              width="400"
+              height="300"
+              loading="lazy"
             />
           </motion.div>
 

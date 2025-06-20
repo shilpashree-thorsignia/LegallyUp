@@ -61,7 +61,7 @@ const CaseStudyDetailPage: React.FC = () => {
     >
       {/* Hero Image and Title */}
       <div className="relative h-72 md:h-96">
-        <img src={study.imageUrl} alt={study.title} className="w-full h-full object-cover"/>
+        <img src={study.imageUrl} alt={study.title} className="w-full h-full object-cover" width="1200" height="400" loading="lazy"/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-6 md:p-10 container mx-auto">
             <span className="text-xs font-semibold text-white bg-primary/70 px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">{study.industry}</span>
