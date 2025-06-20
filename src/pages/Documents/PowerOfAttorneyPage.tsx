@@ -21,6 +21,7 @@ import ReactDOM from 'react-dom/client';
 // Components
 import FormField from '../../components/forms/FormField';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { PoASignatureBlock } from '../../components/ui/SignatureBlock';
 
 // Types
 interface IFormFieldProps extends Omit<React.ComponentProps<typeof FormField>, 'name' | 'value' | 'onChange' | 'error' | 'id'> {
@@ -210,7 +211,7 @@ const PowerOfAttorneyPage: React.FC = () => {
       document.body.appendChild(container);
       // Use your live preview render function/component
       const root = ReactDOM.createRoot(container);
-      root.render(renderLivePreview());
+      root.render(renderLivePreview(true));
       setTimeout(async () => {
         const previewNode = container.firstElementChild;
         await html2pdf().from(previewNode).set({
@@ -435,7 +436,7 @@ const PowerOfAttorneyPage: React.FC = () => {
     </div>
   );
 
-  const renderLivePreview = () => (
+  const renderLivePreview = (forDownload = false) => (
     <div ref={previewRef} className="prose prose-sm max-w-none p-6 border border-gray-300 rounded-lg bg-white shadow-sm h-full overflow-y-auto">
       <h2 className="text-xl font-semibold text-center text-primary !mb-2">POWER OF ATTORNEY</h2>
       <p className="text-center text-sm text-gray-600 mb-6">
@@ -506,26 +507,18 @@ const PowerOfAttorneyPage: React.FC = () => {
           </div>
         </>
       )}
-
-      <div className="mt-8 grid md:grid-cols-2 gap-8">
-        <div className="border-t-2 border-gray-300 pt-4">
-          <p className="font-semibold">PRINCIPAL</p>
-          <p className="mt-8">_________________________________</p>
-          <p className="text-sm text-gray-600">Signature of Principal</p>
-          <p className="mt-2">Date: ____________________________</p>
-        </div>
-        <div className="border-t-2 border-gray-300 pt-4">
-          <p className="font-semibold">AGENT</p>
-          <p className="mt-8">_________________________________</p>
-          <p className="text-sm text-gray-600">Signature of Agent</p>
-          <p className="mt-2">Date: ____________________________</p>
-        </div>
-      </div>
-
-      <p className="mt-6 text-center italic text-xs">
-        This document may need to be notarized or witnessed according to the laws of your jurisdiction.
-        Consult with a legal professional to ensure compliance with local requirements.
-      </p>
+      
+      {forDownload ? (
+        <PoASignatureBlock
+          principal={formData.principalFullName}
+          agent={formData.agentFullName}
+          witness1={formData.witness1FullName}
+          witness2={formData.witness2FullName}
+          effectiveDate={formData.poaEffectiveDate}
+        />
+      ) : (
+        <p className="mt-6 text-center italic text-xs">Signature blocks will be included in the final document.</p>
+      )}
     </div>
   );
 

@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
-import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Save, Download } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
+import ReactDOM from 'react-dom/client';
+import { SinglePartySignatureBlock } from '../../components/ui/SignatureBlock';
 
 interface PrivacyPolicyData {
   // Step 1
@@ -84,6 +87,7 @@ const PrivacyPolicyPage: React.FC = () => {
   }, [editingTemplate]);
   const [formData, setFormData] = useState<PrivacyPolicyData>(initialFormData);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
   const previewRef = useRef<HTMLDivElement>(null);
@@ -194,7 +198,7 @@ const PrivacyPolicyPage: React.FC = () => {
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownloadPdf = async () => {
     if (typeof validateBeforeSubmit === 'function') {
       const isValid = validateBeforeSubmit();
       if (!isValid) {
@@ -203,8 +207,41 @@ const PrivacyPolicyPage: React.FC = () => {
         return;
       }
     }
-    // Place your document generation logic here (e.g., download PDF, DOCX, etc.)
-    alert('Document would be generated here (implement actual logic)');
+    setSaveError('');
+    setShowErrorModal(false);
+    setIsGenerating(true);
+
+    try {
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.visibility = 'hidden';
+        container.style.pointerEvents = 'none';
+        container.style.width = '800px';
+        container.style.left = '0';
+        container.style.top = '0';
+        document.body.appendChild(container);
+
+        const root = ReactDOM.createRoot(container);
+        root.render(renderLivePreview(true));
+
+        setTimeout(async () => {
+            const previewNode = container.firstElementChild;
+            await html2pdf().from(previewNode).set({
+                filename: `Privacy-Policy-${formData.companyName || 'Document'}.pdf`,
+                margin: 0.5,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save();
+            root.unmount();
+            document.body.removeChild(container);
+            setIsGenerating(false);
+        }, 1000);
+    } catch (error) {
+        setIsGenerating(false);
+        setSaveError('Failed to generate PDF.');
+        setShowErrorModal(true);
+    }
   };
 
   const yesNoOptions = [ { value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }];
@@ -294,49 +331,54 @@ const PrivacyPolicyPage: React.FC = () => {
   const PreviewSectionTitle: React.FC<{ title: string; stepToEdit: number; condition?: boolean }> = ({ title, stepToEdit, condition = true }) => {
     if (!condition) return null;
     return (
-        <div className="flex justify-between items-center !mt-4 !mb-1 group">
+      <div className="flex justify-between items-center !mt-4 !mb-1">
         <h3 className="!text-base !font-semibold">{title}</h3>
         <button
-            onClick={() => jumpToStep(stepToEdit)}
-            className="text-accent opacity-0 group-hover:opacity-100 hover:text-primary text-xs font-medium p-1 rounded hover:bg-accent/10 transition-all duration-200 flex items-center gap-1"
-            title={`Edit ${title}`}
+          onClick={() => jumpToStep(stepToEdit)}
+          className="text-accent hover:text-primary text-xs font-medium p-1 rounded hover:bg-accent/10 transition-colors flex items-center gap-1"
+          title={`Edit ${title}`}
         >
-            <Edit3 size={14} /> Edit
+          <Edit3 size={14} /> Edit
         </button>
-        </div>
+      </div>
     );
   };
 
-  const renderLivePreview = () => (
+  const renderLivePreview = (forDownload = false) => (
     <div ref={previewRef} className="prose prose-sm max-w-none p-6 border border-gray-300 rounded-lg bg-white shadow-sm h-full overflow-y-auto">
-        <h2 className="text-xl font-semibold text-center text-primary !mb-6">Privacy Policy Preview</h2>
+      <h2 className="text-xl font-semibold text-center text-primary !mb-6">Privacy Policy</h2>
+      
+      <PreviewSectionTitle title="Introduction" stepToEdit={1} />
+      <p>This Privacy Policy describes how {formData.companyName || '[Company Name]'} ("we", "us", or "our") collects, uses, and shares personal information of users of our website {formData.websiteUrl || '[Website URL]'} (the "Service").</p>
+      <p><strong>Effective Date:</strong> {formData.policyDate || '[Date]'}</p>
+      <p><strong>Contact:</strong> {formData.contactEmail || '[Contact Email]'}</p>
+      
+      <PreviewSectionTitle title="Information We Collect & How We Use It" stepToEdit={2} />
+      <p><strong>Types of Data Collected:</strong> <span className="whitespace-pre-line block">{formData.dataTypesCollected || '[List data types]'}</span></p>
+      <p><strong>Cookies & Tracking:</strong> We {formData.usesCookies === 'yes' ? 'use' : (formData.usesCookies === 'no' ? 'do not use' : '[use/do not use]')} cookies and similar technologies. {formData.usesCookies === 'yes' && '(Refer to our Cookies Policy for details).'}</p>
+      <p><strong>Sensitive Data:</strong> We {formData.collectsSensitiveData === 'yes' ? 'may collect' : (formData.collectsSensitiveData === 'no' ? 'do not knowingly collect' : '[may collect/do not collect]')} sensitive personal data.</p>
+      <p><strong>Purpose of Use:</strong> <span className="whitespace-pre-line block">{formData.purposeOfUsage || '[State purposes]'}</span></p>
+      <p><strong>Marketing Communications:</strong> We {formData.sendsMarketingEmails === 'yes' ? 'may send you' : (formData.sendsMarketingEmails === 'no' ? 'will not send you' : '[may send/will not send]')} marketing emails. You can opt-out at any time.</p>
+      
+      <PreviewSectionTitle title="Data Sharing, Security & Your Rights" stepToEdit={3} />
+      <p><strong>Third-Party Sharing:</strong> We {formData.sharesWithThirdParties === 'yes' ? 'may share your information with third-party service providers' : (formData.sharesWithThirdParties === 'no' ? 'do not share your personal data with third parties for their own marketing purposes without your consent' : '[state sharing practices]')}{formData.sharesWithThirdParties === 'yes' && ` Key services include: ${formData.thirdPartyServicesList || '[List services]'}.`}</p>
+      <p><strong>Data Security:</strong> <span className="whitespace-pre-line block">{formData.securityMeasures || '[Describe security measures]'}</span></p>
+      <p><strong>Your Rights:</strong> You typically have the right to Access ({formData.userRightsAccess?.toUpperCase() || 'N/A'}), Delete ({formData.userRightsDelete?.toUpperCase() || 'N/A'}), and Update ({formData.userRightsUpdate?.toUpperCase() || 'N/A'}) your personal information. Please contact us to exercise these rights.</p>
+      <p><strong>Policy Updates:</strong> <span className="whitespace-pre-line block">{formData.policyUpdateNotification || '[How users are notified]'}</span></p>
 
-        <PreviewSectionTitle title="1. Introduction & Business Information" stepToEdit={1} />
-        <p>This Privacy Policy describes how {formData.companyName || "[Company Name]"} ("we", "us", or "our") collects, uses, and shares personal information of users of our website {formData.websiteUrl ? <a href={formData.websiteUrl} target="_blank" rel="noopener noreferrer">{formData.websiteUrl}</a> : "[Website URL]"} (the "Service").</p>
-        <p><strong>Effective Date:</strong> {formData.policyDate || "[Date]"}</p>
-        <p><strong>Contact:</strong> {formData.contactEmail || "[Contact Email]"}</p>
-
-        <PreviewSectionTitle title="2. Information We Collect & How We Use It" stepToEdit={2} />
-        <p><strong>Types of Data Collected:</strong> <span className="whitespace-pre-line block">{formData.dataTypesCollected || "[List data types]"}</span></p>
-        <p><strong>Cookies & Tracking:</strong> We {formData.usesCookies === 'yes' ? 'use' : (formData.usesCookies === 'no' ? 'do not use' : '[use/do not use]')} cookies and similar technologies. {formData.usesCookies === 'yes' && `(Refer to our Cookies Policy for details).`}</p>
-        <p><strong>Sensitive Data:</strong> We {formData.collectsSensitiveData === 'yes' ? 'may collect' : (formData.collectsSensitiveData === 'no' ? 'do not knowingly collect' : '[may collect/do not collect]')} sensitive personal data.</p>
-        <p><strong>Purpose of Use:</strong> <span className="whitespace-pre-line block">{formData.purposeOfUsage || "[State purposes]"}</span></p>
-        <p><strong>Marketing Communications:</strong> We {formData.sendsMarketingEmails === 'yes' ? 'may send you' : (formData.sendsMarketingEmails === 'no' ? 'will not send you' : '[may send/will not send]')} marketing emails. You can opt-out at any time.</p>
-
-        <PreviewSectionTitle title="3. Data Sharing, Security & Your Rights" stepToEdit={3} />
-        <p><strong>Third-Party Sharing:</strong> We {formData.sharesWithThirdParties === 'yes' ? 'may share your information with third-party service providers' : (formData.sharesWithThirdParties === 'no' ? 'do not share your personal data with third parties for their own marketing purposes without your consent' : '[state sharing practices]')}.
-          {formData.sharesWithThirdParties === 'yes' && ` Key services include: ${formData.thirdPartyServicesList || "[List services]"}.`}
-        </p>
-        <p><strong>Data Security:</strong> <span className="whitespace-pre-line block">{formData.securityMeasures || "[Describe security measures]"}</span></p>
-        <p><strong>Your Rights:</strong> You typically have the right to Access ({formData.userRightsAccess?.toUpperCase() || "N/A"}), Delete ({formData.userRightsDelete?.toUpperCase() || "N/A"}), and Update ({formData.userRightsUpdate?.toUpperCase() || "N/A"}) your personal information. Please contact us to exercise these rights.</p>
-        <p><strong>Policy Updates:</strong> <span className="whitespace-pre-line block">{formData.policyUpdateNotification || "[How users are notified]"}</span></p>
-
+      {forDownload ? (
+        <SinglePartySignatureBlock
+          party={formData.companyName}
+          partyRole={`${formData.companyName} - Authorized Representative`}
+        />
+      ) : (
         <p className="mt-6 text-center italic text-xs">This is a preview. The final document will be formatted professionally and may include additional legal clauses.</p>
+      )}
     </div>
   );
 
   const progressSteps = [1, 2, 3];
-  const progressLabels = ["Business Info", "Data & Usage", "Security & Rights"];
+  const progressLabels = ["Company Info", "Data Handling", "User Rights"];
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto py-10 px-4">
@@ -405,13 +447,14 @@ const PrivacyPolicyPage: React.FC = () => {
               disabled={isSaving} 
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Save size={18}/> {isSaving ? (editingTemplate ? 'Updating...' : 'Saving...') : (editingTemplate ? 'Update Document' : 'Save to Dashboard')}
+              <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
-            <button
-              onClick={handleDownload}
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            <button 
+              onClick={handleDownloadPdf}
+              disabled={isGenerating}
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
             >
-              Download Document
+              <Download size={18}/> {isGenerating ? 'Generating...' : 'Download PDF'}
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import ReactDOM from 'react-dom/client';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { SignatureBlock } from '../../components/ui/SignatureBlock';
 
 interface WebsiteServicesAgreementData {
   // Step 1: Parties & Agreement Overview
@@ -212,7 +213,7 @@ const WebsiteServicesAgreementPage: React.FC = () => {
       document.body.appendChild(container);
       // Use your live preview render function/component
       const root = ReactDOM.createRoot(container);
-      root.render(renderLivePreview());
+      root.render(renderLivePreview(true));
       setTimeout(async () => {
         const previewNode = container.firstElementChild;
         await html2pdf().from(previewNode).set({
@@ -314,7 +315,7 @@ const WebsiteServicesAgreementPage: React.FC = () => {
     </div>
   );
 
-  const renderLivePreview = () => (
+  const renderLivePreview = (forDownload = false) => (
     <div ref={previewRef} className="prose prose-sm max-w-none p-6 border border-gray-300 rounded-lg bg-white shadow-sm h-full overflow-y-auto">
       <h2 className="text-xl font-semibold text-center text-primary !mb-2">WEBSITE SERVICES AGREEMENT</h2>
       <p className="text-center text-sm text-gray-600 mb-6">This Agreement is made effective as of {formData.agreementEffectiveDate || '[Effective Date]'}</p>
@@ -372,7 +373,16 @@ const WebsiteServicesAgreementPage: React.FC = () => {
       <p><strong>Dispute Resolution:</strong><br/><span className="whitespace-pre-line block pl-2">{formData.disputeResolutionMethod || "[Method]"}</span></p>
       <p><strong>Effective Date of Agreement:</strong> {formData.agreementEffectiveDate || "[Effective Date]"}</p>
 
-      <p className="mt-6 text-center italic text-xs">This Agreement requires signatures from authorized representatives of both parties to be binding.</p>
+      {forDownload ? (
+        <SignatureBlock
+          party1={formData.serviceProviderCompanyName}
+          party2={formData.clientCompanyName}
+          party1Role="Service Provider"
+          party2Role="Client"
+        />
+      ) : (
+        <p className="mt-6 text-center italic text-xs">This Agreement requires signatures from authorized representatives of both parties to be binding.</p>
+      )}
     </div>
   );
 

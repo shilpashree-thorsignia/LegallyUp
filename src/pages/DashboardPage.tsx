@@ -1,9 +1,9 @@
 // src/pages/DashboardPage.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; 
-import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText } from 'lucide-react';
+import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText, MoreHorizontal } from 'lucide-react';
 import ReactDOM from 'react-dom/client';
 import DocumentPreview from '../components/DocumentPreview';
 // @ts-ignore
@@ -48,6 +48,8 @@ const DashboardPage: React.FC = () => {
   // const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number|null>(null);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Document stats
   const documentsCreated = templates.length + trashedTemplates.length;
@@ -73,6 +75,18 @@ const DashboardPage: React.FC = () => {
     if (!user) return;
     fetchTemplates(user.id);
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef]);
 
   const handleLogout = () => {
     logout();
@@ -138,7 +152,7 @@ const DashboardPage: React.FC = () => {
       // Debug: log data and typeKey
       console.log('DocumentPreview data:', data, 'typeKey:', typeKey);
 
-      root.render(<DocumentPreview data={data} typeKey={typeKey} />);
+      root.render(<DocumentPreview data={data} typeKey={typeKey} forDownload={true} />);
       setTimeout(async () => {
         // Debug: log HTML
         console.log('Container innerHTML:', container.innerHTML);
@@ -199,6 +213,15 @@ const DashboardPage: React.FC = () => {
       }, 1000); // Increase delay to 1 second
       return;
     }
+  };
+
+  const handleToggleMenu = (docId: number) => {
+    setOpenMenuId(openMenuId === docId ? null : docId);
+  }
+
+  const handleActionClick = (action: () => void) => {
+    action();
+    setOpenMenuId(null);
   };
 
   // Filter and sort logic
@@ -351,94 +374,97 @@ const DashboardPage: React.FC = () => {
               </svg>
             </div>
           ) : filteredAndSortedTemplates.length > 0 ? (
-            <div className="bg-lightGray p-6 rounded-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredAndSortedTemplates.map(doc => (
-                  <div key={doc.id} className="bg-white rounded-xl shadow-md border border-white p-6 flex flex-col justify-between transition-transform hover:scale-[1.02] hover:shadow-lg">
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        {/* Optional: Badge for type */}
-                        <span className="inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">
-                          {(() => {
-                            const t = doc.title.toLowerCase();
-                            if (t.includes('nda')) return 'NDA';
-                            if (t.includes('privacy')) return 'Privacy Policy';
-                            if (t.includes('refund')) return 'Refund Policy';
-                            if (t.includes('power of attorney')) return 'Power of Attorney';
-                            if (t.includes('website services')) return 'Website Services';
-                            if (t.includes('cookies')) return 'Cookies Policy';
-                            if (t.includes('eula')) return 'EULA';
-                            return 'Document';
-                          })()}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {filteredAndSortedTemplates.map(doc => {
+                const parsedContent = typeof doc.content === 'string' 
+                  ? (() => { try { return JSON.parse(doc.content); } catch { return { content: doc.content }; } })() 
+                  : doc.content;
+
+                const typeKey = (() => {
+                  const t = doc.title.toLowerCase();
+                  if (t.includes('privacy')) return 'privacyPolicy';
+                  if (t.includes('nda')) return 'nda';
+                  if (t.includes('refund')) return 'refundPolicy';
+                  if (t.includes('power of attorney')) return 'powerOfAttorney';
+                  if (t.includes('website services')) return 'websiteServicesAgreement';
+                  if (t.includes('cookies')) return 'cookiesPolicy';
+                  if (t.includes('eula')) return 'eula';
+                  return 'generic';
+                })();
+
+                return (
+                  <div key={doc.id} className="group relative">
+                    {/* Visual Preview Area */}
+                    <div
+                      onClick={() => handleEditDocument(doc)}
+                      className="aspect-[3/4] bg-white rounded-lg shadow-sm border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-accent/30 relative overflow-hidden"
+                    >
+                      <div className="pointer-events-none origin-top-left absolute top-0 left-0" style={{ transform: 'scale(0.42)', width: '238%', height: '238%' }}>
+                        <DocumentPreview data={parsedContent} typeKey={typeKey} isThumbnail={true} />
+                      </div>
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="bg-white text-primary px-4 py-2 rounded-lg font-semibold flex items-center gap-2">
+                          <Edit3 size={16} /> Edit
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-primary mb-1 truncate" title={doc.title}>{doc.title}</h3>
-                      <div className="text-sm text-textColor/70 mb-2">Saved: {doc.created_at ? doc.created_at.slice(0, 10) : ''}</div>
                     </div>
-                    <div className="grid grid-cols-4 gap-0 mt-auto">
-                      <div className="flex flex-col items-center group cursor-pointer">
-                        <button
-                          onClick={() => handleViewDocument(doc)}
-                          className="p-2 rounded-full group-hover:bg-accent/10 transition"
-                          title="View"
-                        >
-                          <Eye size={20} className="text-accent group-hover:scale-110 transition" />
-                        </button>
-                        <span className="text-xs font-semibold text-gray-600 group-hover:text-accent mt-1 transition">View</span>
+
+                    {/* Info and Actions Area */}
+                    <div className="flex items-center justify-between mt-3">
+                      <div>
+                        <h3 className="font-semibold text-primary truncate" title={doc.title}>{doc.title}</h3>
+                        <p className="text-sm text-gray-500">
+                          {showTrash ? 'Trashed' : 'Saved'}: {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'N/A'}
+                        </p>
                       </div>
-                      <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
-                        <button
-                          onClick={() => handleEditDocument(doc)}
-                          className="p-2 rounded-full group-hover:bg-accent/10 transition"
-                          title="Edit"
-                        >
-                          <Edit3 size={20} className="text-accent group-hover:scale-110 transition" />
-                        </button>
-                        <span className="text-xs font-semibold text-gray-600 group-hover:text-accent mt-1 transition">Edit</span>
-                      </div>
-                      <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
-                        <button
-                          onClick={() => handleDownloadDocument(doc, 'pdf')}
-                          className="p-2 rounded-full group-hover:bg-primary/10 transition"
-                          title="Download PDF"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary group-hover:scale-110 transition"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l-6-6m6 6l6-6" /></svg>
-                        </button>
-                        <span className="text-xs font-semibold text-gray-600 group-hover:text-primary mt-1 transition">Download</span>
-                      </div>
-                      {!showTrash ? (
-                        <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
-                          <button
-                            onClick={() => handleDeleteDocument(doc.id)}
-                            className="p-2 rounded-full group-hover:bg-red-100 transition"
-                            title="Move to Trash"
-                          >
-                            <Trash2 size={20} className="text-red-600 group-hover:scale-110 transition" />
-                          </button>
-                          <span className="text-xs font-semibold text-gray-600 group-hover:text-red-600 mt-1 transition">Delete</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center group cursor-pointer border-l border-gray-200">
-                          <button
-                            onClick={() => handleRestoreDocument(doc.id)}
-                            className="p-2 rounded-full group-hover:bg-green-100 transition"
-                            title="Restore"
-                          >
-                            <Undo2 size={20} className="text-green-600 group-hover:scale-110 transition" />
-                          </button>
-                          <span className="text-xs font-semibold text-gray-600 group-hover:text-green-600 mt-1 transition">Restore</span>
-                        </div>
-                      )}
+
+                      <button onClick={() => handleToggleMenu(doc.id)} className="p-2 rounded-full text-gray-500 hover:bg-gray-100">
+                        <MoreHorizontal size={20} />
+                      </button>
                     </div>
+
+                    {/* Dropdown Menu */}
+                    {openMenuId === doc.id && (
+                      <div ref={menuRef} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-100 py-1">
+                        <button onClick={() => handleActionClick(() => handleViewDocument(doc))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><Eye size={16} /> View</button>
+                        <button onClick={() => handleActionClick(() => handleDownloadDocument(doc, 'pdf'))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l-3-3m3 3l3-3m6-5a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7z" /></svg> Download</button>
+                        <div className="my-1 h-px bg-gray-100"></div>
+                        {!showTrash ? (
+                          <button onClick={() => handleActionClick(() => handleDeleteDocument(doc.id))} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={16} /> Move to Trash</button>
+                        ) : (
+                          <button onClick={() => handleActionClick(() => handleRestoreDocument(doc.id))} className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2"><Undo2 size={16} /> Restore</button>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-textColor/80 text-lg bg-lightGray p-6 rounded-2xl">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" className="w-16 h-16 mb-4 text-accent"><rect width="48" height="48" rx="12" fill="#e0e7ff"/><path d="M16 20h16M16 28h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="12" y="12" width="24" height="24" rx="4" stroke="#6366f1" strokeWidth="2"/></svg>
-              {showTrash ? "No trashed documents found." : "You haven't saved any documents yet."}
-              <Link to="/generate" className="text-accent hover:underline mt-4 inline-block font-semibold">Start Generating One!</Link>
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-accent/10 to-primary/10 rounded-2xl flex items-center justify-center mb-6">
+                <FileText size={40} className="text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {showTrash ? "No trashed documents found" : "No documents yet"}
+              </h3>
+              <p className="text-gray-500 mb-6 max-w-md">
+                {showTrash 
+                  ? "Your trash is empty. Deleted documents will appear here." 
+                  : "Start creating your first legal document using our professional templates."
+                }
+              </p>
+              {!showTrash && (
+                <Link 
+                  to="/generate" 
+                  className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent/90 transition-colors shadow-md hover:shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Create Your First Document
+                </Link>
+              )}
             </div>
           )}
           {/* View Modal */}

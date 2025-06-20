@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField'; // Adjust path
-import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Eye, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Edit3, Eye, Save, Download } from 'lucide-react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
+import ReactDOM from 'react-dom/client';
+import { SinglePartySignatureBlock } from '../../components/ui/SignatureBlock';
 // import { API_BASE } from '../../lib/apiBase';
 
 interface CookiesPolicyData {
@@ -74,6 +77,7 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
   const formColumnRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -172,17 +176,48 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
     }
   };
 
-  // Add a handler for document generation/download with validation
-  const handleDownload = async () => {
-    if (typeof validateBeforeSubmit === 'function') {
-      const isValid = validateBeforeSubmit();
-      if (!isValid) {
-        alert('Please fill in all mandatory fields before generating the document.');
+  const handleDownloadPdf = async () => {
+    const isValid = validateBeforeSubmit();
+    if (!isValid) {
+        setSaveError('Please fill in all mandatory fields before generating the document.');
+        setShowErrorModal(true);
         return;
-      }
     }
-    // Place your document generation logic here (e.g., download PDF, DOCX, etc.)
-    alert('Document would be generated here (implement actual logic)');
+    setSaveError('');
+    setShowErrorModal(false);
+    setIsGenerating(true);
+    
+    try {
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.visibility = 'hidden';
+        container.style.pointerEvents = 'none';
+        container.style.width = '800px';
+        container.style.left = '0';
+        container.style.top = '0';
+        document.body.appendChild(container);
+
+        const root = ReactDOM.createRoot(container);
+        root.render(renderLivePreview(true));
+
+        setTimeout(async () => {
+            const previewNode = container.firstElementChild;
+            await html2pdf().from(previewNode).set({
+                filename: `Cookies-Policy-${formData.companyName || 'Document'}.pdf`,
+                margin: 0.5,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save();
+            root.unmount();
+            document.body.removeChild(container);
+            setIsGenerating(false);
+        }, 1000);
+    } catch (error) {
+        setIsGenerating(false);
+        setSaveError('Failed to generate PDF.');
+        setShowErrorModal(true);
+    }
   };
 
   const renderStepFormContent = () => {
@@ -281,39 +316,42 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
     );
   };
 
-  const renderLivePreview = () => (
+  const renderLivePreview = (forDownload = false) => (
     <div ref={previewRef} className="prose prose-sm max-w-none p-6 border border-gray-300 rounded-lg bg-white shadow-sm h-full overflow-y-auto">
-        <h2 className="text-xl font-semibold text-center text-primary !mb-6">Cookies Policy Preview</h2>
+      <h2 className="text-xl font-semibold text-center text-primary !mb-6">Cookies Policy</h2>
+      
+      <PreviewSectionTitle title="Introduction" stepToEdit={1} />
+      <p>This Cookies Policy explains how {formData.companyName || '[Company Name]'} ("we", "us", or "our") uses cookies and similar technologies on our website {formData.websiteUrl || '[Website URL]'}.</p>
+      <p><strong>Last Updated:</strong> {formData.lastUpdated || '[Date]'}</p>
+      
+      <PreviewSectionTitle title="Cookie Usage" stepToEdit={1} />
+      <p>Our website {formData.usesCookies === 'yes' ? 'uses' : (formData.usesCookies === 'no' ? 'does not use' : '[uses/does not use]')} cookies.</p>
+      
+      <PreviewSectionTitle title="Types of Cookies & Details" stepToEdit={2} condition={formData.usesCookies === 'yes'} />
+      {formData.usesCookies === 'yes' && (
+        <>
+          <p>We use the following types of cookies:</p>
+          <p className="whitespace-pre-line">{formData.typesOfCookiesUsed || '[List types of cookies]'}</p>
+          <p>Specific cookies we use include:</p>
+          <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded">{formData.cookieDetailsList || '[List specific cookies]'}</pre>
+        </>
+      )}
 
-        <PreviewSectionTitle title="Introduction & Business Info" stepToEdit={1} />
-        <p>This Cookies Policy explains how {formData.companyName || "[Company Name]"} ("we", "us", or "our") uses cookies and similar technologies on our website {formData.websiteUrl ? <a href={formData.websiteUrl} target="_blank" rel="noopener noreferrer">{formData.websiteUrl}</a> : "[Website URL]"}.</p>
-        <p><strong>Last Updated:</strong> {formData.lastUpdated || "[Date]"}</p>
-        <p><strong>Contact for Questions:</strong> {formData.contactEmail || "[Contact Email]"}</p>
+      <PreviewSectionTitle title="Managing Cookies" stepToEdit={2} condition={formData.usesCookies === 'yes'} />
+      {formData.usesCookies === 'yes' && (
+        <p className="whitespace-pre-line">{formData.cookiePolicyManagement || '[How users can manage cookies]'}</p>
+      )}
 
-        <PreviewSectionTitle title="Cookie Usage Statement" stepToEdit={1} />
-        <p>Our website {formData.usesCookies === 'yes' ? 'uses' : (formData.usesCookies === 'no' ? 'does not use' : '[uses/does not use]')} cookies.</p>
+      <PreviewSectionTitle title="Contact & Other Policies" stepToEdit={3} />
+      <p>For more information about our privacy practices, please see our Privacy Policy: <a href={formData.linkToPrivacyPolicy} target="_blank" rel="noopener noreferrer">{formData.linkToPrivacyPolicy || '[Privacy Policy Link]'}</a>.</p>
+      <p>If you have any questions about this Cookies Policy, please contact {formData.contactPersonPolicy || '[Contact Person/Team]'} at <a href={`mailto:${formData.contactEmail}`}>{formData.contactEmail || '[Contact Email]'}</a>.</p>
 
-        <PreviewSectionTitle title="Types of Cookies & Details" stepToEdit={2} condition={formData.usesCookies === 'yes'} />
-        {formData.usesCookies === 'yes' && (
-            <>
-            <p>We use the following types of cookies:</p>
-            <p className="whitespace-pre-line">{formData.typesOfCookiesUsed || "[List types of cookies]"}</p>
-            <p>Specific cookies we use include:</p>
-            <pre className="whitespace-pre-wrap text-xs bg-gray-100 p-2 rounded">{formData.cookieDetailsList || "[List specific cookies]"}</pre>
-            </>
-        )}
-
-        <PreviewSectionTitle title="Managing Cookies" stepToEdit={2} condition={formData.usesCookies === 'yes'} />
-         {formData.usesCookies === 'yes' && (
-            <p className="whitespace-pre-line">{formData.cookiePolicyManagement || "[How users can manage cookies]"}</p>
-         )}
-
-
-        <PreviewSectionTitle title="Contact & Other Policies" stepToEdit={formData.usesCookies === 'yes' ? 3 : 2} />
-        <p>If you have any questions about our use of cookies, please contact {formData.contactPersonPolicy || "[Contact Person/Department]"} at {formData.contactEmail || "[Contact Email]"}.</p>
-        <p>For more information about how we handle your personal data, please see our <a href={formData.linkToPrivacyPolicy} target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
-
-        <p className="mt-6 text-center italic text-xs">This is a preview. The final document will be formatted professionally.</p>
+      {forDownload && (
+        <SinglePartySignatureBlock
+          party={formData.companyName}
+          partyRole={`${formData.companyName} - Authorized Representative`}
+        />
+      )}
     </div>
   );
 
@@ -414,11 +452,12 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
             >
               <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
-            <button
-              onClick={handleDownload}
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            <button 
+              onClick={handleDownloadPdf} 
+              disabled={isGenerating} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
             >
-              Download Document
+              <Download size={18}/> {isGenerating ? 'Generating PDF...' : 'Download PDF'}
             </button>
           </div>
         </div>

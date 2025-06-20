@@ -1,15 +1,41 @@
 import React from 'react';
+import { SignatureBlock, PoASignatureBlock } from './ui/SignatureBlock';
 
 interface DocumentPreviewProps {
   data: any;
   typeKey: string;
+  isThumbnail?: boolean;
+  forDownload?: boolean;
 }
 
-const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
+const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey, isThumbnail, forDownload }) => {
+  const baseStyles: React.CSSProperties = {
+    background: '#fff',
+    color: '#222',
+    fontFamily: 'serif',
+    height: '100%',
+  };
+
+  const thumbnailStyles: React.CSSProperties = {
+    ...baseStyles,
+    padding: isThumbnail ? '24px' : '32px',
+  };
+
+  const fullStyles: React.CSSProperties = {
+    ...baseStyles,
+    padding: '32px',
+    borderRadius: 12,
+    maxWidth: 700,
+    margin: '0 auto',
+    boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+  };
+
+  const wrapperStyle = isThumbnail ? thumbnailStyles : fullStyles;
+
   // NDA
   if (typeKey === 'nda') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>NDA Preview</h2>
         <p><strong>Effective Date:</strong> {data.effectiveDate || '[Effective Date]'}</p>
         <p><strong>Disclosing Party:</strong> {data.disclosingPartyName || '[Name]'} ({data.disclosingPartyEntityType || '[Type]'}), {data.disclosingPartyAddress || '[Address]'}{data.companyName && data.companyName !== data.disclosingPartyName ? ` (Company: ${data.companyName}, Email: ${data.contactEmail || '[Email]'})` : (data.contactEmail ? ` (Email: ${data.contactEmail})` : '')}</p>
@@ -23,14 +49,24 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
         <p><strong>Obligations of Receiving Party:</strong> <span style={{ whiteSpace: 'pre-line', display: 'block' }}>{data.obligationsReceivingParty || '[Obligations]'}</span></p>
         <p><strong>Exclusions from Confidentiality:</strong> <span style={{ whiteSpace: 'pre-line', display: 'block' }}>{data.exclusionsConfidentiality || '[Exclusions]'}</span></p>
         <p><strong>Legal Remedies & Breach:</strong> <span style={{ whiteSpace: 'pre-line', display: 'block' }}>{data.legalRemedies || '[Remedies]'}</span></p>
-        <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>--- Signature blocks will be included in the final downloaded document ---</p>
+        
+        {forDownload ? (
+          <SignatureBlock 
+            party1={data.disclosingPartyName} 
+            party2={data.receivingPartyName}
+            party1Role="Disclosing Party"
+            party2Role="Receiving Party"
+          />
+        ) : (
+          <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>--- Signature blocks will be included in the final downloaded document ---</p>
+        )}
       </div>
     );
   }
   // Privacy Policy
   if (typeKey === 'privacyPolicy') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>Privacy Policy</h2>
         <p>This Privacy Policy describes how {data.companyName || '[Company Name]'} ("we", "us", or "our") collects, uses, and shares personal information of users of our website {data.websiteUrl || '[Website URL]'} (the "Service").</p>
         <p><strong>Effective Date:</strong> {data.policyDate || '[Date]'}</p>
@@ -53,7 +89,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
   // Refund Policy
   if (typeKey === 'refundPolicy') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>Refund Policy</h2>
         <p style={{ textAlign: 'right', fontSize: 14, color: '#64748b' }}>Effective Date: {data.policyEffectiveDate || '[Date]'}</p>
         <h3 style={{ fontSize: 16, fontWeight: 600, marginTop: 16 }}>1. Introduction</h3>
@@ -91,7 +127,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
   // EULA
   if (typeKey === 'eula') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>End User License Agreement (EULA) Preview</h2>
         <p style={{ fontSize: 14, textAlign: 'center' }}>For: {data.productName || '[Product Name]'} {data.productVersion && `(v${data.productVersion})`}</p>
         <p style={{ fontSize: 14, textAlign: 'center' }}>Effective Date: {data.eulaEffectiveDate || '[Date]'}</p>
@@ -119,7 +155,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
   // Website Services Agreement
   if (typeKey === 'websiteServicesAgreement') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>WEBSITE SERVICES AGREEMENT</h2>
         <p style={{ textAlign: 'center', color: '#64748b', fontSize: 14, marginBottom: 24 }}>This Agreement is made effective as of {data.agreementEffectiveDate || '[Effective Date]'}</p>
         <h3 style={{ fontSize: 16, fontWeight: 600, marginTop: 16 }}>1. Parties</h3>
@@ -163,14 +199,24 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
         <p><strong>Governing Law:</strong> {data.governingLawAndJurisdiction || '[Law & Jurisdiction]'}</p>
         <p><strong>Dispute Resolution:</strong><br/><span style={{ whiteSpace: 'pre-line', display: 'block', paddingLeft: 8 }}>{data.disputeResolutionMethod || '[Method]'}</span></p>
         <p><strong>Effective Date of Agreement:</strong> {data.agreementEffectiveDate || '[Effective Date]'}</p>
-        <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>This Agreement requires signatures from authorized representatives of both parties to be binding.</p>
+        
+        {forDownload ? (
+          <SignatureBlock
+            party1={data.serviceProviderCompanyName}
+            party2={data.clientCompanyName}
+            party1Role="Service Provider"
+            party2Role="Client"
+          />
+        ) : (
+          <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>This Agreement requires signatures from authorized representatives of both parties to be binding.</p>
+        )}
       </div>
     );
   }
   // Cookies Policy
   if (typeKey === 'cookiesPolicy') {
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>Cookies Policy</h2>
         <p>This Cookies Policy explains how {data.companyName || '[Company Name]'} ("we", "us", or "our") uses cookies and similar technologies on our website {data.websiteUrl || '[Website URL]'}</p>
         <p><strong>Last Updated:</strong> {data.lastUpdated || '[Date]'}</p>
@@ -198,7 +244,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
   if (typeKey === 'powerOfAttorney') {
     // Render a styled Power of Attorney preview
     return (
-      <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+      <div style={wrapperStyle}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>POWER OF ATTORNEY</h2>
         <p style={{ textAlign: 'center', color: '#64748b', fontSize: 14, marginBottom: 24 }}>
           {data.poaType === 'general' && 'GENERAL POWER OF ATTORNEY'}
@@ -258,38 +304,26 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ data, typeKey }) => {
             </div>
           </>
         )}
-        <div style={{ display: 'flex', gap: 32, marginTop: 32 }}>
-          <div style={{ flex: 1, borderTop: '2px solid #e5e7eb', paddingTop: 16 }}>
-            <p style={{ fontWeight: 600 }}>PRINCIPAL</p>
-            <p style={{ marginTop: 32 }}>_________________________________</p>
-            <p style={{ fontSize: 14, color: '#64748b' }}>Signature of Principal</p>
-            <p style={{ marginTop: 8 }}>Date: ____________________________</p>
-          </div>
-          <div style={{ flex: 1, borderTop: '2px solid #e5e7eb', paddingTop: 16 }}>
-            <p style={{ fontWeight: 600 }}>AGENT</p>
-            <p style={{ marginTop: 32 }}>_________________________________</p>
-            <p style={{ fontSize: 14, color: '#64748b' }}>Signature of Agent</p>
-            <p style={{ marginTop: 8 }}>Date: ____________________________</p>
-          </div>
-        </div>
-        <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>
-          This document may need to be notarized or witnessed according to the laws of your jurisdiction.<br />
-          Consult with a legal professional to ensure compliance with local requirements.
-        </p>
+        
+        {forDownload ? (
+          <PoASignatureBlock
+            principal={data.principalFullName}
+            agent={data.agentFullName}
+            witness1={data.witness1FullName}
+            witness2={data.witness2FullName}
+            effectiveDate={data.poaEffectiveDate}
+          />
+        ) : (
+          <p style={{ marginTop: 24, textAlign: 'center', fontStyle: 'italic', fontSize: 12, color: '#64748b' }}>Signature blocks will be included in the final document.</p>
+        )}
       </div>
     );
   }
-  // Fallback: generic preview
   return (
-    <div style={{ background: '#fff', color: '#222', padding: 32, borderRadius: 12, maxWidth: 700, margin: '0 auto', fontFamily: 'serif', boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 16 }}>{data.title || 'Document'}</h1>
-      <div style={{ fontSize: 16, lineHeight: 1.7 }}>
-        {/* If content is HTML, render as HTML. If plain text, render as text. */}
-        {data.contentHtml ? (
-          <div dangerouslySetInnerHTML={{ __html: data.contentHtml }} />
-        ) : (
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'none', padding: 0, margin: 0 }}>{typeof data === 'string' ? data : JSON.stringify(data, null, 2)}</pre>
-        )}
+    <div style={wrapperStyle}>
+      <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', color: '#3b82f6', marginBottom: 8 }}>{data.title || 'Document Preview'}</h2>
+      <div style={{ whiteSpace: 'pre-wrap' }}>
+        {typeof data.content === 'string' ? data.content : JSON.stringify(data, null, 2)}
       </div>
     </div>
   );

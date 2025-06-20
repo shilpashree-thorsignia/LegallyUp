@@ -2,9 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FormField from '../../components/forms/FormField';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { ArrowLeft, ArrowRight, CheckCircle, Edit3,  Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Edit3,  Save, Download } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Navigate, useLocation } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
+import ReactDOM from 'react-dom/client';
+import { SinglePartySignatureBlock } from '../../components/ui/SignatureBlock';
 // import { API_BASE } from '../../lib/apiBase';
 
 interface RefundPolicyData {
@@ -83,6 +86,7 @@ const RefundPolicyPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
 
@@ -172,8 +176,7 @@ const RefundPolicyPage: React.FC = () => {
     }
   };
 
-  // Add a handler for document generation/download with validation
-  const handleDownload = async () => {
+  const handleDownloadPdf = async () => {
     if (typeof validateBeforeSubmit === 'function') {
       const isValid = validateBeforeSubmit();
       if (!isValid) {
@@ -182,8 +185,41 @@ const RefundPolicyPage: React.FC = () => {
         return;
       }
     }
-    // Place your document generation logic here (e.g., download PDF, DOCX, etc.)
-    alert('Document would be generated here (implement actual logic)');
+    setSaveError('');
+    setShowErrorModal(false);
+    setIsGenerating(true);
+
+    try {
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.visibility = 'hidden';
+        container.style.pointerEvents = 'none';
+        container.style.width = '800px';
+        container.style.left = '0';
+        container.style.top = '0';
+        document.body.appendChild(container);
+
+        const root = ReactDOM.createRoot(container);
+        root.render(renderLivePreview(true));
+
+        setTimeout(async () => {
+            const previewNode = container.firstElementChild;
+            await html2pdf().from(previewNode).set({
+                filename: `Refund-Policy-${formData.companyName || 'Document'}.pdf`,
+                margin: 0.5,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save();
+            root.unmount();
+            document.body.removeChild(container);
+            setIsGenerating(false);
+        }, 1000);
+    } catch (error) {
+        setIsGenerating(false);
+        setSaveError('Failed to generate PDF.');
+        setShowErrorModal(true);
+    }
   };
 
   const renderStepFormContent = () => {
@@ -296,13 +332,13 @@ const RefundPolicyPage: React.FC = () => {
     </div>
   );
 
-  const renderLivePreview = () => (
+  const renderLivePreview = (forDownload = false) => (
     <div ref={previewRef} className="prose prose-sm max-w-none p-6 border border-gray-300 rounded-lg bg-white shadow-sm h-full overflow-y-auto">
       <h2 className="text-xl font-semibold text-center text-primary !mb-6">Refund Policy</h2>
-      <p className="text-right text-sm text-gray-500">Effective Date: {formData.policyEffectiveDate || '[Date]'}</p>
+      <p className="text-right text-sm">Effective Date: {formData.policyEffectiveDate || '[Date]'}</p>
       
       <PreviewSectionTitle title="1. Introduction" stepToEdit={1} />
-      <p>This Refund Policy ("Policy") describes the policies and procedures of {formData.companyName || '[Your Company Name]'} ("we," "our," or "us") regarding refunds for purchases made through our website: {formData.websiteUrl ? <a href={formData.websiteUrl} target="_blank" rel="noopener noreferrer">{formData.websiteUrl}</a> : '[Your Website URL]'}.</p>
+      <p>This Refund Policy ("Policy") describes the policies and procedures of {formData.companyName || '[Your Company Name]'} ("we," "our," or "us") regarding refunds for purchases made through our website: {formData.websiteUrl || '[Your Website URL]'}</p>
       <p className="whitespace-pre-line">{formData.policyScope || '[Policy Scope]'}</p>
       
       <PreviewSectionTitle title="2. Refund Eligibility & Process" stepToEdit={2} />
@@ -332,15 +368,22 @@ const RefundPolicyPage: React.FC = () => {
       </p>
       <p className="whitespace-pre-line">{formData.returnShippingInstructions || '[Return Shipping Instructions]'}</p>
       
-      <PreviewSectionTitle title="4. Contact Us" stepToEdit={1} />
+      <PreviewSectionTitle title="4. Contact Us" stepToEdit={4} />
       <p>If you have any questions about this Refund Policy, please contact us at: {formData.contactEmail || '[Your Contact Email]'}</p>
       
-      <p className="mt-6 text-center italic text-xs">This is a preview. The final document will be formatted professionally.</p>
+      {forDownload ? (
+        <SinglePartySignatureBlock
+          party={formData.companyName}
+          partyRole={`${formData.companyName} - Authorized Representative`}
+        />
+      ) : (
+        <p className="mt-6 text-center italic text-xs">This is a preview. The final document will be formatted professionally.</p>
+      )}
     </div>
   );
 
   const progressSteps = [1, 2, 3, 4];
-  const progressLabels = ["Business Info", "Eligibility", "Returns", "Finalize"];
+  const progressLabels = ["Info", "Eligibility", "Exchanges", "Finalize"];
 
   if (!user) {
     return <Navigate to="/signin" replace />;
@@ -415,11 +458,12 @@ const RefundPolicyPage: React.FC = () => {
             >
               <Save size={18}/> {isSaving ? 'Saving...' : 'Save to Dashboard'}
             </button>
-            <button
-              onClick={handleDownload}
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            <button 
+              onClick={handleDownloadPdf} 
+              disabled={isGenerating} 
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 transition-colors"
             >
-              Download Document
+              <Download size={18}/> {isGenerating ? 'Generating...' : 'Download PDF'}
             </button>
           </div>
         </div>
