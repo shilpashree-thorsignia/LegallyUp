@@ -32,11 +32,7 @@ export default defineConfig({
     copyPublicDir: true,
     // Optimize chunk size
     chunkSizeWarningLimit: 1000,
-    // Enable tree-shaking
-    treeshake: {
-      moduleSideEffects: false,
-      preset: 'recommended'
-    },
+    // Tree-shaking is handled by Rollup automatically
     terserOptions: {
       compress: {
         drop_console: true,
@@ -79,6 +75,15 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:5000',
     },
+    fs: {
+      strict: false
+    },
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    }
   },
   publicDir: 'public',
   // Performance optimizations
