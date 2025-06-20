@@ -42,6 +42,7 @@ const DashboardPage: React.FC = () => {
   const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [viewModal, setViewModal] = useState<{ open: boolean, template?: any }>({ open: false });
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('az'); // 'az', 'za', 'newest', 'oldest'
@@ -60,19 +61,65 @@ const DashboardPage: React.FC = () => {
   // Fetch templates helper
   const fetchTemplates = async (userId: string) => {
     setLoading(true);
-    // Fetch active templates
-    const resActive = await fetch(`${API_BASE}/templates?user_id=${userId}`);
-    const dataActive = await resActive.json();
-    setTemplates(dataActive.templates || []);
-    // Fetch trashed templates
-    const resTrashed = await fetch(`${API_BASE}/templates/trash?user_id=${userId}`);
-    const dataTrashed = await resTrashed.json();
-    setTrashedTemplates(dataTrashed.templates || []);
-    setLoading(false);
+    setError(null);
+    try {
+      console.log('Fetching templates for user:', userId);
+      console.log('API_BASE:', API_BASE);
+      
+      // Fetch active templates
+      const activeUrl = `${API_BASE}/templates?user_id=${userId}`;
+      console.log('Fetching active templates from:', activeUrl);
+      
+      const resActive = await fetch(activeUrl);
+      console.log('Active templates response status:', resActive.status);
+      
+      if (!resActive.ok) {
+        throw new Error(`Failed to fetch active templates: ${resActive.status} ${resActive.statusText}`);
+      }
+      
+      const dataActive = await resActive.json();
+      console.log('Active templates data:', dataActive);
+      setTemplates(dataActive.templates || []);
+      
+      // Fetch trashed templates
+      const trashedUrl = `${API_BASE}/templates/trash?user_id=${userId}`;
+      console.log('Fetching trashed templates from:', trashedUrl);
+      
+      const resTrashed = await fetch(trashedUrl);
+      console.log('Trashed templates response status:', resTrashed.status);
+      
+      if (!resTrashed.ok) {
+        console.warn(`Failed to fetch trashed templates: ${resTrashed.status} ${resTrashed.statusText}`);
+        setTrashedTemplates([]);
+      } else {
+        const dataTrashed = await resTrashed.json();
+        console.log('Trashed templates data:', dataTrashed);
+        setTrashedTemplates(dataTrashed.templates || []);
+      }
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load documents');
+      // Set empty arrays and show error state instead of infinite loading
+      setTemplates([]);
+      setTrashedTemplates([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found, skipping template fetch');
+      return;
+    }
+    
+    if (!user.id) {
+      console.error('User object missing id property:', user);
+      setError('User authentication error: missing user ID');
+      return;
+    }
+    
+    console.log('User found with ID:', user.id);
     fetchTemplates(user.id);
   }, [user]);
 
@@ -241,6 +288,55 @@ const DashboardPage: React.FC = () => {
       return 0;
     });
 
+  // Test API connectivity
+  const testApiConnection = async () => {
+    try {
+      console.log('Testing API connection...');
+      const response = await fetch(`${API_BASE}/test`);
+      console.log('API test response status:', response.status);
+      const data = await response.text();
+      console.log('API test response data:', data);
+      alert(`API Status: ${response.status}\nResponse: ${data}`);
+    } catch (error) {
+      console.error('API test failed:', error);
+      alert(`API test failed: ${error}`);
+    }
+  };
+
+  // Test with mock data
+  const testWithMockData = () => {
+    console.log('Testing with mock data...');
+    const mockDocuments = [
+      {
+        id: 1,
+        title: 'Test NDA Document',
+        content: JSON.stringify({
+          partyOne: 'Test Company',
+          partyTwo: 'Test Individual',
+          effectiveDate: '2024-12-20',
+          purpose: 'Testing purposes'
+        }),
+        created_at: '2024-12-20T10:00:00Z'
+      },
+      {
+        id: 2,
+        title: 'Test Privacy Policy',
+        content: JSON.stringify({
+          companyName: 'Test Corp',
+          website: 'test.com',
+          contactEmail: 'test@test.com',
+          effectiveDate: '2024-12-20'
+        }),
+        created_at: '2024-12-19T15:30:00Z'
+      }
+    ];
+    
+    setTemplates(mockDocuments);
+    setTrashedTemplates([]);
+    setLoading(false);
+    setError(null);
+  };
+
   if (!user) {
     return <div className="py-8 text-center text-primary text-xl">Please sign in to view your dashboard.</div>;
   }
@@ -372,6 +468,46 @@ const DashboardPage: React.FC = () => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
               </svg>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-24 h-24 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                <X size={40} className="text-red-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Failed to Load Documents</h3>
+              <p className="text-gray-500 mb-4 max-w-md">{error}</p>
+              <div className="text-sm text-gray-400 mb-6 space-y-1">
+                <p>User ID: {user?.id || 'Not available'}</p>
+                <p>API Base: {API_BASE}</p>
+                <p>Attempting URL: {API_BASE}/templates?user_id={user?.id}</p>
+              </div>
+              <button 
+                onClick={() => user?.id && fetchTemplates(user.id)}
+                className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent/90 transition-colors shadow-md hover:shadow-lg mr-3"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Try Again
+              </button>
+              <button 
+                onClick={testApiConnection}
+                className="inline-flex items-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors shadow-md hover:shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                Test API
+              </button>
+              <button 
+                onClick={testWithMockData}
+                className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-colors shadow-md hover:shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                Test UI
+              </button>
             </div>
           ) : filteredAndSortedTemplates.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">

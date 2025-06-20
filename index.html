@@ -4,10 +4,95 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Performance Optimizations -->
+    <meta name="robots" content="index,follow" />
+    <meta name="googlebot" content="index,follow" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//vercel.com">
+    <link rel="dns-prefetch" href="//api.legallyup.com">
+    
+    <!-- Resource hints for better performance -->
+    <link rel="preload" href="/src/main.tsx" as="script" crossorigin>
+    <link rel="prefetch" href="/src/App.tsx">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*;">
+    
+    <!-- Critical CSS inlined to prevent render blocking -->
+    <style>
+      /* Critical CSS for initial render */
+      *{box-sizing:border-box}
+      body{margin:0;font-family:system-ui,-apple-system,sans-serif;line-height:1.5}
+      #root{min-height:100vh}
+      .loading{display:flex;align-items:center;justify-content:center;min-height:100vh}
+      .loading div{width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+      @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    </style>
+    
+    <!-- Preload critical scripts -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
     <title>LegallyUp - Create Legal Documents Easily</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Create professional legal documents easily with LegallyUp. Generate NDAs, contracts, privacy policies and more with our intuitive platform." />
+    <meta name="keywords" content="legal documents, NDA, contracts, privacy policy, legal templates, document generator" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="LegallyUp - Create Legal Documents Easily" />
+    <meta property="og:description" content="Create professional legal documents easily with LegallyUp. Generate NDAs, contracts, privacy policies and more with our intuitive platform." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LegallyUp" />
+    <meta property="og:url" content="https://legallyup.com" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LegallyUp - Create Legal Documents Easily" />
+    <meta name="twitter:description" content="Create professional legal documents easily with LegallyUp. Generate NDAs, contracts, privacy policies and more with our intuitive platform." />
+    
+    <!-- Performance Hints -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "LegallyUp",
+      "description": "Create professional legal documents easily",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading fallback -->
+      <div class="loading">
+        <div style="text-align: center;">
+          <div></div>
+          <p style="color: #666; margin: 0;">Loading LegallyUp...</p>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
