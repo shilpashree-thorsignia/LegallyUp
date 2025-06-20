@@ -533,95 +533,97 @@ const DashboardPage: React.FC = () => {
         <motion.section variants={sectionVariants} className="py-8 mb-14 px-2 sm:px-0">
           <h2 className="text-2xl sm:text-4xl font-bold text-primary mb-8 text-center">Account Settings</h2>
           <div className="bg-lightGray p-4 sm:p-8 rounded-2xl grid grid-cols-1 gap-6">
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-8 flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
-              <div className="flex flex-col items-center md:items-start w-full md:w-1/3">
-                <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <svg xmlns='http://www.w3.org/2000/svg' className='w-16 h-16 text-accent' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14c3.866 0 7 1.343 7 3v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1c0-1.657 3.134-3 7-3z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14a5 5 0 100-10 5 5 0 000 10z' /></svg>
+            <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 flex flex-col lg:flex-row items-start text-left gap-8">
+              <div className="flex flex-col items-center lg:items-start w-full lg:w-1/2">
+                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto lg:mx-0">
+                  <svg xmlns='http://www.w3.org/2000/svg' className='w-16 h-16 text-primary' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14c3.866 0 7 1.343 7 3v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1c0-1.657 3.134-3 7-3z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 14a5 5 0 100-10 5 5 0 000 10z' /></svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-accent mb-2 text-center w-full">{user?.name}
+                <h3 className="text-2xl font-semibold text-primary mb-2 text-center lg:text-left w-full">{user?.name}
                   {user?.verified && (
                     <span className="inline-block bg-green-100 text-green-700 text-sm font-semibold px-2 py-0.5 rounded-full ml-2">Verified</span>
                   )}
                 </h3>
-                <p className="text-textColor text-lg mb-2 text-left w-full">{user?.email}</p>
+                <p className="text-textColor text-lg mb-2 text-center lg:text-left w-full">{user?.email}</p>
                 {user?.created_at && (
-                  <p className="text-base text-gray-400 mb-2 text-left w-full">Member since: {user.created_at.slice(0, 10)}</p>
+                  <p className="text-base text-gray-400 mb-4 text-center lg:text-left w-full">Member since: {user.created_at.slice(0, 10)}</p>
                 )}
-                <p className="text-gray-500 text-base mb-4 text-left w-full">
-                  Welcome to LegallyUp! Here you can view and update your personal information, track your document activity, and manage your subscription plan. Take advantage of our growing library of legal templates and powerful tools to simplify your legal paperwork.
+                <p className="text-gray-500 text-base mb-6 text-center lg:text-left w-full">
+                  Welcome to LegallyUp! Here you can view and update your personal information, track your document activity, and manage your subscription plan.
                 </p>
-                <div className="w-full flex flex-col gap-3 mb-4">
-                  <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
-                    <span className="text-base text-gray-500">Most Recent Document:</span>
+                <div className="w-full flex flex-col gap-3 mb-6">
+                  <div className="bg-lightGray rounded-lg p-4 flex flex-col items-start text-left w-full">
+                    <span className="text-base text-gray-500 mb-1">Most Recent Document:</span>
                     <span className="font-semibold text-primary text-base">{mostRecentDoc ? mostRecentDoc.title : '--'}</span>
                     <span className="text-sm text-gray-400">{mostRecentDoc && mostRecentDoc.created_at ? mostRecentDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
-                  <div className="bg-lightGray rounded-lg p-3 sm:p-3 flex flex-col items-start text-left w-full">
-                    <span className="text-base text-gray-500">First Document Created:</span>
+                  <div className="bg-lightGray rounded-lg p-4 flex flex-col items-start text-left w-full">
+                    <span className="text-base text-gray-500 mb-1">First Document Created:</span>
                     <span className="font-semibold text-primary text-base">{firstDoc ? firstDoc.title : '--'}</span>
                     <span className="text-sm text-gray-400">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
                 </div>
-                <button className="mt-2 px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base sm:text-sm w-full">Edit Profile (Coming Soon)</button>
+                <button className="px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base w-full">Edit Profile (Coming Soon)</button>
               </div>
-              <div className="hidden md:block w-px bg-lightGray mx-8"></div>
-              <div className="flex-1 flex flex-col items-center md:items-start">
-                <div className="flex items-center gap-3 mb-3 justify-center w-full">
+              
+              <div className="hidden lg:block w-px bg-gray-200 mx-4"></div>
+              
+              <div className="flex-1 w-full lg:w-1/2 flex flex-col">
+                <div className="flex items-center gap-3 mb-4 justify-center lg:justify-start">
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
                   <span className="text-primary font-semibold text-lg">Your Plan</span>
                 </div>
-                <p className="text-textColor text-lg mb-2 text-left w-full"><span className="font-semibold text-primary">Current Plan:</span> {user?.plan || 'Free'}</p>
-                <p className="text-gray-500 text-base mb-3 text-left w-full">
+                <p className="text-gray-500 text-base mb-4 text-center lg:text-left">
                   {user?.plan === 'Pro'
                     ? 'You are on the Pro plan. Enjoy unlimited access to all features and priority support.'
                     : (
                       <>
                         You are on the Free plan. Enjoy access to essential legal templates and create up to 3 documents per month.<br />
-                        <span className="block mt-3 font-semibold text-primary text-base text-center">Upgrade to unlock:</span>
+                        <span className="block mt-4 font-semibold text-primary text-base text-center lg:text-left">Upgrade to unlock:</span>
                         <div className="bg-accent/5 rounded-lg p-4 mt-3">
                           <ul className="space-y-3">
                             <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Unlimited document creation
+                              <CheckCircle className="w-5 h-5 mr-3 text-primary" /> Unlimited document creation
                             </li>
                             <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> All premium templates
+                              <CheckCircle className="w-5 h-5 mr-3 text-primary" /> All premium templates
                             </li>
                             <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Advanced customization options
+                              <CheckCircle className="w-5 h-5 mr-3 text-primary" /> Advanced customization options
                             </li>
                             <li className="flex items-center text-base font-semibold text-primary">
-                              <CheckCircle className="w-5 h-5 mr-3 text-accent" /> Priority support from legal experts
+                              <CheckCircle className="w-5 h-5 mr-3 text-primary" /> Priority support from legal experts
                             </li>
                           </ul>
                         </div>
                       </>
                     )}
                 </p>
-                <p className="text-sm text-gray-400 mb-3 text-left w-full">
+                <p className="text-sm text-gray-400 mb-4 text-center lg:text-left">
                   {user?.plan === 'Pro' && user?.next_billing_date ? (
                     <>Next billing date: {user.next_billing_date}</>
                   ) : (
                     <>No payment method on file</>
                   )}
                 </p>
-                <Link to="/pricing" className="mt-2 px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base sm:text-sm w-full text-center">View Pricing / Upgrade</Link>
-                <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 w-full max-w-xs">
-                  <div className="flex flex-col items-center bg-white rounded-lg border border-blue-100 p-4 shadow-sm">
-                    <div className="bg-blue-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Created'>
+                <Link to="/pricing" className="mb-6 px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base w-full text-center">View Pricing / Upgrade</Link>
+                <div className="grid grid-cols-2 gap-4 w-full max-w-sm mx-auto lg:mx-0">
+                  <div className="flex flex-col items-center bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3" aria-label='Documents Created'>
                       <FileText className="w-6 h-6 text-primary" />
                     </div>
                     <span className="text-2xl font-extrabold text-primary mb-1 text-center">{documentsCreated}</span>
-                    <span className="text-base text-gray-500 font-medium text-center leading-tight">Documents Created</span>
+                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Created</span>
                   </div>
-                  <div className="flex flex-col items-center bg-white rounded-lg border border-red-100 p-4 shadow-sm">
-                    <div className="bg-red-50 rounded-full p-2 mb-2 flex items-center justify-center" aria-label='Documents Trashed'>
-                      <Trash2 className="w-6 h-6 text-red-500" />
+                  <div className="flex flex-col items-center bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3" aria-label='Documents Trashed'>
+                      <Trash2 className="w-6 h-6 text-primary" />
                     </div>
-                    <span className="text-2xl font-extrabold text-red-600 mb-1 text-center">{documentsTrashed}</span>
-                    <span className="text-base text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
+                    <span className="text-2xl font-extrabold text-primary mb-1 text-center">{documentsTrashed}</span>
+                    <span className="text-sm text-gray-500 font-medium text-center leading-tight">Documents Trashed</span>
                   </div>
                 </div>
               </div>
+              
             </div>
           </div>
         </motion.section>
