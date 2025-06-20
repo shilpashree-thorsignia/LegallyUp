@@ -39,13 +39,18 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Handle API requests
+  // Handle API requests - only cache GET requests
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       caches.open(API_CACHE).then((cache) => {
+        // Only cache GET requests, let other methods pass through
+        if (request.method !== 'GET') {
+          return fetch(request);
+        }
+        
         return cache.match(request).then((cachedResponse) => {
           const fetchPromise = fetch(request).then((networkResponse) => {
-            // Only cache successful responses
+            // Only cache successful GET responses
             if (networkResponse.status === 200) {
               cache.put(request, networkResponse.clone());
             }
