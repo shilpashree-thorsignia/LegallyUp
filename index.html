@@ -18,19 +18,15 @@
     <link rel="dns-prefetch" href="//api.legallyup.com">
     
     <!-- Resource hints for better performance -->
-    <link rel="preload" href="/src/main.tsx" as="script" crossorigin>
     <link rel="prefetch" href="/src/App.tsx">
-    <!-- Preload critical images to reduce request chains -->
-    <link rel="preload" href="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8b2ZmaWNlJTIwZGVzayUyMGRvY3VtZW50c3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=400&q=80" as="image" media="(min-width: 768px)">
     
-    <!-- Security Headers -->
+    <!-- Security Headers (note: X-Frame-Options should be set via HTTP headers, not meta tags) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     
     <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*;">
     
     <!-- Critical CSS inlined to prevent render blocking -->
     <style>
@@ -70,7 +66,7 @@
     <!-- Performance Hints -->
     <meta name="format-detection" content="telephone=no" />
     <meta name="theme-color" content="#3b82f6" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     
     <!-- Structured Data -->
