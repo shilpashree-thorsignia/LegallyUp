@@ -194,7 +194,7 @@ const TemplateLibraryPage: React.FC = () => {
   const handleGenerateClick = (path: string, isPremium: boolean) => {
     if (!user) {
       setShowLoginPrompt(true);
-    } else if (isPremium && user.plan === 'free') {
+    } else if (isPremium && (user.plan === 'free' || !user.plan || user.plan === 'Free')) {
       setShowUpgradePrompt(true);
     } else {
       navigate(path);

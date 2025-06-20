@@ -698,7 +698,12 @@ const DashboardPage: React.FC = () => {
                     <span className="text-sm text-gray-400">{firstDoc && firstDoc.created_at ? firstDoc.created_at.slice(0, 10) : ''}</span>
                   </div>
                 </div>
-                <button className="px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base w-full">Edit Profile (Coming Soon)</button>
+                <button 
+                  onClick={() => navigate('/profile/edit')}
+                  className="px-6 py-2.5 bg-accent text-white rounded-lg font-semibold shadow hover:bg-accent/90 transition text-base w-full"
+                >
+                  Edit Profile
+                </button>
               </div>
               
               <div className="hidden lg:block w-px bg-gray-200 mx-4"></div>

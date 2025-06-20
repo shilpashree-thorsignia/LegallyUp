@@ -22,6 +22,7 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const SignInPage = React.lazy(() => import('./pages/SignInPage'));
 const SignUpPage = React.lazy(() => import('./pages/SignUpPage'));
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const EditProfilePage = React.lazy(() => import('./pages/EditProfilePage'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/Documents/PrivacyPolicyPage'));
 const NdaPage = React.lazy(() => import('./pages/Documents/NdaPage'));
 const RefundPolicyPage = React.lazy(() => import('./pages/Documents/RefundPolicyPage'));
@@ -119,6 +120,13 @@ function App() {
           
           {/* Protected Routes */}
           <Route path="/dashboard" element={<ProtectedLazyRoute component={DashboardPage} />} />
+          <Route path="/profile/edit" element={
+            <ProtectedRoute>
+              <Suspense fallback={<PageLoader />}>
+                <EditProfilePage />
+              </Suspense>
+            </ProtectedRoute>
+          } />
 
           {/* Auth pages */}
           <Route path="/signin" element={<LazyRoute component={SignInPage} />} />

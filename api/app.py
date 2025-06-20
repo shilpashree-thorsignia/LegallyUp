@@ -1133,6 +1133,71 @@ def check_and_log_document_generation(user_id):
         print('Document generation check error:', e)
         return False, str(e)
 
+@app.route('/api/update-profile', methods=['PUT'])
+def update_profile():
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    
+    # Extract user ID from the request (you might want to use JWT token instead)
+    # For now, we'll use the email to identify the user
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not email or not username:
+        return jsonify({'error': 'Email and username are required'}), 400
+    
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+        
+        # First, check if user exists
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        
+        if not user:
+            cursor.close()
+            conn.close()
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_id = user['id']
+        
+        # Update user data
+        if password:
+            # Update username and password
+            cursor.execute("""
+                UPDATE users 
+                SET username = %s, password = %s 
+                WHERE id = %s
+            """, (username, password, user_id))
+        else:
+            # Update only username
+            cursor.execute("""
+                UPDATE users 
+                SET username = %s 
+                WHERE id = %s
+            """, (username, user_id))
+        
+        conn.commit()
+        
+        # Get updated user data
+        cursor.execute("SELECT id, username, email, plan, verified, created_at FROM users WHERE id = %s", (user_id,))
+        updated_user = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'message': 'Profile updated successfully',
+            'user': updated_user
+        }), 200
+        
+    except Error as e:
+        print('Profile update error:', e)
+        return jsonify({'error': 'Failed to update profile'}), 500
+
 if __name__ == "__main__":
     # For local development only
     app.run(host="0.0.0.0", port=5000, debug=True) 
