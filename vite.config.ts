@@ -32,6 +32,11 @@ export default defineConfig({
     copyPublicDir: true,
     // Optimize chunk size
     chunkSizeWarningLimit: 1000,
+    // Enable tree-shaking
+    treeshake: {
+      moduleSideEffects: false,
+      preset: 'recommended'
+    },
     terserOptions: {
       compress: {
         drop_console: true,

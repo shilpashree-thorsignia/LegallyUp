@@ -106,7 +106,7 @@ const SignUpPage: React.FC = () => {
   };
 
   // Single relevant image for the right column
- const heroImageUrl = "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8b2ZmaWNlJTIwZGVzayUyMGRvY3VtZW50c3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=70";
+ const heroImageUrl = "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8b2ZmaWNlJTIwZGVzayUyMGRvY3VtZW50c3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=400&q=80";
  const heroImageAlt = "Modern desk with legal documents and technology";
 
 
@@ -229,6 +229,7 @@ const SignUpPage: React.FC = () => {
           <motion.div
             variants={itemVariants}
             className="w-full max-w-md rounded-xl shadow-2xl overflow-hidden my-8 transform transition-all hover:scale-105"
+            style={{ minHeight: '300px' }} // Reserve space to prevent CLS
           >
             <img
               src={heroImageUrl}
@@ -237,6 +238,7 @@ const SignUpPage: React.FC = () => {
               width="400"
               height="300"
               loading="lazy"
+              style={{ aspectRatio: '4/3' }}
             />
           </motion.div>
 

@@ -13,7 +13,7 @@ const mockCaseStudies = [
         title: 'Startup Secures IP with Quick NDAs',
         client: 'Innovatech Solutions',
         industry: 'Software & AI',
-        imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c3RhcnR1cCUyMHRlY2h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60', // Replace with relevant image
+        imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c3RhcnR1cCUyMHRlY2h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=300&q=80', // Replace with relevant image
         summary: 'How a new tech company streamlined contracting and protected vital intellectual property by using LegallyUp for Non-Disclosure Agreements during early-stage discussions.',
         challenge: "Innovatech Solutions, an AI startup, needed to engage with multiple potential partners and investors. They faced the challenge of quickly and reliably protecting their proprietary algorithms and business plans without incurring high legal fees or lengthy delays.",
         solution: "LegallyUp's platform provided Innovatech with a customizable NDA template. They could generate tailored NDAs in minutes, ensuring all critical information was covered. The ease of use allowed their small team to manage these agreements efficiently.",

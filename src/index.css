@@ -50,6 +50,18 @@ h1, h2, h3, h4, h5, h6 {
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent layout shifts from animations */
+* {
+  /* Prevent layout shifts from transform animations */
+  transform-origin: center;
+}
+
+/* Fix CLS from Framer Motion animations */
+[data-framer-appear] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Optimized animations - reduced complexity for better performance */
 @keyframes blob-move-slow {
   0%, 100% { transform: translateY(0) scale(1); }
