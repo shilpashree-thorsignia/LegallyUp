@@ -81,6 +81,7 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
   const navigate = useNavigate();
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const totalFormSteps = formData.usesCookies === 'yes' ? 3 : 2; // Step 2 is conditional
 
@@ -167,10 +168,19 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
         navigate('/dashboard');
       } else {
         const data = await res.json();
-        alert('Failed to save: ' + (data.error || 'Unknown error'));
+        const errorMessage = data.error || 'Unknown error';
+        
+        // Check if it's a daily limit error and show upgrade modal
+        if (errorMessage.includes('Daily document generation limit reached')) {
+          setShowUpgradeModal(true);
+        } else {
+          setSaveError('Failed to save: ' + errorMessage);
+          setShowErrorModal(true);
+        }
       }
     } catch (err) {
-      alert('Failed to save: ' + err);
+      setSaveError('Failed to save: ' + err);
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
@@ -473,6 +483,32 @@ const [editingTemplate] = useState<any>(location.state?.template || null);  cons
             >
               OK
             </button>
+          </div>
+        </div>
+      )}
+      
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-primary mb-4">Upgrade to Pro</h3>
+            <p className="mb-6 text-gray-600">
+              You've reached your daily document limit for the free plan. 
+              Upgrade to Pro for unlimited document generation and access to premium templates!
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/pricing')}
+                className="w-full bg-yellow-400 text-black py-3 rounded-xl font-semibold hover:bg-yellow-500 transition"
+              >
+                Upgrade to Pro
+              </button>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="w-full py-2 text-gray-500 hover:text-primary text-sm"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

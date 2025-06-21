@@ -89,12 +89,20 @@ const Header: React.FC = () => {
               </button>
             </>
           ) : (
-            <Link
-              to="/signin"
-              className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
-            >
-              Sign In
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/signin"
+                className="text-gray-600 hover:text-primary px-3 lg:px-4 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-gray-50 transition-all duration-300 whitespace-nowrap"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
+              >
+                Sign Up
+              </Link>
+            </div>
           )}
         </div>
 
@@ -152,13 +160,22 @@ const Header: React.FC = () => {
                     </button>
                   </>
                 ) : (
-                  <NavLink
-                    to="/signin"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
-                  >
-                    Sign In
-                  </NavLink>
+                  <>
+                    <NavLink
+                      to="/signin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left text-gray-700 hover:bg-gray-200 hover:text-primary transition-colors"
+                    >
+                      Sign In
+                    </NavLink>
+                    <NavLink
+                      to="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
+                    >
+                      Sign Up
+                    </NavLink>
+                  </>
                 )}
               </div>
             </div>

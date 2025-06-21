@@ -1,7 +1,7 @@
 // Service Worker for LegallyUp
-const CACHE_NAME = 'legallyup-v1';
-const STATIC_CACHE = 'legallyup-static-v1';
-const API_CACHE = 'legallyup-api-v1';
+const CACHE_NAME = 'legallyup-v2';
+const STATIC_CACHE = 'legallyup-static-v2';
+const API_CACHE = 'legallyup-api-v2';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
