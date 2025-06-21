@@ -9,6 +9,56 @@ interface HeroBackgroundProps {
  * Blobs are above the overlay, with a subtle animated grid for a legal-tech vibe.
  */
 const HeroBackground: React.FC<HeroBackgroundProps> = ({ variant }) => {
+  if (variant === 'homepage') {
+    // Homepage variant with perfect 360-degree circles
+    return (
+      <div className="absolute inset-0 w-full h-full overflow-hidden z-10 pointer-events-none">
+        {/* Subtle animated grid */}
+        <svg className="absolute inset-0 w-full h-full opacity-30 animate-hero-grid-move" width="100%" height="100%" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#fff" strokeWidth="0.7" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+        {/* Animated colorful circles - clearly visible */}
+        <svg className="absolute left-[-10%] top-[-20%] w-[60vw] h-[60vw] min-w-[400px] min-h-[400px] opacity-90 animate-spin-slow" viewBox="0 0 600 600" fill="none">
+          <defs>
+            <radialGradient id="homepageBg1" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+              <stop offset="40%" stopColor="#06B6D4" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.3" />
+            </radialGradient>
+          </defs>
+          <circle cx="300" cy="300" r="180" fill="url(#homepageBg1)" />
+        </svg>
+        <svg className="absolute right-[-15%] top-[10%] w-[40vw] h-[40vw] min-w-[300px] min-h-[300px] opacity-80 animate-spin-reverse" viewBox="0 0 500 500" fill="none">
+          <defs>
+            <radialGradient id="homepageBg2" cx="50%" cy="50%" r="50%" fx="70%" fy="30%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+              <stop offset="40%" stopColor="#10B981" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.3" />
+            </radialGradient>
+          </defs>
+          <circle cx="250" cy="250" r="140" fill="url(#homepageBg2)" />
+        </svg>
+        <svg className="absolute left-[30%] bottom-[-20%] w-[40vw] h-[40vw] min-w-[250px] min-h-[250px] opacity-75 animate-spin-medium" viewBox="0 0 400 400" fill="none">
+          <defs>
+            <radialGradient id="homepageBg3" cx="50%" cy="50%" r="50%" fx="20%" fy="70%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
+              <stop offset="40%" stopColor="#8B5CF6" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#EC4899" stopOpacity="0.3" />
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="200" r="100" fill="url(#homepageBg3)" />
+        </svg>
+        {/* Soft glow overlay for extra pop */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-accent/30 to-white/0 mix-blend-lighten" />
+      </div>
+    );
+  }
+  
   if (variant === 'dashboard') {
     // Responsive, full-width hexagon grid illusion
     const gridCols = 20;

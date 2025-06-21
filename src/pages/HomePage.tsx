@@ -184,7 +184,7 @@ const HomePage: React.FC = () => {
         className="relative bg-gradient-to-br from-primary to-accent h-screen flex items-center justify-center overflow-hidden text-white"
         variants={contentBlockVariants}
       >
-        <HeroBackground />
+        <HeroBackground variant="homepage" />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
         
         <div className="w-full relative z-10 py-16 md:py-20">

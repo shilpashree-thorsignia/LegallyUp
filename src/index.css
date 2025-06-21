@@ -162,6 +162,40 @@ footer {
   contain: layout;
 }
 
+/* 360-degree rotation animations for homepage circles */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes spin-medium {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 30s linear infinite;
+  will-change: transform;
+  contain: layout;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 20s linear infinite;
+  will-change: transform;
+  contain: layout;
+}
+
+.animate-spin-medium {
+  animation: spin-medium 25s linear infinite;
+  will-change: transform;
+  contain: layout;
+}
+
 /* Performance optimizations for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -178,7 +212,10 @@ footer {
   .animate-blob-move-fast,
   .animate-hero-grid-move,
   .animate-dashboard-hex-parallax,
-  .animate-dashboard-hex-illusion {
+  .animate-dashboard-hex-illusion,
+  .animate-spin-slow,
+  .animate-spin-reverse,
+  .animate-spin-medium {
     animation: none !important;
   }
 }
