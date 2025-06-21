@@ -36,11 +36,11 @@ const AttorneyPage: React.FC = () => {
     >
         <motion.section
             variants={sectionVariants}
-            className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-12 px-4"
+            className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
         >
             <HeroBackground />
             <div className="absolute inset-0 bg-black/20 z-0"></div>
-            <div className="container mx-auto relative z-10 text-center">
+            <div className="w-full relative z-10 text-center">
                 <Shield size={64} className="mx-auto mb-6 opacity-90" />
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-gray-900">
                     Connect with Legal Experts

@@ -380,11 +380,11 @@ const DashboardPage: React.FC = () => {
         {/* Hero Section (modern, animated) */}
         <motion.section
           variants={sectionVariants}
-          className="w-full min-h-[85vh] flex flex-col justify-center py-10 sm:py-16 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative rounded-b-[60px] mb-8 md:mb-12 px-4 sm:px-6 lg:px-8"
+          className="w-full h-screen flex flex-col justify-center py-10 sm:py-16 bg-gradient-to-br from-primary to-accent text-white text-center overflow-hidden relative"
         >
           <HeroBackground variant="dashboard" />
           <div className="absolute inset-0 bg-black/20 z-0"></div>
-          <div className="container mx-auto relative z-10 flex flex-col justify-center h-full">
+          <div className="w-full relative z-10 flex flex-col justify-center h-full">
             <div className="max-w-4xl mx-auto text-center space-y-4">
               <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
                 <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.5} />

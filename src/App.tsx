@@ -59,11 +59,12 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = memo(({ children
   return <>{children}</>;
 });
 
-// Memoized layout component to prevent unnecessary re-renders
-const Layout: React.FC<{ children: React.ReactNode }> = memo(({ children }) => (
+
+// Full screen layout for pages with full-screen hero sections
+const FullScreenLayout: React.FC<{ children: React.ReactNode }> = memo(({ children }) => (
   <div className="flex flex-col min-h-screen text-textColor bg-white">
     <Header />
-    <main className="flex-grow container mx-auto px-4 py-8 md:px-6 lg:px-8">
+    <main className="flex-grow">
       <Suspense fallback={<PageLoader />}>
         {children}
       </Suspense>
@@ -72,19 +73,20 @@ const Layout: React.FC<{ children: React.ReactNode }> = memo(({ children }) => (
   </div>
 ));
 
-// Wrapper component for lazy-loaded routes
-const LazyRoute: React.FC<{ component: React.ComponentType }> = memo(({ component: Component }) => (
-  <Layout>
+// Wrapper component for full-screen lazy-loaded routes
+const FullScreenLazyRoute: React.FC<{ component: React.ComponentType }> = memo(({ component: Component }) => (
+  <FullScreenLayout>
     <Component />
-  </Layout>
+  </FullScreenLayout>
 ));
 
-// Wrapper component for protected lazy-loaded routes
-const ProtectedLazyRoute: React.FC<{ component: React.ComponentType }> = memo(({ component: Component }) => (
+
+// Wrapper component for protected full-screen lazy-loaded routes
+const ProtectedFullScreenLazyRoute: React.FC<{ component: React.ComponentType }> = memo(({ component: Component }) => (
   <ProtectedRoute>
-    <Layout>
+    <FullScreenLayout>
       <Component />
-    </Layout>
+    </FullScreenLayout>
   </ProtectedRoute>
 ));
 
@@ -95,53 +97,55 @@ function App() {
         <ScrollToTop />
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<LazyRoute component={HomePage} />} />
-          <Route path="/about" element={<LazyRoute component={AboutPage} />} />
-          <Route path="/generate" element={<LazyRoute component={DocumentGeneratorPage} />} />
-          <Route path="/Documents/generate" element={<LazyRoute component={DocumentGeneratorPage} />} />
-          <Route path="/Documents/generate/nda" element={<LazyRoute component={NdaPage} />} />
-          <Route path="/Documents/generate/privacy-policy" element={<LazyRoute component={PrivacyPolicyPage} />} />
-          <Route path="/Documents/generate/refund-policy" element={<LazyRoute component={RefundPolicyPage} />} />
-          <Route path="/Documents/generate/power-of-attorney" element={<LazyRoute component={PowerOfAttorneyPage} />} />
-          <Route path="/Documents/generate/eula" element={<LazyRoute component={EulaPage} />} />
-          <Route path="/Documents/generate/website-services-agreement" element={<LazyRoute component={WebsiteServicesAgreementPage} />} />
-          <Route path="/Documents/generate/cookies-policy" element={<LazyRoute component={CookiesPolicyPage} />} />
-          <Route path="/templates" element={<LazyRoute component={TemplateLibraryPage} />} />
-          <Route path="/attorneys" element={<LazyRoute component={AttorneyPage} />} />
-          <Route path="/schedule-consultation/:attorneySlug" element={<LazyRoute component={ScheduleConsultationPage} />} />
-          <Route path="/resources" element={<LazyRoute component={LegalResourcesPage} />} />
-          <Route path="/resources/:resourceSlug" element={<LazyRoute component={ResourceDetailPage} />} />
-          <Route path="/pricing" element={<LazyRoute component={PricingPage} />} />
-          <Route path="/case-studies" element={<LazyRoute component={CaseStudiesPage} />} />
-          <Route path="/case-studies/:caseStudySlug" element={<LazyRoute component={CaseStudyDetailPage} />} />
-          <Route path="/contact" element={<LazyRoute component={ContactPage} />} />
-          <Route path="/blogs" element={<LazyRoute component={BlogsPage} />} />
-          <Route path="/blogs/:blogId" element={<LazyRoute component={BlogDetailPage} />} />
+          <Route path="/" element={<FullScreenLazyRoute component={HomePage} />} />
+          <Route path="/about" element={<FullScreenLazyRoute component={AboutPage} />} />
+          <Route path="/generate" element={<FullScreenLazyRoute component={DocumentGeneratorPage} />} />
+          <Route path="/Documents/generate" element={<FullScreenLazyRoute component={DocumentGeneratorPage} />} />
+          <Route path="/Documents/generate/nda" element={<FullScreenLazyRoute component={NdaPage} />} />
+          <Route path="/Documents/generate/privacy-policy" element={<FullScreenLazyRoute component={PrivacyPolicyPage} />} />
+          <Route path="/Documents/generate/refund-policy" element={<FullScreenLazyRoute component={RefundPolicyPage} />} />
+          <Route path="/Documents/generate/power-of-attorney" element={<FullScreenLazyRoute component={PowerOfAttorneyPage} />} />
+          <Route path="/Documents/generate/eula" element={<FullScreenLazyRoute component={EulaPage} />} />
+          <Route path="/Documents/generate/website-services-agreement" element={<FullScreenLazyRoute component={WebsiteServicesAgreementPage} />} />
+          <Route path="/Documents/generate/cookies-policy" element={<FullScreenLazyRoute component={CookiesPolicyPage} />} />
+          <Route path="/templates" element={<FullScreenLazyRoute component={TemplateLibraryPage} />} />
+          <Route path="/attorneys" element={<FullScreenLazyRoute component={AttorneyPage} />} />
+          <Route path="/schedule-consultation/:attorneySlug" element={<FullScreenLazyRoute component={ScheduleConsultationPage} />} />
+          <Route path="/resources" element={<FullScreenLazyRoute component={LegalResourcesPage} />} />
+          <Route path="/resources/:resourceSlug" element={<FullScreenLazyRoute component={ResourceDetailPage} />} />
+          <Route path="/pricing" element={<FullScreenLazyRoute component={PricingPage} />} />
+          <Route path="/case-studies" element={<FullScreenLazyRoute component={CaseStudiesPage} />} />
+          <Route path="/case-studies/:caseStudySlug" element={<FullScreenLazyRoute component={CaseStudyDetailPage} />} />
+          <Route path="/contact" element={<FullScreenLazyRoute component={ContactPage} />} />
+          <Route path="/blogs" element={<FullScreenLazyRoute component={BlogsPage} />} />
+          <Route path="/blogs/:blogId" element={<FullScreenLazyRoute component={BlogDetailPage} />} />
           
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedLazyRoute component={DashboardPage} />} />
+          <Route path="/dashboard" element={<ProtectedFullScreenLazyRoute component={DashboardPage} />} />
           <Route path="/profile/edit" element={
             <ProtectedRoute>
-              <Suspense fallback={<PageLoader />}>
-                <EditProfilePage />
-              </Suspense>
+              <FullScreenLayout>
+                <Suspense fallback={<PageLoader />}>
+                  <EditProfilePage />
+                </Suspense>
+              </FullScreenLayout>
             </ProtectedRoute>
           } />
 
           {/* Auth pages */}
-          <Route path="/signin" element={<LazyRoute component={SignInPage} />} />
-          <Route path="/signup" element={<LazyRoute component={SignUpPage} />} />
-          <Route path="/forgot-password" element={<LazyRoute component={ForgotPasswordPage} />} />
+          <Route path="/signin" element={<FullScreenLazyRoute component={SignInPage} />} />
+          <Route path="/signup" element={<FullScreenLazyRoute component={SignUpPage} />} />
+          <Route path="/forgot-password" element={<FullScreenLazyRoute component={ForgotPasswordPage} />} />
 
           {/* Policy Pages */}
-          <Route path="/privacy" element={<LazyRoute component={PrivacyPolicy} />} />
-          <Route path="/terms" element={<LazyRoute component={TermsAndConditions} />} />
-          <Route path="/refund" element={<LazyRoute component={RefundPolicy} />} />
+          <Route path="/privacy" element={<FullScreenLazyRoute component={PrivacyPolicy} />} />
+          <Route path="/terms" element={<FullScreenLazyRoute component={TermsAndConditions} />} />
+          <Route path="/refund" element={<FullScreenLazyRoute component={RefundPolicy} />} />
 
           {/* Document Generator Pages */}
-          <Route path="/documents/privacy-policy" element={<LazyRoute component={PrivacyPolicyPage} />} />
-          <Route path="/documents/terms-of-service" element={<LazyRoute component={EulaPage} />} />
-          <Route path="/documents/refund-policy" element={<LazyRoute component={RefundPolicyPage} />} />
+          <Route path="/documents/privacy-policy" element={<FullScreenLazyRoute component={PrivacyPolicyPage} />} />
+          <Route path="/documents/terms-of-service" element={<FullScreenLazyRoute component={EulaPage} />} />
+          <Route path="/documents/refund-policy" element={<FullScreenLazyRoute component={RefundPolicyPage} />} />
         </Routes>
       </>
     </AuthProvider>

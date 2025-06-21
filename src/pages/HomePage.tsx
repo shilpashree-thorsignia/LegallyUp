@@ -179,15 +179,15 @@ const HomePage: React.FC = () => {
       variants={pageVariants}
       className="overflow-x-hidden bg-gray-50"
     >
-      {/* Hero Section */}
+      {/* Hero Section - Full Screen */}
       <motion.section
-        className="relative bg-gradient-to-br from-primary to-accent min-h-[85vh] flex items-center justify-center overflow-hidden text-white rounded-b-[60px]"
+        className="relative bg-gradient-to-br from-primary to-accent h-screen flex items-center justify-center overflow-hidden text-white"
         variants={contentBlockVariants}
       >
         <HeroBackground />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-20">
+        <div className="w-full relative z-10 py-16 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
               <ShieldCheck size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5}/>

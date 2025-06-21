@@ -125,11 +125,11 @@ const PricingPage: React.FC = () => {
     >
       <motion.section // Hero Section
         variants={contentBlockVariants}
-        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px] shadow-xl mb-16"
+        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
       >
         <HeroBackground />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
               <DollarSign size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />

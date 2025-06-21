@@ -300,14 +300,14 @@ const TemplateLibraryPage: React.FC = () => {
     >
       {/* Hero Section (matching homepage style) */}
       <motion.section
-        className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden rounded-b-[60px]"
+        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
         variants={{ hidden: { opacity: 0, y: 30, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], delayChildren: 0.2, staggerChildren: 0.2 } } }}
         initial="hidden"
         animate="visible"
       >
         <HeroBackground />
         <div className="absolute inset-0 bg-black/20 z-0"></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
               <Layers size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5} />

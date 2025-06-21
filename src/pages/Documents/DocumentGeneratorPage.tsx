@@ -57,9 +57,9 @@ const DocumentGeneratorPage: React.FC = () => {
       variants={pageVariants}
       className="bg-gray-100 min-h-screen"
     >
-      {/* Optimized Hero Section - Fixed height to prevent shifts */}
+      {/* Full Screen Hero Section - No curves or padding */}
       <motion.section
-        className="w-full h-[500px] md:h-[600px] bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative rounded-b-[60px] flex items-center justify-center"
+        className="w-full h-screen bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative flex items-center justify-center"
         variants={heroContentVariants}
         initial="hidden"
         animate="visible"
@@ -71,7 +71,7 @@ const DocumentGeneratorPage: React.FC = () => {
                 <rect width="100%" height="100%" fill="url(#patt)"/>
             </svg>
         </div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="w-full relative z-10 text-center">
           <motion.div variants={heroItemVariants} className="mb-8">
             <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.2} />
           </motion.div>
@@ -94,7 +94,7 @@ const DocumentGeneratorPage: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* Main Content Area with Template Grid - Remove negative margin */}
+      {/* Main Content Area with Template Grid */}
       <div className="relative z-20 py-16 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
