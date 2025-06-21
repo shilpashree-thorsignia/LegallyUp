@@ -29,6 +29,9 @@ body {
 h1, h2, h3, h4, h5, h6 {
   color: var(--primary, #1F3B4D);
   font-weight: bold;
+  /* Prevent font-loading shifts */
+  font-display: swap;
+  font-optical-sizing: auto;
 }
 
 /* Remove loading spinner once React loads */
@@ -50,16 +53,44 @@ h1, h2, h3, h4, h5, h6 {
 @tailwind components;
 @tailwind utilities;
 
-/* Prevent layout shifts from animations */
+/* Comprehensive CLS Prevention */
 * {
   /* Prevent layout shifts from transform animations */
   transform-origin: center;
+}
+
+/* Prevent layout shifts from async loading */
+img, svg, iframe, video {
+  /* Force dimensions to prevent shifts */
+  max-width: 100%;
+  height: auto;
+  /* Prevent jumps during loading */
+  vertical-align: top;
 }
 
 /* Fix CLS from Framer Motion animations */
 [data-framer-appear] {
   opacity: 1 !important;
   transform: none !important;
+}
+
+/* Stabilize navigation layout */
+header, nav {
+  contain: layout;
+}
+
+/* Stabilize footer layout */
+footer {
+  contain: layout;
+}
+
+/* Prevent text reflow during font loading */
+.font-loading {
+  visibility: hidden;
+}
+
+.font-loaded {
+  visibility: visible;
 }
 
 /* Optimized animations - reduced complexity for better performance */
@@ -82,16 +113,20 @@ h1, h2, h3, h4, h5, h6 {
   animation: blob-move-slow 18s ease-in-out infinite;
   /* Use GPU acceleration */
   will-change: transform;
+  /* Prevent layout shifts */
+  contain: layout;
 }
 
 .animate-blob-move-medium {
   animation: blob-move-medium 14s ease-in-out infinite;
   will-change: transform;
+  contain: layout;
 }
 
 .animate-blob-move-fast {
   animation: blob-move-fast 10s ease-in-out infinite;
   will-change: transform;
+  contain: layout;
 }
 
 @keyframes hero-grid-move {
@@ -102,6 +137,7 @@ h1, h2, h3, h4, h5, h6 {
 .animate-hero-grid-move {
   animation: hero-grid-move 24s linear infinite alternate;
   will-change: transform;
+  contain: layout;
 }
 
 @keyframes dashboard-hex-parallax {
@@ -112,6 +148,7 @@ h1, h2, h3, h4, h5, h6 {
 .animate-dashboard-hex-parallax {
   animation: dashboard-hex-parallax 28s linear infinite alternate;
   will-change: transform;
+  contain: layout;
 }
 
 @keyframes dashboard-hex-illusion {
@@ -122,6 +159,7 @@ h1, h2, h3, h4, h5, h6 {
 .animate-dashboard-hex-illusion {
   animation: dashboard-hex-illusion 16s ease-in-out infinite;
   will-change: transform;
+  contain: layout;
 }
 
 /* Performance optimizations for reduced motion */
@@ -168,6 +206,8 @@ img {
   max-width: 100%;
   height: auto;
   image-rendering: optimizeQuality;
+  /* Prevent layout shifts */
+  font-size: 0; /* Remove space below images */
 }
 
 /* Print optimizations */

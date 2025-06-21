@@ -36,19 +36,28 @@ const Header: React.FC = () => {
   const mobileActiveLinkClasses = "bg-accent/10 text-accent font-semibold";
   const mobileInactiveLinkClasses = "text-gray-700 hover:bg-gray-200 hover:text-primary";
 
+  // Simplified animation variants to prevent layout shifts
   const mobileMenuVariants = {
-    closed: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeOut" } },
-    open: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeIn" } },
+    closed: { opacity: 0, transition: { duration: 0.2, ease: "easeOut" } },
+    open: { opacity: 1, transition: { duration: 0.3, ease: "easeIn" } },
   };
 
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ease-in-out bg-white shadow-md w-full"
-      style={{ height: `${NAVBAR_HEIGHT_REM}rem` }}
+      style={{ 
+        height: `${NAVBAR_HEIGHT_REM}rem`,
+        contain: 'layout', // Prevent layout shifts
+        willChange: 'contents' // Optimize for content changes
+      }}
     >
       <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center h-full">
-        {/* Logo/Brand */}
-        <Link to="/" className="text-2xl md:text-3xl font-extrabold text-primary hover:opacity-80 transition-opacity duration-200 tracking-tight mr-4 lg:mr-8">
+        {/* Logo/Brand - Fixed dimensions to prevent shifts */}
+        <Link 
+          to="/" 
+          className="text-2xl md:text-3xl font-extrabold text-primary hover:opacity-80 transition-opacity duration-200 tracking-tight mr-4 lg:mr-8 flex-shrink-0"
+          style={{ minWidth: '140px' }} // Prevent text reflow
+        >
           Legally<span className="text-accent">Up</span>
         </Link>
 
@@ -62,6 +71,7 @@ const Header: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center h-full ${isActive ? activeLinkClasses : inactiveLinkClasses} text-base md:text-[15px] lg:text-[16px] font-medium whitespace-nowrap py-2`
                 }
+                style={{ minHeight: '40px' }} // Stable height
               >
                 <span>{link.label}</span>
               </NavLink>
@@ -70,55 +80,68 @@ const Header: React.FC = () => {
         </nav>
 
         {/* Desktop/Tablet Auth Links */}
-        <div className="hidden md:flex items-center ml-4 lg:ml-8">
+        <div className="hidden md:flex items-center space-x-4 ml-4 flex-shrink-0">
           {user ? (
             <>
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `flex items-center ${isActive ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'} transition-colors duration-200 text-base md:text-[15px] lg:text-[16px] font-medium mr-4`
+                  `flex items-center px-3 py-2 rounded-lg text-base font-medium transition-colors ${isActive ? 'bg-accent/10 text-accent' : 'text-gray-600 hover:text-primary hover:bg-gray-100'}`
                 }
+                style={{ minHeight: '40px', minWidth: '100px' }} // Stable dimensions
               >
                 {user.name || 'Dashboard'}
               </NavLink>
               <button
                 onClick={handleLogout}
-                className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
+                className="bg-primary text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-primary/80 transition-colors"
+                style={{ minHeight: '40px', minWidth: '80px' }} // Stable dimensions
               >
                 Logout
               </button>
             </>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link
+            <>
+              <NavLink
                 to="/signin"
-                className="text-gray-600 hover:text-primary px-3 lg:px-4 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-gray-50 transition-all duration-300 whitespace-nowrap"
+                className={({ isActive }) =>
+                  `flex items-center px-3 py-2 rounded-lg text-base font-medium transition-colors ${isActive ? 'bg-accent/10 text-accent' : 'text-gray-600 hover:text-primary hover:bg-gray-100'}`
+                }
+                style={{ minHeight: '40px', minWidth: '70px' }} // Stable dimensions
               >
                 Sign In
-              </Link>
-              <Link
+              </NavLink>
+              <NavLink
                 to="/signup"
-                className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg text-base md:text-[15px] lg:text-[16px] font-semibold hover:bg-primary/80 transition-colors duration-300 shadow-md whitespace-nowrap"
+                className="bg-primary text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-primary/80 transition-colors"
+                style={{ minHeight: '40px', minWidth: '80px' }} // Stable dimensions
               >
                 Sign Up
-              </Link>
-            </div>
+              </NavLink>
+            </>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile menu button - Fixed dimensions */}
         <div className="md:hidden ml-auto">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="text-gray-700 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
             aria-label="Toggle Mobile Menu"
+            style={{ 
+              width: '44px', 
+              height: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
             {isMobileMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation (Dropdown) */}
+      {/* Mobile Navigation (Dropdown) - Optimized for CLS */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.nav
@@ -128,6 +151,7 @@ const Header: React.FC = () => {
             exit="closed"
             variants={mobileMenuVariants}
             className="md:hidden absolute top-full left-0 right-0 shadow-xl bg-white border-t border-gray-200 w-full"
+            style={{ contain: 'layout' }} // Prevent layout shifts
           >
             <div className="px-4 pt-4 pb-5 space-y-2">
               {navLinks.map(link => (
@@ -138,6 +162,7 @@ const Header: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center px-4 py-3 rounded-lg text-[16px] font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`
                   }
+                  style={{ minHeight: '48px' }} // Stable height
                 >
                   {link.label}
                 </NavLink>
@@ -149,12 +174,14 @@ const Header: React.FC = () => {
                       to="/dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg text-[16px] font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}
+                      style={{ minHeight: '48px' }}
                     >
                       {user.name || 'Dashboard'}
                     </NavLink>
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
+                      style={{ minHeight: '48px' }}
                     >
                       Logout
                     </button>
@@ -164,7 +191,8 @@ const Header: React.FC = () => {
                     <NavLink
                       to="/signin"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left text-gray-700 hover:bg-gray-200 hover:text-primary transition-colors"
+                      className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg text-[16px] font-medium transition-colors ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}
+                      style={{ minHeight: '48px' }}
                     >
                       Sign In
                     </NavLink>
@@ -172,6 +200,7 @@ const Header: React.FC = () => {
                       to="/signup"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="w-full flex items-center px-4 py-3 rounded-lg text-[16px] font-medium text-left bg-primary text-white hover:bg-primary/80 transition-colors"
+                      style={{ minHeight: '48px' }}
                     >
                       Sign Up
                     </NavLink>
