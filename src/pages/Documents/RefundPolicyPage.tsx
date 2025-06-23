@@ -163,7 +163,7 @@ const RefundPolicyPage: React.FC = () => {
         });
       }
       if (res.ok) {
-        navigate('/dashboard');
+        navigate('/dashboard', { state: { shouldRefreshDashboard: true } });
       } else {
         const data = await res.json();
         const errorMessage = data.error || 'Unknown error';

@@ -1,7 +1,7 @@
 // src/pages/DashboardPage.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; 
 import { Trash2, Undo2, Eye, Edit3, X, Search, ArrowDownUp, Layers, CheckCircle, FileText, MoreHorizontal, FilePlus2, LayoutGrid, BookOpenCheck } from 'lucide-react';
 import ReactDOM from 'react-dom/client';
@@ -38,6 +38,7 @@ const getEditPath = (title = '') => {
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [templates, setTemplates] = useState<any[]>([]);
   const [trashedTemplates, setTrashedTemplates] = useState<any[]>([]);
   const [showTrash, setShowTrash] = useState(false);
@@ -51,6 +52,11 @@ const DashboardPage: React.FC = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState<number|null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastFetchRef = useRef<number>(0);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initialLoadCompletedRef = useRef<boolean>(false);
+  const lastUserIdRef = useRef<string | null>(null);
 
   // Document stats
   const documentsCreated = templates.length + trashedTemplates.length;
@@ -58,70 +64,212 @@ const DashboardPage: React.FC = () => {
   const mostRecentDoc = templates.length > 0 ? templates[0] : null;
   const firstDoc = templates.length > 0 ? templates[templates.length - 1] : null;
 
-  // Fetch templates helper
-  const fetchTemplates = async (userId: string) => {
+  // Debug: Track loading state changes
+  useEffect(() => {
+    console.log('Loading state changed to:', loading, 'Templates count:', templates.length);
+  }, [loading, templates.length]);
+
+  // Debug: Track when dashboard component mounts/unmounts
+  useEffect(() => {
+    console.log('Dashboard component mounted/updated');
+    return () => {
+      console.log('Dashboard component will unmount');
+    };
+  }, []);
+
+  // Optimized fetch templates helper with debouncing and parallel requests
+  const fetchTemplates = async (userId: string, force = false) => {
+    // For forced calls (like initial load or after document operations), skip debouncing
+    if (!force) {
+      const now = Date.now();
+      if (now - lastFetchRef.current < 1000) { // Debounce for 1 second
+        console.log('Debouncing fetchTemplates call');
+        return;
+      }
+      lastFetchRef.current = now;
+    }
+
+    // Cancel previous request if still pending
+    if (abortControllerRef.current) {
+      console.log('Cancelling previous request');
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller with timeout
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    // Set timeout for requests (8 seconds max)
+    const timeoutId = setTimeout(() => {
+      console.log('Request timeout, aborting...');
+      controller.abort();
+    }, 8000);
+
     setLoading(true);
     setError(null);
+    
     try {
       console.log('Fetching templates for user:', userId);
-      console.log('API_BASE:', API_BASE);
       
-      // Fetch active templates
-      const activeUrl = `${API_BASE}/templates?user_id=${userId}`;
-      console.log('Fetching active templates from:', activeUrl);
-      
-      const resActive = await fetch(activeUrl);
-      console.log('Active templates response status:', resActive.status);
-      
-      if (!resActive.ok) {
-        throw new Error(`Failed to fetch active templates: ${resActive.status} ${resActive.statusText}`);
+      // Make both API calls in parallel for better performance
+      const [activeResponse, trashedResponse] = await Promise.allSettled([
+        fetch(`${API_BASE}/templates?user_id=${userId}`, { 
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+          }
+        }),
+        fetch(`${API_BASE}/templates/trash?user_id=${userId}`, { 
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+          }
+        })
+      ]);
+
+      // Clear timeout since requests completed
+      clearTimeout(timeoutId);
+
+      // Check if request was aborted
+      if (controller.signal.aborted) {
+        console.log('Request was aborted');
+        return;
       }
-      
-      const dataActive = await resActive.json();
-      console.log('Active templates data:', dataActive);
-      setTemplates(dataActive.templates || []);
-      
-      // Fetch trashed templates
-      const trashedUrl = `${API_BASE}/templates/trash?user_id=${userId}`;
-      console.log('Fetching trashed templates from:', trashedUrl);
-      
-      const resTrashed = await fetch(trashedUrl);
-      console.log('Trashed templates response status:', resTrashed.status);
-      
-      if (!resTrashed.ok) {
-        console.warn(`Failed to fetch trashed templates: ${resTrashed.status} ${resTrashed.statusText}`);
-        setTrashedTemplates([]);
+
+      // Process active templates
+      if (activeResponse.status === 'fulfilled' && activeResponse.value.ok) {
+        const dataActive = await activeResponse.value.json();
+        console.log('Active templates loaded:', dataActive.templates?.length || 0);
+        setTemplates(dataActive.templates || []);
       } else {
-        const dataTrashed = await resTrashed.json();
-        console.log('Trashed templates data:', dataTrashed);
-        setTrashedTemplates(dataTrashed.templates || []);
+        console.error('Failed to fetch active templates:', activeResponse);
+        setTemplates([]);
+        if (activeResponse.status === 'rejected') {
+          throw new Error(`Failed to fetch active templates: ${activeResponse.reason}`);
+        }
       }
+
+      // Process trashed templates
+      if (trashedResponse.status === 'fulfilled' && trashedResponse.value.ok) {
+        const dataTrashed = await trashedResponse.value.json();
+        console.log('Trashed templates loaded:', dataTrashed.templates?.length || 0);
+        setTrashedTemplates(dataTrashed.templates || []);
+      } else {
+        console.warn('Failed to fetch trashed templates, setting empty array');
+        setTrashedTemplates([]);
+      }
+
+      // Mark initial load as completed
+      initialLoadCompletedRef.current = true;
+
     } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Fetch aborted or timed out');
+        // Don't set error for aborted requests, just return
+        return;
+      }
+      
       console.error('Error fetching templates:', error);
       setError(error instanceof Error ? error.message : 'Failed to load documents');
-      // Set empty arrays and show error state instead of infinite loading
       setTemplates([]);
       setTrashedTemplates([]);
     } finally {
-      setLoading(false);
+      // Always clear loading state if the request wasn't aborted
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
+      abortControllerRef.current = null;
     }
   };
 
+  // Debounced version for frequent calls
+  // const debouncedFetchTemplates = (userId: string) => {
+  //   if (debounceTimeoutRef.current) {
+  //     clearTimeout(debounceTimeoutRef.current);
+  //   }
+    
+  //   debounceTimeoutRef.current = setTimeout(() => {
+  //     fetchTemplates(userId, true);
+  //   }, 300); // 300ms debounce
+  // };
+
   useEffect(() => {
+    console.log('Dashboard useEffect running - user:', user?.id, 'initialLoadCompleted:', initialLoadCompletedRef.current);
+    
     if (!user) {
       console.log('No user found, skipping template fetch');
+      setLoading(false); // Ensure loading is false when no user
+      initialLoadCompletedRef.current = false;
+      lastUserIdRef.current = null;
       return;
     }
     
     if (!user.id) {
       console.error('User object missing id property:', user);
       setError('User authentication error: missing user ID');
+      setLoading(false); // Ensure loading is false on error
       return;
     }
     
-    console.log('User found with ID:', user.id);
-    fetchTemplates(user.id);
+    // Only fetch if:
+    // 1. Initial load hasn't been completed for this user, OR
+    // 2. User has changed
+    const userChanged = lastUserIdRef.current !== user.id;
+    const needsInitialLoad = !initialLoadCompletedRef.current || userChanged;
+    
+    console.log('needsInitialLoad:', needsInitialLoad, 'userChanged:', userChanged);
+    
+    if (needsInitialLoad) {
+      console.log('Performing initial load for user:', user.id);
+      lastUserIdRef.current = user.id;
+      fetchTemplates(user.id, true); // Force initial load
+      
+      // Safety timeout to clear loading state if request hangs
+      const safetyTimeout = setTimeout(() => {
+        if (loading) {
+          console.warn('Safety timeout: clearing loading state');
+          setLoading(false);
+          setError('Request timed out. Please try refreshing the page.');
+        }
+      }, 15000); // 15 seconds safety timeout
+
+      return () => clearTimeout(safetyTimeout);
+    } else {
+      console.log('Skipping fetch - data already loaded for user:', user.id);
+      // Ensure loading state is cleared when skipping fetch
+      setLoading(false);
+      setError(null);
+    }
   }, [user]);
+
+  // Only refresh when coming from document generation/edit pages
+  useEffect(() => {
+    // Skip if this is the initial load (handled by the previous useEffect)
+    if (!user?.id || !location.state?.shouldRefreshDashboard) {
+      return;
+    }
+    
+    console.log('Refreshing templates after document operation...');
+    fetchTemplates(user.id, true);
+    
+    // Clear the state to prevent repeated refreshes
+    window.history.replaceState({}, document.title);
+  }, [location.state, user?.id]); // Only depend on location.state, not the entire location object
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -157,7 +305,7 @@ const DashboardPage: React.FC = () => {
   const confirmDeleteDocument = async () => {
     if (pendingDeleteId !== null) {
       await fetch(`${API_BASE}/templates/${pendingDeleteId}/trash`, { method: 'POST' });
-      if (user) fetchTemplates(user.id);
+      if (user) fetchTemplates(user.id, true); // Force immediate refresh
     }
     setShowDeleteModal(false);
     setPendingDeleteId(null);
@@ -170,7 +318,7 @@ const DashboardPage: React.FC = () => {
 
   const handleRestoreDocument = async (docId: number) => {
     await fetch(`${API_BASE}/templates/${docId}/restore`, { method: 'POST' });
-    if (user) fetchTemplates(user.id);
+    if (user) fetchTemplates(user.id, true); // Force immediate refresh
   };
 
   const handleDownloadDocument = async (doc: any, format: 'pdf' | 'docx') => {
@@ -289,19 +437,19 @@ const DashboardPage: React.FC = () => {
     });
 
   // Test API connectivity
-  const testApiConnection = async () => {
-    try {
-      console.log('Testing API connection...');
-      const response = await fetch(`${API_BASE}/test`);
-      console.log('API test response status:', response.status);
-      const data = await response.text();
-      console.log('API test response data:', data);
-      alert(`API Status: ${response.status}\nResponse: ${data}`);
-    } catch (error) {
-      console.error('API test failed:', error);
-      alert(`API test failed: ${error}`);
-    }
-  };
+  // const testApiConnection = async () => {
+  //   try {
+  //     console.log('Testing API connection...');
+  //     const response = await fetch(`${API_BASE}/test`);
+  //     console.log('API test response status:', response.status);
+  //     const data = await response.text();
+  //     console.log('API test response data:', data);
+  //     alert(`API Status: ${response.status}\nResponse: ${data}`);
+  //   } catch (error) {
+  //     console.error('API test failed:', error);
+  //     alert(`API test failed: ${error}`);
+  //   }
+  // };
 
   // Test with mock data
   const testWithMockData = () => {
@@ -482,7 +630,7 @@ const DashboardPage: React.FC = () => {
                 <p>Attempting URL: {API_BASE}/templates?user_id={user?.id}</p>
               </div>
               <button 
-                onClick={() => user?.id && fetchTemplates(user.id)}
+                onClick={() => user?.id && fetchTemplates(user.id, true)}
                 className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent/90 transition-colors shadow-md hover:shadow-lg mr-3"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,22 +639,17 @@ const DashboardPage: React.FC = () => {
                 Try Again
               </button>
               <button 
-                onClick={testApiConnection}
-                className="inline-flex items-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors shadow-md hover:shadow-lg"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                Test API
-              </button>
-              <button 
-                onClick={testWithMockData}
+                onClick={() => {
+                  setLoading(false);
+                  setError(null);
+                  testWithMockData();
+                }}
                 className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-colors shadow-md hover:shadow-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                Test UI
+                Load Test Data
               </button>
             </div>
           ) : filteredAndSortedTemplates.length > 0 ? (
@@ -713,12 +856,12 @@ const DashboardPage: React.FC = () => {
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user?.plan === 'Pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{user?.plan || 'Free'}</span>
                   <span className="text-primary font-semibold text-lg">Your Plan</span>
                 </div>
-                <p className="text-gray-500 text-base mb-4 text-center lg:text-left">
+                <div className="text-gray-500 text-base mb-4 text-center lg:text-left">
                   {user?.plan === 'Pro'
                     ? 'You are on the Pro plan. Enjoy unlimited access to all features and priority support.'
                     : (
                       <>
-                        You are on the Free plan. Enjoy access to essential legal templates and create up to 3 documents per month.<br />
+                        You are on the Free plan. Enjoy access to essential legal templates and create up to 3 documents per month.
                         <span className="block mt-4 font-semibold text-primary text-base text-center lg:text-left">Upgrade to unlock:</span>
                         <div className="bg-accent/5 rounded-lg p-4 mt-3">
                           <ul className="space-y-3">
@@ -738,7 +881,7 @@ const DashboardPage: React.FC = () => {
                         </div>
                       </>
                     )}
-                </p>
+                </div>
                 <p className="text-sm text-gray-400 mb-4 text-center lg:text-left">
                   {user?.plan === 'Pro' && user?.next_billing_date ? (
                     <>Next billing date: {user.next_billing_date}</>
