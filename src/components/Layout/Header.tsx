@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Menu as MenuIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import LegallyUpLogo from '../../assets/LegallyUpLogo.jpeg';
 
 const NAVBAR_HEIGHT_REM = 5; // 5rem = 80px (h-20 in Tailwind)
 
@@ -55,10 +56,15 @@ const Header: React.FC = () => {
         {/* Logo/Brand - Fixed dimensions to prevent shifts */}
         <Link 
           to="/" 
-          className="text-2xl md:text-3xl font-extrabold text-primary hover:opacity-80 transition-opacity duration-200 tracking-tight mr-4 lg:mr-8 flex-shrink-0"
-          style={{ minWidth: '140px' }} // Prevent text reflow
+          className="hover:opacity-80 transition-opacity duration-200 mr-4 lg:mr-8 flex-shrink-0"
+          style={{ minWidth: '160px' }} // Prevent layout shifts
         >
-          Legally<span className="text-accent">Up</span>
+          <img 
+            src={LegallyUpLogo} 
+            alt="LegallyUp" 
+            className="h-12 md:h-14 w-auto object-contain"
+            style={{ maxHeight: '56px' }} // Stable height
+          />
         </Link>
 
         {/* Desktop/Tablet Navigation */}

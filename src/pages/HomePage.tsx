@@ -181,7 +181,7 @@ const HomePage: React.FC = () => {
     >
       {/* Hero Section - Full Screen */}
       <motion.section
-        className="relative bg-gradient-to-br from-primary to-accent h-screen flex items-center justify-center overflow-hidden text-white"
+        className="relative bg-gradient-to-br from-logoBlue to-primary h-screen flex items-center justify-center overflow-hidden text-white"
         variants={contentBlockVariants}
       >
         <HeroBackground variant="homepage" />
@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
         <div className="w-full relative z-10 py-16 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
-              <ShieldCheck size={72} className="mx-auto opacity-90 text-white" strokeWidth={1.5}/>
+              <ShieldCheck size={72} className="mx-auto opacity-90 text-logoGreen" strokeWidth={1.5}/>
             </motion.div>
             <motion.div
               variants={titleContainer}
@@ -202,7 +202,10 @@ const HomePage: React.FC = () => {
                 <motion.span
                   key={i}
                   variants={titleWord}
-                  className="inline-block mr-[0.2em] last:mr-0 text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900"
+                  className={`inline-block mr-[0.2em] last:mr-0 text-4xl md:text-5xl lg:text-6xl font-extrabold ${
+                    word === 'Transform' || word === 'Legal' ? 'text-logoGreen' : 'text-white'
+                  }`}
+                  style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
                 >
                   {word}
                 </motion.span>
@@ -211,10 +214,31 @@ const HomePage: React.FC = () => {
 
             <motion.p
               variants={itemVariants}
-              className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto"
+              className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto"
+              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
             >
               Create, customize, and manage your legal documents with ease. Our intuitive platform helps you generate professional documents in minutes.
             </motion.p>
+
+            <motion.div 
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Link
+                to="/templates"
+                className="inline-flex items-center justify-center px-8 py-4 bg-logoGreen text-white text-lg font-bold rounded-xl hover:bg-logoGreen/90 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              >
+                <FileText className="mr-2 h-6 w-6" />
+                Start Creating
+              </Link>
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-logoBlue text-lg font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-white/20"
+              >
+                <ArrowRight className="mr-2 h-6 w-6" />
+                Get Started Free
+              </Link>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -424,7 +448,7 @@ const HomePage: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* CTA Section */}
+      {/* Enhanced CTA Section */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -432,28 +456,53 @@ const HomePage: React.FC = () => {
         viewport={{ once: true, margin: "-100px" }}
         className="relative py-20 bg-white"
       >
-        <div className="absolute inset-0 bg-gray-50/50"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.h2 
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-primary"
             >
-              Ready to Streamline Your Legal Documentation?
+              Ready to <span className="text-logoGreen">Streamline</span> Your <span className="text-logoGreen">Legal</span> Documentation?
             </motion.h2>
             <motion.p 
-              className="text-lg md:text-xl text-gray-600 mb-10"
+              className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto"
             >
-              Join thousands of satisfied users who trust LegallyUp for their legal document needs
+              Join thousands of satisfied users who trust LegallyUp for their legal document needs. Start your free account today.
             </motion.p>
             <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-6 justify-center"
             >
               <Link
                 to="/signup"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-10 py-4 bg-logoGreen text-white text-lg font-bold rounded-xl hover:bg-logoGreen/90 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
               >
-                Get Started Now <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started Free <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
+              <Link
+                to="/pricing"
+                className="inline-flex items-center justify-center px-10 py-4 bg-transparent text-logoBlue text-lg font-bold rounded-xl border-2 border-logoBlue hover:bg-logoBlue hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                View Pricing <DollarSign className="ml-3 h-6 w-6" />
+              </Link>
+            </motion.div>
+            
+            <motion.div 
+              className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+            >
+              <div className="flex flex-col items-center">
+                <Zap className="h-8 w-8 text-primary mb-3" />
+                <h4 className="text-primary font-semibold text-lg mb-1">Lightning Fast</h4>
+                <p className="text-gray-600 text-sm">Generate documents in under 5 minutes</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <ShieldCheck className="h-8 w-8 text-primary mb-3" />
+                <h4 className="text-primary font-semibold text-lg mb-1">Legally Compliant</h4>
+                <p className="text-gray-600 text-sm">All templates reviewed by legal experts</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <Users className="h-8 w-8 text-primary mb-3" />
+                <h4 className="text-primary font-semibold text-lg mb-1">Trusted by 10,000+</h4>
+                <p className="text-gray-600 text-sm">Businesses and individuals worldwide</p>
+              </div>
             </motion.div>
           </div>
         </div>

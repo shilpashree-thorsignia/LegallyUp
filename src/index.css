@@ -39,13 +39,19 @@ h1, h2, h3, h4, h5, h6 {
   display: none !important;
 }
 
-/* Critical CSS variables */
+/* Enhanced CSS variables for professional legal theme */
 :root {
-  --color-primary-rgb: 37, 99, 235;
-  --color-primary: #2563EB;
-  --color-primary-dark: #1D4ED8;
+  --color-primary-rgb: 30, 58, 138;
+  --color-primary: #1E3A8A;
+  --color-primary-dark: #1E40AF;
   --color-accent: #3B82F6;
-  --color-accent-medium: #2563EB;
+  --color-accent-medium: #1E40AF;
+  --color-secondary: #1F2937;
+  --color-hero-start: #1E40AF;
+  --color-hero-end: #3B82F6;
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
   color-scheme: light;
 }
 

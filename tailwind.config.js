@@ -7,12 +7,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Design Theme Colors
-        primary: '#1F3B4D', // Navy Blue
-        accent: '#4A90E2',  // Soft Blue
-        textColor: '#2C2C2C', // Dark Charcoal
-        lightGray: '#F5F7FA', // Light Gray
-        white: '#FFFFFF', // Pure White
+        // LegallyUp Logo-Matched Theme Colors
+        primary: '#1B365D',   // Dark Blue from logo shield
+        accent: '#22C55E',    // Green from logo (matching the "Up" and arrow)
+        secondary: '#1F2937', // Dark Gray - sophisticated text
+        textColor: '#1F2937', // Dark Gray
+        lightGray: '#F8FAFC', // Very Light Gray - clean backgrounds
+        mediumGray: '#E2E8F0', // Medium Gray - subtle borders
+        success: '#22C55E',   // Green - same as accent for consistency
+        warning: '#D97706',   // Orange - attention
+        danger: '#DC2626',    // Red - errors/delete
+        white: '#FFFFFF',     // Pure White
+        // Logo-inspired gradient colors for hero sections
+        heroStart: '#1B365D', // Dark blue from logo
+        heroEnd: '#2563EB',   // Slightly lighter blue for gradient
+        logoGreen: '#22C55E', // Exact green from logo
+        logoBlue: '#1B365D',  // Exact dark blue from logo
       },
       spacing: {
          '18': '4.5rem',

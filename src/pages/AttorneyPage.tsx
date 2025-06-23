@@ -41,9 +41,10 @@ const AttorneyPage: React.FC = () => {
             <HeroBackground />
             <div className="absolute inset-0 bg-black/20 z-0"></div>
             <div className="w-full relative z-10 text-center">
-                <Shield size={64} className="mx-auto mb-6 opacity-90" />
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-gray-900">
-                    Connect with Legal Experts
+                <Shield size={64} className="mx-auto mb-6 opacity-90 text-logoGreen" />
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-white"
+                  style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                    <span className="text-logoGreen">Connect</span> with Legal Experts
                 </h1>
                 <p className="text-lg sm:text-xl text-white/90 mb-0 max-w-3xl mx-auto leading-relaxed">
                     Find qualified attorneys ready to provide personalized legal advice and services tailored to your unique needs.

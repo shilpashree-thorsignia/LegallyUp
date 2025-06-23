@@ -2,16 +2,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import LegallyUpLogo from '../../assets/LegallyUpLogo.jpeg';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinkClasses = "text-gray-200 hover:text-white transition-colors duration-200 text-base md:text-sm";
-  const footerTitleClasses = "text-lg font-semibold text-white mb-5 uppercase tracking-wider";
+  const footerTitleClasses = "text-lg font-semibold text-logoGreen mb-5 uppercase tracking-wider";
 
   return (
     <footer 
-      className="bg-gradient-to-br from-primary to-accent text-white pt-16 md:pt-24 pb-8"
+      className="bg-gradient-to-br from-logoBlue to-primary text-white pt-16 md:pt-24 pb-8"
       style={{ contain: 'layout' }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,12 +68,14 @@ const Footer: React.FC = () => {
           >
             <Link 
               to="/" 
-              className="inline-block mb-4 md:mb-6"
+              className="inline-block mb-4 md:mb-6 hover:opacity-90 transition-opacity"
               style={{ minHeight: '60px' }}
             >
-              <h2 className="text-4xl font-extrabold font-sans hover:opacity-90 transition-opacity text-left">
-                <span className="text-gray-800">Legally</span><span className="text-[#3db6f2]">Up</span>
-              </h2>
+              <img 
+                src={LegallyUpLogo} 
+                alt="LegallyUp" 
+                className="h-16 w-auto object-contain"
+              />
             </Link>
             <p 
               className="text-gray-200 leading-relaxed max-w-xs sm:max-w-sm md:max-w-xs lg:max-w-sm xl:max-w-md mb-4 md:mb-6 text-left"
@@ -88,7 +91,7 @@ const Footer: React.FC = () => {
                 href="#" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-gray-200 hover:text-white transition-colors"
+                className="text-gray-200 hover:text-logoGreen transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px' }}
               >
                 <Facebook size={22} />
@@ -97,7 +100,7 @@ const Footer: React.FC = () => {
                 href="#" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-gray-200 hover:text-white transition-colors"
+                className="text-gray-200 hover:text-logoGreen transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px' }}
               >
                 <Twitter size={22} />
@@ -106,7 +109,7 @@ const Footer: React.FC = () => {
                 href="#" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-gray-200 hover:text-white transition-colors"
+                className="text-gray-200 hover:text-logoGreen transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px' }}
               >
                 <Linkedin size={22} />
@@ -115,7 +118,7 @@ const Footer: React.FC = () => {
                 href="#" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-gray-200 hover:text-white transition-colors"
+                className="text-gray-200 hover:text-logoGreen transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px' }}
               >
                 <Instagram size={22} />

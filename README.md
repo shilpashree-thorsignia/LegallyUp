@@ -2,6 +2,104 @@
 
 A Flask-based REST API for the LegallyUp platform, providing document generation, user management, and payment processing services.
 
+## 📁 Project Structure
+
+```
+LegallyUp/
+├── 📂 api/                          # Backend (Flask API)
+│   ├── app.py                       # Main Flask application
+│   ├── requirements.txt             # Python dependencies
+│   └── venv/                        # Python virtual environment
+│
+├── 📂 src/                          # Frontend (React TypeScript)
+│   ├── 📂 components/               # Reusable React components
+│   │   ├── 📂 forms/               # Form components
+│   │   │   └── FormField.tsx       # Form field component
+│   │   ├── 📂 Layout/              # Layout components
+│   │   │   ├── Header.tsx          # Header component
+│   │   │   └── Footer.tsx          # Footer component
+│   │   ├── 📂 ui/                  # UI components
+│   │   │   ├── button.jsx          # Button component
+│   │   │   ├── HeroBackground.tsx  # Hero background component
+│   │   │   └── SignatureBlock.tsx  # Signature component
+│   │   ├── DocumentPreview.tsx     # Document preview component
+│   │   └── ScrollToTop.tsx         # Scroll to top component
+│   │
+│   ├── 📂 pages/                   # Page components
+│   │   ├── 📂 Documents/           # Document generation pages
+│   │   │   ├── DocumentGeneratorPage.tsx
+│   │   │   ├── NdaPage.tsx
+│   │   │   ├── PrivacyPolicyPage.tsx
+│   │   │   ├── RefundPolicyPage.tsx
+│   │   │   ├── PowerOfAttorneyPage.tsx
+│   │   │   ├── WebsiteServicesAgreementPage.tsx
+│   │   │   ├── EulaPage.tsx
+│   │   │   └── CookiesPolicyPage.tsx
+│   │   ├── 📂 policies/            # Policy pages
+│   │   │   ├── PrivacyPolicy.tsx
+│   │   │   ├── RefundPolicy.tsx
+│   │   │   └── TermsAndConditions.tsx
+│   │   ├── HomePage.tsx            # Landing page
+│   │   ├── DashboardPage.tsx       # User dashboard
+│   │   ├── SignInPage.tsx          # Authentication pages
+│   │   ├── SignUpPage.tsx
+│   │   ├── ForgotPasswordPage.tsx
+│   │   ├── EditProfilePage.tsx     # User profile
+│   │   ├── TemplateLibraryPage.tsx # Template browsing
+│   │   ├── AboutPage.tsx           # About page
+│   │   ├── PricingPage.tsx         # Pricing plans
+│   │   ├── ContactPage.tsx         # Contact form
+│   │   ├── BlogsPage.tsx           # Blog listing
+│   │   ├── BlogDetailPage.tsx      # Individual blog posts
+│   │   ├── CaseStudiesPage.tsx     # Case studies
+│   │   ├── CaseStudyDetailPage.tsx
+│   │   ├── LegalResourcesPage.tsx  # Legal resources
+│   │   ├── ResourceDetailPage.tsx
+│   │   ├── AttorneyPage.tsx        # Attorney services
+│   │   └── ScheduleConsultationPage.tsx
+│   │
+│   ├── 📂 contexts/                # React contexts
+│   │   └── AuthContext.tsx         # Authentication context
+│   │
+│   ├── 📂 hooks/                   # Custom React hooks
+│   │   └── useFormValidation.ts    # Form validation hook
+│   │
+│   ├── 📂 lib/                     # Utility libraries
+│   │   ├── apiBase.ts              # API configuration
+│   │   └── blogsData.ts            # Blog data
+│   │
+│   ├── 📂 utils/                   # Utility functions
+│   │   └── formValidation.ts       # Form validation utilities
+│   │
+│   ├── 📂 assets/                  # Static assets
+│   │   ├── images/                 # Image files
+│   │   └── videos/                 # Video files
+│   │
+│   ├── App.tsx                     # Main React application
+│   ├── main.tsx                    # React entry point
+│   ├── index.css                   # Global styles
+│   ├── declarations.d.ts           # TypeScript declarations
+│   └── vite-env.d.ts              # Vite environment types
+│
+├── 📂 public/                      # Public static files
+│   ├── favicon.ico                 # Site favicon
+│   ├── sw.js                       # Service worker
+│   ├── test.html                   # Test page
+│   ├── vite.svg                    # Vite logo
+│   └── _redirects                  # Netlify redirects
+│
+├── 📄 package.json                 # Frontend dependencies
+├── 📄 package-lock.json            # Lock file
+├── 📄 tsconfig.json                # TypeScript configuration
+├── 📄 tsconfig.node.json           # Node TypeScript config
+├── 📄 tailwind.config.js           # Tailwind CSS configuration
+├── 📄 postcss.config.js            # PostCSS configuration
+├── 📄 vite.config.ts               # Vite bundler configuration
+├── 📄 vercel.json                  # Vercel deployment config
+├── 📄 index.html                   # HTML entry point
+└── 📄 README.md                    # Project documentation
+```
+
 ## Features
 
 ### User Management
