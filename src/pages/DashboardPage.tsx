@@ -535,14 +535,14 @@ const DashboardPage: React.FC = () => {
           <div className="w-full relative z-10 flex flex-col justify-center h-full">
             <div className="max-w-4xl mx-auto text-center space-y-4">
               <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }} className="mb-8">
-                <Layers size={72} className="mx-auto opacity-90" strokeWidth={1.5} />
+                <Layers size={72} className="mx-auto opacity-90 text-logoGreen" strokeWidth={1.5} />
               </motion.div>
               <motion.h1
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
                 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tighter"
-                style={{ textShadow: '0 3px 10px rgba(0,0,0,0.2)' }}
+                style={{ textShadow: '0 3px 10px rgba(0,0,0,0.3)' }}
               >
-                Your Legal Hub
+                <span className="text-logoGreen">Your</span> <span className="text-white">Legal</span> <span className="text-logoGreen">Hub</span>
               </motion.h1>
               <motion.p
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }}
