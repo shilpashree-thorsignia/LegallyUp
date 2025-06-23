@@ -581,7 +581,7 @@ const DashboardPage: React.FC = () => {
             </p> */}
           </div>
           {/* Search and Sort Bar */}
-          <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
+          <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200 mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end md:gap-8 gap-4">
             <div className="flex-1">
               <label htmlFor="dashboard-search" className="block text-sm font-medium text-gray-700 mb-1.5">Search Documents</label>
               <div className="relative">
@@ -653,7 +653,7 @@ const DashboardPage: React.FC = () => {
               </button>
             </div>
           ) : filteredAndSortedTemplates.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
               {filteredAndSortedTemplates.map(doc => {
                 const parsedContent = typeof doc.content === 'string' 
                   ? (() => { try { return JSON.parse(doc.content); } catch { return { content: doc.content }; } })() 
@@ -689,22 +689,22 @@ const DashboardPage: React.FC = () => {
                     </div>
 
                     {/* Info and Actions Area */}
-                    <div className="flex items-center justify-between mt-3">
-                      <div>
-                        <h3 className="font-semibold text-primary truncate" title={doc.title}>{doc.title}</h3>
-                        <p className="text-sm text-gray-500">
+                    <div className="flex items-start justify-between mt-3 gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-primary truncate text-sm sm:text-base" title={doc.title}>{doc.title}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1">
                           {showTrash ? 'Trashed' : 'Saved'}: {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'N/A'}
                         </p>
                       </div>
 
-                      <button onClick={() => handleToggleMenu(doc.id)} className="p-2 rounded-full text-gray-500 hover:bg-gray-100">
-                        <MoreHorizontal size={20} />
+                      <button onClick={() => handleToggleMenu(doc.id)} className="p-1.5 sm:p-2 rounded-full text-gray-500 hover:bg-gray-100 flex-shrink-0">
+                        <MoreHorizontal size={18} className="sm:w-5 sm:h-5" />
                       </button>
                     </div>
 
                     {/* Dropdown Menu */}
                     {openMenuId === doc.id && (
-                      <div ref={menuRef} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-100 py-1">
+                      <div ref={menuRef} className="absolute top-full right-0 mt-2 w-44 sm:w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-100 py-1">
                         <button onClick={() => handleActionClick(() => handleViewDocument(doc))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><Eye size={16} /> View</button>
                         <button onClick={() => handleActionClick(() => handleDownloadDocument(doc, 'pdf'))} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m0 0l-3-3m3 3l3-3m6-5a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7z" /></svg> Download</button>
                         <div className="my-1 h-px bg-gray-100"></div>
