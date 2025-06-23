@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen } from 'lucide-react';
 import { blogsData, categories, type BlogPost } from '../lib/blogsData';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 // Lazy loaded blog card component
 const BlogCard: React.FC<{ post: BlogPost }> = ({ post }) => {
@@ -76,9 +76,7 @@ const BlogsPage: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Hero Section - Full Screen */}
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden">
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
+      <section className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden">
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">

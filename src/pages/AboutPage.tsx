@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import {
   Users, Sparkles, Handshake, ShieldCheck, Lightbulb,  Shield
 } from 'lucide-react';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -69,11 +69,9 @@ const AboutPage: React.FC = () => {
     >
       {/* Hero Section - Full Screen */}
       <motion.section
-        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
         variants={contentBlockVariants}
       >
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
@@ -102,10 +100,10 @@ const AboutPage: React.FC = () => {
 <motion.section
   id="our-journey"
   variants={sectionVariants}
-  className="py-28 px-6 bg-white text-gray-900"
+  className="py-12 md:py-16 px-6 bg-white text-gray-900"
 >
-  <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <motion.div variants={sectionVariants} className="order-1 flex justify-center relative">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+    <motion.div variants={sectionVariants} className="order-1 flex justify-center lg:justify-start relative">
       {/* Sprinkles Animation */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <span className="sprinkle sprinkle-1"></span>
@@ -119,7 +117,7 @@ const AboutPage: React.FC = () => {
       </div>
     </motion.div>
     <motion.div variants={sectionVariants} className="order-2">
-      <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Our Journey From Idea to Impact</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Our Journey From Idea to Impact</h2>
       <p className="text-lg md:text-xl leading-relaxed">
         LegallyUp was founded to make legal empowerment accessible to everyone. What began as a mission to simplify and streamline legal documents has grown into a platform that offers intuitive templates, educational resources, and connections to trusted legal professionals. Our journey is driven by innovation and a commitment to making the law work for all.
       </p>
@@ -131,13 +129,13 @@ const AboutPage: React.FC = () => {
       {/* Vision & Mission - Two-Column Layout on lightGray */}
       <motion.section
         variants={contentBlockVariants}
-        className="py-20 md:py-28 px-6 bg-white rounded-t-[30px] md:rounded-t-[50px] rounded-b-[30px] md:rounded-b-[50px] my-12 md:my-16 mx-auto max-w-7xl lg:px-8" // Constrain width and center
+        className="py-12 md:py-16 px-6 bg-white my-8 md:my-12 mx-auto max-w-7xl lg:px-8" // Constrain width and center
       >
         <div className="container mx-auto">
             {/* Our Vision */}
-            <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center mb-16 md:mb-24">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center mb-12 md:mb-16">
   <motion.div variants={itemVariants} className="text-center md:text-left order-2 md:order-1">
-    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6 tracking-tight">Our Vision for the Future</h2>
+    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 tracking-tight">Our Vision for the Future</h2>
     <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
       To be the globally trusted and indispensable platform where individuals and businesses confidently navigate their legal landscapes with unparalleled clarity, efficiency, and ease, fostering a future where expert legal support and understanding are accessible to all through innovative technology.
     </p>
@@ -158,7 +156,7 @@ const AboutPage: React.FC = () => {
 </div>
 
             {/* Our Mission */}
-            <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <motion.div variants={itemVariants} className="flex justify-center md:justify-start order-1 md:order-1 relative">
                   {/* Sprinkles Animation */}
                   <div className="absolute inset-0 z-0 pointer-events-none">
@@ -173,7 +171,7 @@ const AboutPage: React.FC = () => {
                   </div>
                 </motion.div>
                 <motion.div variants={itemVariants} className="text-center md:text-left order-2 md:order-2">
-                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6 tracking-tight">Our Core Mission</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 tracking-tight">Our Core Mission</h2>
                     <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
                         Our mission is to <strong className="text-accent font-semibold">democratize access to legal resources and support</strong>. We achieve this by providing exceptionally intuitive, highly affordable, and consistently reliable solutions designed to empower you at every turn—from drafting essential documents to connecting with seasoned legal professionals.
                     </p>
@@ -185,23 +183,23 @@ const AboutPage: React.FC = () => {
       {/* Core Values Grid - Enhanced Cards */}
       <motion.section
         variants={contentBlockVariants}
-        className="py-20 md:py-28 px-6 bg-white text-center"
+        className="py-12 md:py-16 px-6 bg-white text-center"
       >
-        <motion.h2 variants={sectionHeaderVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-16 md:mb-20 tracking-tight">
+        <motion.h2 variants={sectionHeaderVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-8 md:mb-12 tracking-tight">
             Our Guiding Principles
         </motion.h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {coreValuesData.map((value) => (
             <motion.div
               key={value.title}
               variants={itemVariants} // Stagger individual cards
               whileHover="hover"
               custom // ensure custom prop for stagger is passed if needed by variants
-              className="bg-lightGray p-8 rounded-3xl shadow-lg group flex flex-col items-center text-center transform transition-all duration-300 hover:!shadow-2xl hover:border-accent border-2 border-transparent"
+              className="bg-lightGray p-6 rounded-3xl shadow-lg group flex flex-col items-center text-center transform transition-all duration-300 hover:!shadow-2xl hover:border-accent border-2 border-transparent"
             >
               <motion.div
                 variants={valueCardHover} // Apply hover to the icon container
-                className="p-6 bg-gradient-to-br from-primary to-accent text-white rounded-full mb-8 transform group-hover:scale-110 transition-all duration-300 shadow-lg"
+                className="p-5 bg-gradient-to-br from-primary to-accent text-white rounded-full mb-6 transform group-hover:scale-110 transition-all duration-300 shadow-lg"
               >
                 <value.icon size={44} strokeWidth={2} />
               </motion.div>
@@ -215,28 +213,28 @@ const AboutPage: React.FC = () => {
       {/* Call to Action Section - Using the new requested style */}
       <motion.div
         variants={contentBlockVariants}
-        className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" // Outer spacing
+        className="py-8 md:py-12 px-4 sm:px-6 lg:px-8" // Reduced outer spacing
       >
         <div
-          className="bg-gradient-to-br from-primary  to-accent text-white rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-10 sm:p-12 md:p-16 lg:p-20 shadow-2xl text-center max-w-4xl mx-auto"
+          className="text-gray-900 p-6 sm:p-8 md:p-10 text-center max-w-4xl mx-auto"
           style={{backgroundImage: "" }}
         >
           <motion.h2
             variants={itemVariants}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight tracking-tight"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight tracking-tight text-primary"
           >
             Ready to Streamline Your Legal Needs?
           </motion.h2>
           <motion.p
             variants={itemVariants}
-            className="text-md sm:text-lg text-white/90 mb-10 max-w-xl mx-auto leading-relaxed"
+            className="text-md sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto leading-relaxed"
           >
             Eliminate legal bottlenecks. Begin automating your documents or explore templates and legal support tools with LegallyUp.
           </motion.p>
           <motion.div variants={itemVariants}>
             <Link
               to="/documents/generate"
-              className="inline-block bg-white text-primary px-10 py-4 sm:px-14 sm:py-5 rounded-2xl text-lg sm:text-xl font-semibold hover:bg-gray-200 transition-colors duration-300 shadow-xl transform hover:scale-105 active:scale-100"
+              className="inline-block bg-primary text-white px-10 py-4 sm:px-14 sm:py-5 rounded-2xl text-lg sm:text-xl font-semibold hover:bg-accent transition-colors duration-300 shadow-xl transform hover:scale-105 active:scale-100"
             >
               Generate Your Document
             </Link>

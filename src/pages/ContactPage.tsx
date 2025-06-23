@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Send, Mail, Phone, ExternalLink, MessageSquare, Facebook, Twitter, Linkedin, Instagram, HelpCircle } from 'lucide-react';
 import FormField from '../components/forms/FormField'; 
-import HeroBackground from '../components/ui/HeroBackground';
+
 import { API_BASE } from '../lib/apiBase';
 
 // Animation variants
@@ -102,10 +102,8 @@ const ContactPage: React.FC = () => {
         {/* Hero Section */}
         <motion.section
             variants={contentBlockVariants}
-            className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+            className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
         >
-            <HeroBackground />
-            <div className="absolute inset-0 bg-black/20 z-0"></div>
             <div className="w-full relative z-10">
                 <div className="max-w-4xl mx-auto text-center">
                     <motion.div className="mb-8 flex justify-center">

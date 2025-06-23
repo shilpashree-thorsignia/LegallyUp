@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BookOpen, ChevronRight, HelpCircle, FileText as GuideIcon, Hash } from 'lucide-react';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 // Animation variants
 const sectionVariants = {
@@ -136,10 +136,8 @@ const LegalResourcesPage: React.FC = () => {
       {/* Hero Section */}
       <motion.section
         variants={sectionVariants}
-        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
       >
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">
@@ -151,9 +149,10 @@ const LegalResourcesPage: React.FC = () => {
             </motion.div>
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-white"
+              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
             >
-              Legal Resources Hub
+              <span className="text-logoGreen">Legal</span> Resources Hub
             </motion.h1>
             <motion.p 
               variants={itemVariants}

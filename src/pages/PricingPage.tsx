@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { DollarSign, CheckCircle, XCircle, HelpCircle, ChevronDown, Star, Zap, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 // Animation variants
 const pageVariants = {
@@ -125,10 +125,8 @@ const PricingPage: React.FC = () => {
     >
       <motion.section // Hero Section
         variants={contentBlockVariants}
-        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
       >
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">

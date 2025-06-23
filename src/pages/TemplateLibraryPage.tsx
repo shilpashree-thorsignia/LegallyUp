@@ -7,7 +7,7 @@ import {
   FileText, ShieldCheck, Settings2, RotateCcw, Users,  UserCheck,
   Layers, ChevronRight, Star, Lock, Crown
 } from 'lucide-react';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -300,13 +300,11 @@ const TemplateLibraryPage: React.FC = () => {
     >
       {/* Hero Section (matching homepage style) */}
       <motion.section
-        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
         variants={{ hidden: { opacity: 0, y: 30, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99], delayChildren: 0.2, staggerChildren: 0.2 } } }}
         initial="hidden"
         animate="visible"
       >
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">

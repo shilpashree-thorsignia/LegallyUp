@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FileText, ShieldCheck, Settings2, RotateCcw, Users, Tv2, UserCheck, ChevronRight, Layers, Zap } from 'lucide-react'; // Added Zap for CTA
-import HeroBackground from '../../components/ui/HeroBackground';
+
 
 // Document types data (ensure paths are correct for your routing)
 const documentTypes = [
@@ -59,12 +59,11 @@ const DocumentGeneratorPage: React.FC = () => {
     >
       {/* Full Screen Hero Section - No curves or padding */}
       <motion.section
-        className="w-full h-screen bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative flex items-center justify-center"
+        className="w-full h-screen bg-logoBlue text-white overflow-hidden relative flex items-center justify-center"
         variants={heroContentVariants}
         initial="hidden"
         animate="visible"
       >
-        <HeroBackground variant="generator" />
         <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs><pattern id="patt" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="50" cy="50" r="1.5" fill="currentColor"/></pattern></defs>

@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BarChart3, Target, ChevronRight, Award, BookText } from 'lucide-react';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 // Updated mockCaseStudies with slug and more detailed content
 const mockCaseStudies = [
@@ -81,10 +81,8 @@ const CaseStudiesPage: React.FC = () => {
     >
       <motion.section
         variants={sectionVariants}
-        className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
       >
-        <HeroBackground />
-        <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="w-full relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div className="mb-8 flex justify-center">

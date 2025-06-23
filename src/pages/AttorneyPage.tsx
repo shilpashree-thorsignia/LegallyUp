@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Users, MapPin, ChevronRight, Shield, } from 'lucide-react';
-import HeroBackground from '../components/ui/HeroBackground';
+
 
 // Updated placeholder data for attorneys with more details
 const mockAttorneys = [
@@ -36,10 +36,8 @@ const AttorneyPage: React.FC = () => {
     >
         <motion.section
             variants={sectionVariants}
-            className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary to-accent text-white overflow-hidden"
+            className="relative h-screen flex items-center justify-center bg-logoBlue text-white overflow-hidden"
         >
-            <HeroBackground />
-            <div className="absolute inset-0 bg-black/20 z-0"></div>
             <div className="w-full relative z-10 text-center">
                 <Shield size={64} className="mx-auto mb-6 opacity-90 text-logoGreen" />
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-white"
