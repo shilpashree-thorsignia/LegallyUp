@@ -20,9 +20,9 @@ const HeroBackground: React.FC<HeroBackgroundProps> = ({ variant }) => {
 
   // Determine which video to use based on variant
   const videoSrc = 
-    variant === 'homepage' ? '/src/assets/anime.mp4' :
-    variant === 'dashboard' ? '/src/assets/dashboard.mp4' :
-    '/src/assets/anime2.mp4';
+    variant === 'homepage' ? '/anime.mp4' :
+    variant === 'dashboard' ? '/dashboard.mp4' :
+    '/anime2.mp4';
 
   // Video background for all pages and variants
   return (
