@@ -12,6 +12,11 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 # Enable CORS for all routes
+
+@app.route("/")
+def index():
+    return {"message": "LegallyUp Backend is Running"}
+
 CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:5173", "https://legally-up-nu.vercel.app"],
